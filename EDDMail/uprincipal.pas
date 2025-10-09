@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls,
-  UUsuarios;
+  UListaSimpleUsuarios; // CORRECCIÓN: Nombre de la unidad corregido
 
 type
 

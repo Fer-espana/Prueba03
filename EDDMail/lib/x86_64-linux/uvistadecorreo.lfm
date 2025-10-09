@@ -1,0 +1,45 @@
+object Form10: TForm10
+  Left = 700
+  Height = 410
+  Top = 317
+  Width = 507
+  Caption = 'Vista de Correo'
+  ClientHeight = 410
+  ClientWidth = 507
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  LCLVersion = '2.2.6.0'
+  object tablaInformacionCorreo: TStringGrid
+    Left = 40
+    Height = 240
+    Top = 32
+    Width = 416
+    TabOrder = 0
+    OnClick = tablaInformacionCorreoClick
+    OnEditingDone = tablaInformacionCorreoEditingDone
+    Cells = (
+      4
+      0
+      0
+      'Remitente'
+      0
+      1
+      'Asunto'
+      0
+      2
+      'Fecha'
+      0
+      3
+      'Mensaje'
+    )
+  end
+  object btnEliminarCorreo: TButton
+    Left = 144
+    Height = 34
+    Top = 320
+    Width = 195
+    Caption = 'Eliminar'
+    OnClick = btnEliminarCorreoClick
+    TabOrder = 1
+  end
+end

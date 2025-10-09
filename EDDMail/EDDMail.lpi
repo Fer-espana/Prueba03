@@ -45,9 +45,9 @@
         <UnitName Value="UPrincipal"/>
       </Unit>
       <Unit>
-        <Filename Value="uusuarios.pas"/>
+        <Filename Value="ulistasimpleusuarios.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="ULista"/>
+        <UnitName Value="UListaSimpleUsuarios"/>
       </Unit>
       <Unit>
         <Filename Value="uroot.pas"/>
@@ -64,34 +64,34 @@
         <UnitName Value="UUsuarioEstandar"/>
       </Unit>
       <Unit>
-        <Filename Value="ucorreos.pas"/>
+        <Filename Value="ulistadobleenlazadacorreos.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UCorreos"/>
+        <UnitName Value="UListaDobleEnlazadaCorreos"/>
       </Unit>
       <Unit>
-        <Filename Value="ucontactos.pas"/>
+        <Filename Value="ulistacircularcontactos.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UContactos"/>
+        <UnitName Value="UListaCircularContactos"/>
       </Unit>
       <Unit>
-        <Filename Value="ucola.pas"/>
+        <Filename Value="ucolacorreosprogramados.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UColaCorreos"/>
+        <UnitName Value="UColaCorreosProgramados"/>
       </Unit>
       <Unit>
-        <Filename Value="upila.pas"/>
+        <Filename Value="upilapapelera.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UPilaPapelera"/>
       </Unit>
       <Unit>
-        <Filename Value="umatriz.pas"/>
+        <Filename Value="umatrizdispersarelaciones.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UMatrizDispersa"/>
+        <UnitName Value="UMatrizDispersaRelaciones"/>
       </Unit>
       <Unit>
-        <Filename Value="ucomunidades.pas"/>
+        <Filename Value="ulistadelistascomunidades.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="ULista"/>
+        <UnitName Value="UListadeListasComunidades"/>
       </Unit>
       <Unit>
         <Filename Value="uenviarcorreo.pas"/>
@@ -111,6 +111,7 @@
         <Filename Value="uagregarcontacto.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form6"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UAgregarContacto"/>
       </Unit>

@@ -7,10 +7,10 @@
       <Unit>
         <Filename Value="EDDMail.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
         <TopLine Value="3"/>
-        <CursorPos X="53" Y="20"/>
+        <CursorPos X="55" Y="16"/>
         <UsageCount Value="25"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="uprincipal.pas"/>
@@ -19,16 +19,17 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UPrincipal"/>
-        <CursorPos X="90" Y="10"/>
+        <EditorIndex Value="1"/>
+        <CursorPos X="3" Y="9"/>
         <UsageCount Value="25"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="uusuarios.pas"/>
+        <Filename Value="ulistasimpleusuarios.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="ULista"/>
-        <EditorIndex Value="2"/>
-        <CursorPos X="31" Y="6"/>
+        <UnitName Value="UListaSimpleUsuarios"/>
+        <EditorIndex Value="3"/>
+        <CursorPos X="26"/>
         <UsageCount Value="25"/>
         <Loaded Value="True"/>
       </Unit>
@@ -38,9 +39,8 @@
         <ComponentName Value="Form2"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UROOT"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="28"/>
-        <CursorPos X="63" Y="50"/>
+        <EditorIndex Value="2"/>
+        <CursorPos X="22" Y="11"/>
         <UsageCount Value="25"/>
         <Loaded Value="True"/>
       </Unit>
@@ -50,64 +50,64 @@
         <ComponentName Value="Form3"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UUsuarioEstandar"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="4"/>
         <TopLine Value="20"/>
         <CursorPos X="41" Y="42"/>
         <UsageCount Value="25"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="ucorreos.pas"/>
+        <Filename Value="ulistadobleenlazadacorreos.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UListaDobleEnlazadaCorreos"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="4"/>
-        <CursorPos X="45" Y="7"/>
-        <UsageCount Value="24"/>
-        <Loaded Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="ucontactos.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="UContactos"/>
         <EditorIndex Value="5"/>
-        <CursorPos X="12"/>
+        <CursorPos X="32"/>
         <UsageCount Value="24"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="ucola.pas"/>
+        <Filename Value="ulistacircularcontactos.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UColaCorreos"/>
+        <UnitName Value="UListaCircularContactos"/>
         <EditorIndex Value="6"/>
-        <CursorPos X="18"/>
+        <CursorPos X="29"/>
         <UsageCount Value="24"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="upila.pas"/>
+        <Filename Value="ucolacorreosprogramados.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UColaCorreosProgramados"/>
+        <EditorIndex Value="7"/>
+        <CursorPos X="48" Y="8"/>
+        <UsageCount Value="24"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="upilapapelera.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UPilaPapelera"/>
-        <EditorIndex Value="7"/>
-        <CursorPos X="19"/>
-        <UsageCount Value="24"/>
-        <Loaded Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="umatriz.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="UMatrizDispersa"/>
         <EditorIndex Value="8"/>
-        <CursorPos X="21"/>
+        <CursorPos X="48" Y="8"/>
         <UsageCount Value="24"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="ucomunidades.pas"/>
+        <Filename Value="umatrizdispersarelaciones.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="ULista"/>
+        <UnitName Value="UMatrizDispersaRelaciones"/>
         <EditorIndex Value="9"/>
-        <CursorPos X="12"/>
+        <CursorPos X="31"/>
+        <UsageCount Value="24"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="ulistadelistascomunidades.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UListadeListasComunidades"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="10"/>
+        <CursorPos X="42" Y="8"/>
         <UsageCount Value="24"/>
         <Loaded Value="True"/>
       </Unit>
@@ -117,9 +117,7 @@
         <ComponentName Value="Form4"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UEnviarCorreo"/>
-        <EditorIndex Value="10"/>
-        <TopLine Value="36"/>
-        <CursorPos X="67" Y="58"/>
+        <EditorIndex Value="11"/>
         <UsageCount Value="24"/>
         <Loaded Value="True"/>
       </Unit>
@@ -129,7 +127,7 @@
         <ComponentName Value="Form5"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UProgramarCorreo"/>
-        <EditorIndex Value="11"/>
+        <EditorIndex Value="12"/>
         <TopLine Value="43"/>
         <CursorPos X="105" Y="61"/>
         <UsageCount Value="24"/>
@@ -139,11 +137,12 @@
         <Filename Value="uagregarcontacto.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form6"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UAgregarContacto"/>
-        <EditorIndex Value="12"/>
-        <TopLine Value="31"/>
-        <CursorPos Y="53"/>
+        <EditorIndex Value="13"/>
+        <TopLine Value="7"/>
+        <CursorPos X="61" Y="22"/>
         <UsageCount Value="24"/>
         <Loaded Value="True"/>
       </Unit>
@@ -153,7 +152,7 @@
         <ComponentName Value="Form7"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UActualizarPerfil"/>
-        <EditorIndex Value="13"/>
+        <EditorIndex Value="14"/>
         <CursorPos X="63" Y="16"/>
         <UsageCount Value="24"/>
         <Loaded Value="True"/>
@@ -165,7 +164,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="URegistrarse"/>
-        <EditorIndex Value="14"/>
+        <EditorIndex Value="15"/>
         <CursorPos X="60" Y="12"/>
         <UsageCount Value="24"/>
         <Loaded Value="True"/>
@@ -176,7 +175,7 @@
         <ComponentName Value="Form9"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UBandejaEntrada"/>
-        <EditorIndex Value="15"/>
+        <EditorIndex Value="16"/>
         <CursorPos X="22" Y="8"/>
         <UsageCount Value="22"/>
         <Loaded Value="True"/>
@@ -187,7 +186,7 @@
         <ComponentName Value="Form10"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UVistadeCorreo"/>
-        <EditorIndex Value="16"/>
+        <EditorIndex Value="17"/>
         <CursorPos X="41" Y="9"/>
         <UsageCount Value="22"/>
         <Loaded Value="True"/>
@@ -198,7 +197,7 @@
         <ComponentName Value="Form11"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UPapelera"/>
-        <EditorIndex Value="17"/>
+        <EditorIndex Value="18"/>
         <TopLine Value="55"/>
         <CursorPos X="96" Y="63"/>
         <UsageCount Value="22"/>
@@ -211,7 +210,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UCorreosProgramados"/>
-        <EditorIndex Value="18"/>
+        <EditorIndex Value="19"/>
         <CursorPos X="67" Y="22"/>
         <UsageCount Value="21"/>
         <Loaded Value="True"/>
@@ -223,13 +222,87 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UVentanaContactos"/>
-        <EditorIndex Value="19"/>
-        <CursorPos X="108" Y="40"/>
+        <EditorIndex Value="20"/>
+        <CursorPos X="23"/>
         <UsageCount Value="21"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="-1"/>
+    <JumpHistory HistoryIndex="17">
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="8" Column="39"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="9" Column="23"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="122" Column="43" TopLine="111"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="133" Column="5" TopLine="111"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="9" Column="3"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="13" Column="59"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="9" Column="3"/>
+      </Position>
+      <Position>
+        <Filename Value="EDDMail.lpr"/>
+        <Caret Line="15" Column="2" TopLine="3"/>
+      </Position>
+      <Position>
+        <Filename Value="uprincipal.pas"/>
+        <Caret Line="9" Column="3"/>
+      </Position>
+      <Position>
+        <Filename Value="EDDMail.lpr"/>
+        <Caret Line="16" Column="55" TopLine="3"/>
+      </Position>
+      <Position>
+        <Filename Value="uagregarcontacto.pas"/>
+        <Caret Line="11" Column="65"/>
+      </Position>
+      <Position>
+        <Filename Value="uagregarcontacto.pas"/>
+        <Caret Line="22" Column="61" TopLine="7"/>
+      </Position>
+      <Position>
+        <Filename Value="ucolacorreosprogramados.pas"/>
+        <Caret Line="8" Column="22"/>
+      </Position>
+      <Position>
+        <Filename Value="ucolacorreosprogramados.pas"/>
+        <Caret Line="22" Column="87"/>
+      </Position>
+      <Position>
+        <Filename Value="ulistadobleenlazadacorreos.pas"/>
+        <Caret Column="32"/>
+      </Position>
+      <Position>
+        <Filename Value="ucolacorreosprogramados.pas"/>
+        <Caret Line="8" Column="48"/>
+      </Position>
+      <Position>
+        <Filename Value="upilapapelera.pas"/>
+        <Caret Line="8" Column="48"/>
+      </Position>
+      <Position>
+        <Filename Value="ulistasimpleusuarios.pas"/>
+        <Caret Column="26"/>
+      </Position>
+    </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
       <Modes ActiveMode=""/>

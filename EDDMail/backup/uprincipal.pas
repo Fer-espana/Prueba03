@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls,
-  UUsuarios;
+  UListaSimpleUsuarios;
 
 type
 
@@ -25,8 +25,6 @@ type
     StatusBar1: TStatusBar;
     procedure btnLoginClick(Sender: TObject);
     procedure btnRegistrarClick(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private

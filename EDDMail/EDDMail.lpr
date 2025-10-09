@@ -9,9 +9,11 @@ uses
   {$IFDEF HASAMIGA}
   athreads,
   {$ENDIF}
-  Interfaces, // this includes the LCL widgetset
-  Forms, UPrincipal, UUsuarios, unit1, unit2, unit3, datetimectrls, unit4,
-  unit5, unit6, unit7, unit8, unit9, unit10, unit11;
+Interfaces, // this includes the LCL widgetset
+ Forms, UPrincipal, UROOT, UUsuarioEstandar, UEnviarCorreo, UProgramarCorreo, datetimectrls, UAgregarContacto,
+ UActualizarPerfil, URegistrarse, UBandejaEntrada, UVistadeCorreo, UPapelera, UCorreosProgramados, UVentanaContactos,
+ UListaSimpleUsuarios, UListaDobleEnlazadaCorreos, UListaCircularContactos, UColaCorreosProgramados, UPilaPapelera,
+  UMatrizDispersaRelaciones, UListadeListasComunidades;
 
 {$R *.res}
 

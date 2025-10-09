@@ -17,7 +17,6 @@ type
     editEmail: TEdit;
     Label1: TLabel;
     procedure btnAgregarContactoClick(Sender: TObject);
-    procedure DrawGrid1Click(Sender: TObject);
     procedure editEmailChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);

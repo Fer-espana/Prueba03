@@ -4,8 +4,6 @@ unit UUsuarios;
 
 interface
 
-var
-  ListaUsuariosGlobal: TListaUsuarios;
 
 uses
   Classes, SysUtils;
@@ -25,6 +23,9 @@ type
     Cabeza: PUsuario;
     Count: Integer;
   end;
+
+var
+  ListaUsuariosGlobal: TListaUsuarios;
 
 // Procedimientos básicos
 procedure InicializarListaUsuarios(var Lista: TListaUsuarios);
