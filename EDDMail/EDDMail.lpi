@@ -60,6 +60,7 @@
         <Filename Value="uusuarioestandar.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form3"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UUsuarioEstandar"/>
       </Unit>

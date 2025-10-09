@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls,
-  UListaSimpleUsuarios;
+  UListaSimpleUsuarios, UROOT, UListaCircularContactos;
 
 type
 
@@ -66,7 +66,9 @@ begin
   // Verificar credenciales root
   if (edtEmail.Text = ROOT_EMAIL) and (edtPassword.Text = ROOT_PASSWORD) then
   begin
-    ShowMessage('¡Bienvenido Root!');
+    Hide; // Ocultar login
+    Form2 := TForm2.Create(Application);
+    Form2.Show;
     StatusBar1.SimpleText := 'Sesión root iniciada';
     Exit;
   end;
@@ -79,8 +81,10 @@ begin
     Exit;
   end;
 
-  // Por ahora, cualquier contraseña funciona para usuarios normales
-  ShowMessage('¡Bienvenido ' + Usuario^.Nombre + '!');
+  // Abrir formulario Usuario Estándar
+  Hide; // Ocultar login
+  Form3 := TForm3.Create(Application);
+  Form3.Show;
   StatusBar1.SimpleText := 'Sesión de usuario iniciada: ' + Usuario^.Nombre;
 end;
 

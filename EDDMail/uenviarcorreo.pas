@@ -5,7 +5,8 @@ unit UEnviarCorreo;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
+  UListaCircularContactos, UListaDobleEnlazadaCorreos;
 
 type
 
@@ -26,9 +27,8 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure MemoMensajeChange(Sender: TObject);
   private
-
+    ListaContactos: TListaContactos;
   public
-
   end;
 
 var
@@ -42,12 +42,39 @@ implementation
 
 procedure TForm4.FormCreate(Sender: TObject);
 begin
-
+  Caption := 'Enviar Correo';
+  InicializarListaContactos(ListaContactos);
 end;
 
 procedure TForm4.btnEnviarClick(Sender: TObject);
+var
+  Destinatario, Asunto, Mensaje: string;
 begin
+  Destinatario := editDestinatario.Text;
+  Asunto := editAsunto.Text;
+  Mensaje := MemoMensaje.Text;
 
+  // Validaciones básicas
+  if (Destinatario = '') or (Asunto = '') or (Mensaje = '') then
+  begin
+    ShowMessage('Por favor complete todos los campos');
+    Exit;
+  end;
+
+  // Verificar si el destinatario está en contactos
+  if BuscarContactoPorEmail(ListaContactos, Destinatario) = nil then
+  begin
+    ShowMessage('Error: El destinatario no está en sus contactos');
+    Exit;
+  end;
+
+  // Aquí iría la lógica para enviar el correo
+  ShowMessage('Correo enviado exitosamente a: ' + Destinatario);
+
+  // Limpiar campos
+  editDestinatario.Text := '';
+  editAsunto.Text := '';
+  MemoMensaje.Text := '';
 end;
 
 procedure TForm4.editAsuntoChange(Sender: TObject);
