@@ -1,4 +1,4 @@
-unit UMatrizDispersaRelaciones;
+unit UMatriz;
 
 {$mode objfpc}{$H+}
 

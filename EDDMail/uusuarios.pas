@@ -1,4 +1,4 @@
-unit UUsuarios;
+unit UListaSimpleUsuarios;
 
 {$mode objfpc}{$H+}
 

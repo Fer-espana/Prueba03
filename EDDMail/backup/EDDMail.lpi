@@ -150,6 +150,20 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UPapelera"/>
       </Unit>
+      <Unit>
+        <Filename Value="ucorreosprogramados.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form12"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UCorreosProgramados"/>
+      </Unit>
+      <Unit>
+        <Filename Value="uventanacontactos.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form13"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UVentanaContactos"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

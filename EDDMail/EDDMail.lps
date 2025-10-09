@@ -10,7 +10,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="3"/>
         <CursorPos X="53" Y="20"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="25"/>
       </Unit>
       <Unit>
         <Filename Value="uprincipal.pas"/>
@@ -20,16 +20,16 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UPrincipal"/>
         <CursorPos X="90" Y="10"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="25"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="uusuarios.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UUsuarios"/>
+        <UnitName Value="ULista"/>
         <EditorIndex Value="2"/>
-        <CursorPos X="39" Y="8"/>
-        <UsageCount Value="24"/>
+        <CursorPos X="31" Y="6"/>
+        <UsageCount Value="25"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -41,7 +41,7 @@
         <EditorIndex Value="1"/>
         <TopLine Value="28"/>
         <CursorPos X="63" Y="50"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="25"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -53,17 +53,17 @@
         <EditorIndex Value="3"/>
         <TopLine Value="20"/>
         <CursorPos X="41" Y="42"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="25"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="ucorreos.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UCorreos"/>
+        <UnitName Value="UListaDobleEnlazadaCorreos"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="142"/>
-        <CursorPos X="5" Y="164"/>
-        <UsageCount Value="23"/>
+        <CursorPos X="45" Y="7"/>
+        <UsageCount Value="24"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -71,44 +71,44 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="UContactos"/>
         <EditorIndex Value="5"/>
-        <CursorPos X="5" Y="184"/>
-        <UsageCount Value="23"/>
+        <CursorPos X="12"/>
+        <UsageCount Value="24"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="ucola.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UCola"/>
+        <UnitName Value="UColaCorreos"/>
         <EditorIndex Value="6"/>
-        <CursorPos X="52" Y="7"/>
-        <UsageCount Value="23"/>
+        <CursorPos X="18"/>
+        <UsageCount Value="24"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="upila.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UPila"/>
+        <UnitName Value="UPilaPapelera"/>
         <EditorIndex Value="7"/>
-        <CursorPos X="51" Y="13"/>
-        <UsageCount Value="23"/>
+        <CursorPos X="19"/>
+        <UsageCount Value="24"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="umatriz.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UMatriz"/>
+        <UnitName Value="UMatrizDispersa"/>
         <EditorIndex Value="8"/>
-        <CursorPos X="71" Y="9"/>
-        <UsageCount Value="23"/>
+        <CursorPos X="21"/>
+        <UsageCount Value="24"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="ucomunidades.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UComunidades"/>
+        <UnitName Value="ULista"/>
         <EditorIndex Value="9"/>
-        <CursorPos X="55" Y="9"/>
-        <UsageCount Value="23"/>
+        <CursorPos X="12"/>
+        <UsageCount Value="24"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -120,7 +120,7 @@
         <EditorIndex Value="10"/>
         <TopLine Value="36"/>
         <CursorPos X="67" Y="58"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="24"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -132,7 +132,7 @@
         <EditorIndex Value="11"/>
         <TopLine Value="43"/>
         <CursorPos X="105" Y="61"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="24"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -144,7 +144,7 @@
         <EditorIndex Value="12"/>
         <TopLine Value="31"/>
         <CursorPos Y="53"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="24"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -155,7 +155,7 @@
         <UnitName Value="UActualizarPerfil"/>
         <EditorIndex Value="13"/>
         <CursorPos X="63" Y="16"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="24"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -167,7 +167,7 @@
         <UnitName Value="URegistrarse"/>
         <EditorIndex Value="14"/>
         <CursorPos X="60" Y="12"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="24"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -178,7 +178,7 @@
         <UnitName Value="UBandejaEntrada"/>
         <EditorIndex Value="15"/>
         <CursorPos X="22" Y="8"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -189,7 +189,7 @@
         <UnitName Value="UVistadeCorreo"/>
         <EditorIndex Value="16"/>
         <CursorPos X="41" Y="9"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -201,34 +201,32 @@
         <EditorIndex Value="17"/>
         <TopLine Value="55"/>
         <CursorPos X="96" Y="63"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="ucorreosprogramados.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form12"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UCorreosProgramados"/>
         <EditorIndex Value="18"/>
         <CursorPos X="67" Y="22"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="21"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="uventanacontactos.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form13"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UVentanaContactos"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="19"/>
-        <TopLine Value="33"/>
         <CursorPos X="108" Y="40"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="21"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="-1"/>

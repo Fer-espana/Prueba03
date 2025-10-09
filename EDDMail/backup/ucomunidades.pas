@@ -1,4 +1,4 @@
-unit UListadeListasComunidades;
+unit UComunidades;
 
 {$mode objfpc}{$H+}
 

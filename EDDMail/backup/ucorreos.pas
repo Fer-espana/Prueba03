@@ -1,4 +1,4 @@
-unit UListaDobleEnlazadaCorreos;
+unit UCorreos;
 
 {$mode objfpc}{$H+}
 

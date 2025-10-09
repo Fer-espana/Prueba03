@@ -1,4 +1,4 @@
-unit UPilaPapelera;
+unit UPila;
 
 {$mode objfpc}{$H+}
 

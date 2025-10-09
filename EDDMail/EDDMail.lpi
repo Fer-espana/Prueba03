@@ -47,7 +47,7 @@
       <Unit>
         <Filename Value="uusuarios.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UUsuarios"/>
+        <UnitName Value="ULista"/>
       </Unit>
       <Unit>
         <Filename Value="uroot.pas"/>
@@ -76,22 +76,22 @@
       <Unit>
         <Filename Value="ucola.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UCola"/>
+        <UnitName Value="UColaCorreos"/>
       </Unit>
       <Unit>
         <Filename Value="upila.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UPila"/>
+        <UnitName Value="UPilaPapelera"/>
       </Unit>
       <Unit>
         <Filename Value="umatriz.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UMatriz"/>
+        <UnitName Value="UMatrizDispersa"/>
       </Unit>
       <Unit>
         <Filename Value="ucomunidades.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UComunidades"/>
+        <UnitName Value="ULista"/>
       </Unit>
       <Unit>
         <Filename Value="uenviarcorreo.pas"/>
@@ -154,6 +154,7 @@
         <Filename Value="ucorreosprogramados.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form12"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UCorreosProgramados"/>
       </Unit>
@@ -161,6 +162,7 @@
         <Filename Value="uventanacontactos.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form13"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UVentanaContactos"/>
       </Unit>

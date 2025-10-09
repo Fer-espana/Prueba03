@@ -1,4 +1,4 @@
-unit UListaCircularContactos;
+unit UContactos;
 
 {$mode objfpc}{$H+}
 

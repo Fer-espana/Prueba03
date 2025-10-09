@@ -1,4 +1,4 @@
-unit UColaCorreosProgramados;
+unit UCola;
 
 {$mode objfpc}{$H+}
 

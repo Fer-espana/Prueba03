@@ -4,6 +4,9 @@ unit UUsuarios;
 
 interface
 
+var
+  ListaUsuariosGlobal: TListaUsuarios;
+
 uses
   Classes, SysUtils;
 
