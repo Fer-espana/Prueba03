@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="12"/>
+    <General>
+      <SessionStorage Value="InProjectDir"/>
+      <Title Value="EDDMail"/>
+      <Scaled Value="True"/>
+      <ResourceType Value="res"/>
+      <UseXPManifest Value="True"/>
+      <XPManifest>
+        <DpiAware Value="True"/>
+      </XPManifest>
+      <Icon Value="0"/>
+    </General>
+    <BuildModes>
+      <Item Name="Default" Default="True"/>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+      <UseFileFilters Value="True"/>
+    </PublishOptions>
+    <RunParams>
+      <FormatVersion Value="2"/>
+    </RunParams>
+    <RequiredPackages>
+      <Item>
+        <PackageName Value="DateTimeCtrls"/>
+      </Item>
+      <Item>
+        <PackageName Value="LCL"/>
+      </Item>
+    </RequiredPackages>
+    <Units>
+      <Unit>
+        <Filename Value="EDDMail.lpr"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="uprincipal.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UPrincipal"/>
+      </Unit>
+      <Unit>
+        <Filename Value="uusuarios.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UUsuarios"/>
+      </Unit>
+      <Unit>
+        <Filename Value="uroot.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form2"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UROOT"/>
+      </Unit>
+      <Unit>
+        <Filename Value="uusuarioestandar.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form3"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UUsuarioEstandar"/>
+      </Unit>
+      <Unit>
+        <Filename Value="ucorreos.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UCorreos"/>
+      </Unit>
+      <Unit>
+        <Filename Value="ucontactos.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UContactos"/>
+      </Unit>
+      <Unit>
+        <Filename Value="ucola.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UCola"/>
+      </Unit>
+      <Unit>
+        <Filename Value="upila.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UPila"/>
+      </Unit>
+      <Unit>
+        <Filename Value="umatriz.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UMatriz"/>
+      </Unit>
+      <Unit>
+        <Filename Value="ucomunidades.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UComunidades"/>
+      </Unit>
+      <Unit>
+        <Filename Value="uenviarcorreo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form4"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UEnviarCorreo"/>
+      </Unit>
+      <Unit>
+        <Filename Value="uprogramarcorreo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form5"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UProgramarCorreo"/>
+      </Unit>
+      <Unit>
+        <Filename Value="uagregarcontacto.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form6"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UAgregarContacto"/>
+      </Unit>
+      <Unit>
+        <Filename Value="uactualizarperfil.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form7"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UActualizarPerfil"/>
+      </Unit>
+      <Unit>
+        <Filename Value="uregistrarse.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form8"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="URegistrarse"/>
+      </Unit>
+      <Unit>
+        <Filename Value="ubandejaentrada.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form9"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UBandejaEntrada"/>
+      </Unit>
+      <Unit>
+        <Filename Value="uvistadecorreo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form10"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UVistadeCorreo"/>
+      </Unit>
+      <Unit>
+        <Filename Value="upapelera.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form11"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UPapelera"/>
+      </Unit>
+      <Unit>
+        <Filename Value="ucorreosprogramados.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form12"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UCorreosProgramados"/>
+      </Unit>
+      <Unit>
+        <Filename Value="uventanacontactos.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form13"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UVentanaContactos"/>
+      </Unit>
+    </Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <Target>
+      <Filename Value="EDDMail"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+    </SearchPaths>
+    <Linking>
+      <Debugging>
+        <DebugInfoType Value="dsDwarf2"/>
+      </Debugging>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions>
+      <Item>
+        <Name Value="EAbort"/>
+      </Item>
+      <Item>
+        <Name Value="ECodetoolError"/>
+      </Item>
+      <Item>
+        <Name Value="EFOpenError"/>
+      </Item>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

@@ -1,0 +1,78 @@
+object Form1: TForm1
+  Left = 640
+  Height = 325
+  Top = 272
+  Width = 432
+  Caption = 'LOGIN'
+  ClientHeight = 325
+  ClientWidth = 432
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  LCLVersion = '2.2.6.0'
+  object Label1: TLabel
+    Left = 160
+    Height = 19
+    Top = 24
+    Width = 105
+    Caption = 'EDDMail - Login'
+    ParentColor = False
+  end
+  object edtEmail: TEdit
+    Left = 120
+    Height = 36
+    Top = 88
+    Width = 224
+    TabOrder = 0
+  end
+  object Label2: TLabel
+    Left = 32
+    Height = 19
+    Top = 96
+    Width = 42
+    Caption = 'Email:'
+    ParentColor = False
+  end
+  object Label3: TLabel
+    Left = 32
+    Height = 19
+    Top = 152
+    Width = 79
+    Caption = 'Contraseña:'
+    ParentColor = False
+  end
+  object edtPassword: TEdit
+    Left = 120
+    Height = 36
+    Top = 144
+    Width = 224
+    EchoMode = emPassword
+    PasswordChar = '*'
+    TabOrder = 1
+  end
+  object StatusBar1: TStatusBar
+    Left = 0
+    Height = 21
+    Top = 304
+    Width = 432
+    Panels = <>
+    SimpleText = 'Bienvenido a EDDMail'
+  end
+  object Button1: TButton
+    Left = 168
+    Height = 25
+    Top = 200
+    Width = 123
+    Caption = 'Iniciar sesion'
+    OnClick = btnLoginClick
+    TabOrder = 3
+  end
+  object Button2: TButton
+    Left = 168
+    Height = 25
+    Top = 248
+    Width = 123
+    Caption = 'Registrarse'
+    OnClick = btnRegistrarClick
+    TabOrder = 4
+  end
+end

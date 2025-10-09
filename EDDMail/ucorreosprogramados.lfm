@@ -1,0 +1,41 @@
+object Form12: TForm12
+  Left = 718
+  Height = 316
+  Top = 362
+  Width = 418
+  Caption = 'Correos Programados'
+  ClientHeight = 316
+  ClientWidth = 418
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  LCLVersion = '2.2.6.0'
+  object btnEnviarCorreosProgramados: TButton
+    Left = 32
+    Height = 25
+    Top = 56
+    Width = 75
+    Caption = 'Enviar'
+    OnClick = btnEnviarCorreosProgramadosClick
+    TabOrder = 0
+  end
+  object tablaCorreosProgramados: TStringGrid
+    Left = 32
+    Height = 180
+    Top = 96
+    Width = 360
+    TabOrder = 1
+    OnClick = tablaCorreosProgramadosClick
+    Cells = (
+      3
+      0
+      0
+      'Asunto'
+      1
+      0
+      'Remitente'
+      2
+      0
+      'Fecha de Envio'
+    )
+  end
+end
