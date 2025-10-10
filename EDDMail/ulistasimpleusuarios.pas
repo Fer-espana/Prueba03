@@ -7,7 +7,6 @@ interface
 uses
   Classes, SysUtils;
 
-// CORRECCIÓN: El bloque TYPE va ANTES del bloque VAR
 type
   PUsuario = ^TUsuario;
   TUsuario = record
@@ -24,7 +23,6 @@ type
     Count: Integer;
   end;
 
-// CORRECCIÓN: El bloque VAR va DESPUÉS del bloque TYPE
 var
   ListaUsuariosGlobal: TListaUsuarios;
 
@@ -35,6 +33,7 @@ procedure InsertarUsuario(var Lista: TListaUsuarios; Id: Integer;
 function BuscarUsuarioPorEmail(Lista: TListaUsuarios; Email: string): PUsuario;
 procedure MostrarUsuarios(Lista: TListaUsuarios);
 procedure LiberarListaUsuarios(var Lista: TListaUsuarios);
+// ELIMINAR: procedure CargarUsuariosDesdeJSON(var Lista: TListaUsuarios; NombreArchivo: string);
 
 implementation
 
@@ -77,7 +76,7 @@ begin
   Actual := Lista.Cabeza;
   while Actual <> nil do
   begin
-    if Actual^.Email = Email then
+    if SameText(Actual^.Email, Email) then
       Exit(Actual);
     Actual := Actual^.Siguiente;
   end;
@@ -114,6 +113,11 @@ begin
   end;
   Lista.Cabeza := nil;
   Lista.Count := 0;
+end;
+
+initialization
+begin
+  InicializarListaUsuarios(ListaUsuariosGlobal);
 end;
 
 end.

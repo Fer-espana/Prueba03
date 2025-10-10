@@ -7,7 +7,6 @@ object Form8: TForm8
   ClientHeight = 400
   ClientWidth = 458
   OnCreate = FormCreate
-  OnDestroy = FormDestroy
   LCLVersion = '2.2.6.0'
   object Label1: TLabel
     Left = 56

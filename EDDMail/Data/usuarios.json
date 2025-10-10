@@ -1,0 +1,18 @@
+{
+  "usuarios": [
+    {
+      "id": 1,
+      "nombre": "Administrador Root",
+      "usuario": "root",
+      "email": "root@edd.com",
+      "telefono": "0000-0000"
+    },
+    {
+      "id": 2,
+      "nombre": "fernando espana",
+      "usuario": "fes",
+      "email": "fer@edd.com",
+      "telefono": "45612345"
+    }
+  ]
+}

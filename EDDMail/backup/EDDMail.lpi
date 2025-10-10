@@ -129,7 +129,7 @@
         <ComponentName Value="Form8"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="URegistrarse"/>
+        <UnitName Value="URegistrarseNuevo"/>
       </Unit>
       <Unit>
         <Filename Value="ubandejaentrada.pas"/>

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls,
-  UListaSimpleUsuarios, UROOT, UListaCircularContactos;
+  UListaSimpleUsuarios, URegistrarseNuevo;
 
 type
 
@@ -28,7 +28,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
-    ListaUsuarios: TListaUsuarios;
+    // Ya no necesitamos ListaUsuarios local, usamos la global
   public
 
   end;
@@ -48,15 +48,18 @@ implementation
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  Caption := 'EDDMail - Login';  // Título de la ventana
-  // Inicializar la lista de usuarios
-  InicializarListaUsuarios(ListaUsuarios);
+  Caption := 'EDDMail - Login';
 
-  // Insertar usuario root por defecto
-  InsertarUsuario(ListaUsuarios, 1, 'Administrador Root', 'root',
-    ROOT_EMAIL, '0000-0000');
-
-  StatusBar1.SimpleText := 'Sistema inicializado. Usuario root creado.';
+  // La lista global ya se inicializó en UListaSimpleUsuarios
+  // Solo insertamos el usuario root si no existe
+  if BuscarUsuarioPorEmail(ListaUsuariosGlobal, ROOT_EMAIL) = nil then
+  begin
+    InsertarUsuario(ListaUsuariosGlobal, 1, 'Administrador Root', 'root',
+      ROOT_EMAIL, '0000-0000');
+    StatusBar1.SimpleText := 'Sistema inicializado. Usuario root creado.';
+  end
+  else
+    StatusBar1.SimpleText := 'Sistema inicializado.';
 end;
 
 procedure TForm1.btnLoginClick(Sender: TObject);
@@ -66,72 +69,39 @@ begin
   // Verificar credenciales root
   if (edtEmail.Text = ROOT_EMAIL) and (edtPassword.Text = ROOT_PASSWORD) then
   begin
-    Hide; // Ocultar login
-    Form2 := TForm2.Create(Application);
-    Form2.Show;
+    ShowMessage('¡Bienvenido Root!');
     StatusBar1.SimpleText := 'Sesión root iniciada';
     Exit;
   end;
 
-  // Buscar usuario normal
-  Usuario := BuscarUsuarioPorEmail(ListaUsuarios, edtEmail.Text);
+  // Buscar usuario normal en la lista GLOBAL
+  Usuario := BuscarUsuarioPorEmail(ListaUsuariosGlobal, edtEmail.Text);
   if Usuario = nil then
   begin
     ShowMessage('Error: Usuario no encontrado');
     Exit;
   end;
 
-  // Abrir formulario Usuario Estándar
-  Hide; // Ocultar login
-  Form3 := TForm3.Create(Application);
-  Form3.Show;
+  // Por ahora, cualquier contraseña funciona para usuarios normales
+  ShowMessage('¡Bienvenido ' + Usuario^.Nombre + '!');
   StatusBar1.SimpleText := 'Sesión de usuario iniciada: ' + Usuario^.Nombre;
 end;
 
 procedure TForm1.btnRegistrarClick(Sender: TObject);
-var
-  NuevoId: Integer;
 begin
-  // Validar campos
-  if (edtEmail.Text = '') or (edtPassword.Text = '') then
-  begin
-    ShowMessage('Error: Email y contraseña son obligatorios');
-    Exit;
+  // Abrir formulario de registro
+  Form8 := TForm8.Create(Application);
+  try
+    Form8.ShowModal;
+  finally
+    Form8.Free;
   end;
-
-  // Verificar si el email ya existe
-  if BuscarUsuarioPorEmail(ListaUsuarios, edtEmail.Text) <> nil then
-  begin
-    ShowMessage('Error: El email ya está registrado');
-    Exit;
-  end;
-
-  // Generar nuevo ID
-  if ListaUsuarios.Cabeza = nil then
-    NuevoId := 1
-  else
-    NuevoId := ListaUsuarios.Count + 1;
-
-  // Insertar nuevo usuario
-  InsertarUsuario(ListaUsuarios, NuevoId,
-    'Usuario ' + IntToStr(NuevoId),  // Nombre por defecto
-    'user' + IntToStr(NuevoId),      // Usuario por defecto
-    edtEmail.Text,
-    'Sin teléfono');                 // Teléfono por defecto
-
-  ShowMessage('Usuario registrado exitosamente!');
-  StatusBar1.SimpleText := 'Nuevo usuario registrado: ' + edtEmail.Text;
-
-  // Limpiar campos
-  edtEmail.Text := '';
-  edtPassword.Text := '';
 end;
-
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
-  // Liberar memoria al cerrar
-  LiberarListaUsuarios(ListaUsuarios);
+  // Liberar memoria de la lista GLOBAL al cerrar
+  LiberarListaUsuarios(ListaUsuariosGlobal);
 end;
 
 end.

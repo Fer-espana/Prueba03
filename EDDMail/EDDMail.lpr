@@ -9,10 +9,12 @@ uses
   {$IFDEF HASAMIGA}
   athreads,
   {$ENDIF}
-Interfaces, // this includes the LCL widgetset
- Forms, UPrincipal, UROOT, UUsuarioEstandar, UEnviarCorreo, UProgramarCorreo, datetimectrls, UAgregarContacto,
- UActualizarPerfil, URegistrarse, UBandejaEntrada, UVistadeCorreo, UPapelera, UCorreosProgramados, UVentanaContactos,
- UListaSimpleUsuarios, UListaDobleEnlazadaCorreos, UListaCircularContactos, UColaCorreosProgramados, UPilaPapelera,
+  Interfaces, // this includes the LCL widgetset
+  Forms, UPrincipal, UROOT, UUsuarioEstandar, UEnviarCorreo, UProgramarCorreo,
+  datetimectrls, UAgregarContacto, UActualizarPerfil, URegistrarse,
+  UBandejaEntrada, UVistadeCorreo, UPapelera, UCorreosProgramados,
+  UVentanaContactos, UListaSimpleUsuarios, UListaDobleEnlazadaCorreos,
+  UListaCircularContactos, UColaCorreosProgramados, UPilaPapelera,
   UMatrizDispersaRelaciones, UListadeListasComunidades;
 
 {$R *.res}
@@ -36,4 +38,3 @@ begin
   Application.CreateForm(TForm13, Form13);
   Application.Run;
 end.
-
