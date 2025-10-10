@@ -7,7 +7,8 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, UListaSimpleUsuarios,
   UBandejaEntrada, UEnviarCorreo, UPapelera, UProgramarCorreo, UCorreosProgramados,
-  UAgregarContacto, UVentanaContactos, UActualizarPerfil, UGLOBAL, UNAVEGACION;
+  UAgregarContacto, UVentanaContactos, UActualizarPerfil, UGLOBAL;
+  // Removemos UNAVEGACION ya que no existe
 
 type
 
@@ -70,6 +71,7 @@ end;
 procedure TForm3.bntEnviarCorreoClick(Sender: TObject);
 begin
   Form4 := TForm4.Create(Application);
+  Form4.SetBandejaActual(UsuarioActual^.Email);
   Form4.Show;
 end;
 
@@ -122,17 +124,11 @@ begin
     Caption := 'EDDMail - ' + UsuarioActual^.Nombre;
 end;
 
-procedure TForm3.bntEnviarCorreoClick(Sender: TObject);
-begin
-  Form4 := TForm4.Create(Application);
-  Form4.SetBandejaActual(UsuarioActual^.Email);
-  Form4.Show;
-end;
-
 procedure TForm3.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   CloseAction := caFree;
-  MostrarLogin;
+  if Application.MainForm <> nil then
+    Application.MainForm.Show;
 end;
 
 end.

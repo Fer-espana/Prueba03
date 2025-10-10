@@ -16,10 +16,17 @@
     },
     {
       "id": 3,
-      "nombre": "nato",
-      "usuario": "nato",
-      "email": "nato@edd.com",
-      "telefono": "78945612"
+      "nombre": "fes1",
+      "usuario": "fes1",
+      "email": "fes1@edd.com",
+      "telefono": "78945696"
+    },
+    {
+      "id": 4,
+      "nombre": "fes2",
+      "usuario": "fes2",
+      "email": "fes2@edd.com",
+      "telefono": "46578925"
     }
   ]
 }

@@ -24,6 +24,7 @@ type
     btnContactos: TButton;
     btnActualizarPerfil: TButton;
     btnGenerarReportes: TButton;
+    btnRegresarLogin: TButton;
     procedure btnBandejaEntradaClick(Sender: TObject);
     procedure bntEnviarCorreoClick(Sender: TObject);
     procedure btnPapeleraClick(Sender: TObject);
@@ -33,6 +34,7 @@ type
     procedure btnContactosClick(Sender: TObject);
     procedure btnActualizarPerfilClick(Sender: TObject);
     procedure btnGenerarReportesClick(Sender: TObject);
+    procedure btnRegresarLoginClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -115,6 +117,11 @@ procedure TForm3.btnGenerarReportesClick(Sender: TObject);
 begin
   ShowMessage('Generando reportes...');
   // Aquí irá la lógica para generar reportes
+end;
+
+procedure TForm3.btnRegresarLoginClick(Sender: TObject);
+begin
+
 end;
 
 procedure TForm3.SetUsuarioActual(Usuario: PUsuario);
