@@ -12,7 +12,8 @@ type
   TCorreo = record
     Id: Integer;
     Remitente: string;
-    Estado: Char;  // 'L'=Leído, 'N'=No leído, 'E'=Eliminado
+    Destinatario: string;  // NUEVO CAMPO
+    Estado: Char;  // 'L'=Leído, 'N'=No leído, 'E'=Eliminado, 'P'=Programado
     Programado: Boolean;
     Asunto: string;
     Fecha: string;
@@ -29,8 +30,10 @@ type
 
 // Procedimientos básicos
 procedure InicializarListaCorreos(var Lista: TListaCorreos);
-procedure InsertarCorreo(var Lista: TListaCorreos; Id: Integer; Remitente: string;
-  Estado: Char; Programado: Boolean; Asunto, Fecha, Mensaje: string);
+// CORREGIR: Agregar el parámetro Destinatario en la declaración
+procedure InsertarCorreo(var Lista: TListaCorreos; Id: Integer;
+  Remitente, Destinatario: string; Estado: Char; Programado: Boolean;
+  Asunto, Fecha, Mensaje: string);
 function BuscarCorreoPorId(Lista: TListaCorreos; Id: Integer): PCorreo;
 procedure EliminarCorreo(var Lista: TListaCorreos; Id: Integer);
 procedure MostrarCorreos(Lista: TListaCorreos);
@@ -46,14 +49,16 @@ begin
   Lista.Count := 0;
 end;
 
-procedure InsertarCorreo(var Lista: TListaCorreos; Id: Integer; Remitente: string;
-  Estado: Char; Programado: Boolean; Asunto, Fecha, Mensaje: string);
+procedure InsertarCorreo(var Lista: TListaCorreos; Id: Integer;
+  Remitente, Destinatario: string; Estado: Char; Programado: Boolean;
+  Asunto, Fecha, Mensaje: string);
 var
   Nuevo: PCorreo;
 begin
   New(Nuevo);
   Nuevo^.Id := Id;
   Nuevo^.Remitente := Remitente;
+  Nuevo^.Destinatario := Destinatario;  // NUEVO CAMPO
   Nuevo^.Estado := Estado;
   Nuevo^.Programado := Programado;
   Nuevo^.Asunto := Asunto;
@@ -121,6 +126,7 @@ begin
   begin
     WriteLn('ID: ', Actual^.Id);
     WriteLn('Remitente: ', Actual^.Remitente);
+    WriteLn('Destinatario: ', Actual^.Destinatario);
     WriteLn('Estado: ', Actual^.Estado);
     WriteLn('Asunto: ', Actual^.Asunto);
     WriteLn('-------------------');

@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
   UListaCircularContactos, UListaDobleEnlazadaCorreos, UGLOBAL,
-  UListaSimpleUsuarios, UMatrizDispersaRelaciones; // Agregamos las unidades necesarias
+  UListaSimpleUsuarios, UMatrizDispersaRelaciones;
 
 type
 
@@ -22,13 +22,16 @@ type
     Label3: TLabel;
     MemoMensaje: TMemo;
     procedure btnEnviarClick(Sender: TObject);
+    procedure editAsuntoChange(Sender: TObject);
+    procedure editDestinatarioChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure MemoMensajeChange(Sender: TObject);
   private
     BandejaActual: PBandejaUsuario;
     function GenerarIdCorreo: Integer;
     function ValidarDestinatario(Destinatario: string): Boolean;
-    function BuscarIndiceUsuario(Email: string): Integer; // Agregamos esta función
+    function BuscarIndiceUsuario(Email: string): Integer;
   public
     procedure SetBandejaActual(Email: string);
   end;
@@ -141,7 +144,7 @@ begin
 
   // Insertar correo en la bandeja del destinatario
   InsertarCorreo(BandejaDestino^.BandejaEntrada, NuevoId,
-    UsuarioActual^.Email, 'N', False, Asunto, FechaActual, Mensaje);
+    UsuarioActual^.Email, Destinatario, 'N', False, Asunto, FechaActual, Mensaje);
 
   // Actualizar matriz de relaciones
   IndiceRemitente := BuscarIndiceUsuario(UsuarioActual^.Email);
@@ -159,6 +162,25 @@ begin
   editDestinatario.Text := '';
   editAsunto.Text := '';
   MemoMensaje.Text := '';
+end;
+
+// =============================================================================
+// EVENTOS VACÍOS PERO NECESARIOS PARA EVITAR ERRORES
+// =============================================================================
+
+procedure TForm4.editAsuntoChange(Sender: TObject);
+begin
+  // Evento vacío pero necesario
+end;
+
+procedure TForm4.editDestinatarioChange(Sender: TObject);
+begin
+  // Evento vacío pero necesario
+end;
+
+procedure TForm4.MemoMensajeChange(Sender: TObject);
+begin
+  // Evento vacío pero necesario
 end;
 
 procedure TForm4.FormDestroy(Sender: TObject);

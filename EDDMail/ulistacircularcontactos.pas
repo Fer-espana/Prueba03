@@ -26,7 +26,7 @@ type
 procedure InicializarListaContactos(var Lista: TListaContactos);
 procedure InsertarContacto(var Lista: TListaContactos; Id: Integer;
   Nombre, Email, Telefono: string);
-function BuscarContactoPorEmail(Lista: TListaContactos; Email: string): PContacto;
+function BuscarContactoPorEmail(Lista: TListaContactos; Email: string): PContacto; // MOVIDO DESPUÉS DE LOS TIPOS
 procedure EliminarContacto(var Lista: TListaContactos; Email: string);
 procedure MostrarContactos(Lista: TListaContactos);
 procedure LiberarListaContactos(var Lista: TListaContactos);
@@ -72,17 +72,21 @@ end;
 function BuscarContactoPorEmail(Lista: TListaContactos; Email: string): PContacto;
 var
   Actual: PContacto;
+  i: Integer;
 begin
-  if Lista.Cabeza = nil then Exit(nil);
+  Result := nil;
+  if Lista.Cabeza = nil then Exit;
 
   Actual := Lista.Cabeza;
-  repeat
+  for i := 0 to Lista.Count - 1 do
+  begin
     if Actual^.Email = Email then
-      Exit(Actual);
+    begin
+      Result := Actual;
+      Exit;
+    end;
     Actual := Actual^.Siguiente;
-  until Actual = Lista.Cabeza;
-
-  Result := nil;
+  end;
 end;
 
 procedure EliminarContacto(var Lista: TListaContactos; Email: string);

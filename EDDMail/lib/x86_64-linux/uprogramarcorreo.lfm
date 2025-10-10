@@ -60,34 +60,15 @@ object Form5: TForm5
     Height = 104
     Top = 152
     Width = 288
-    Lines.Strings = (
-      'MemoMensaje'
-    )
     OnChange = MemoMensajeChange
     TabOrder = 2
   end
-  object Fecha: TDateTimePicker
+  object Fecha: TDateEdit
     Left = 160
-    Height = 25
+    Height = 36
     Top = 278
     Width = 105
-    CenturyFrom = 1941
-    MaxDate = 2958465
-    MinDate = -53780
     TabOrder = 3
-    TrailingSeparator = False
-    TextForNullDate = 'NULL'
-    LeadingZeros = True
-    Kind = dtkDate
-    TimeFormat = tf24
-    TimeDisplay = tdHMS
-    DateMode = dmComboBox
-    Date = 45938
-    Time = 0.659123263889342
-    UseDefaultSeparators = True
-    HideDateTimeParts = []
-    MonthNames = 'Long'
-    OnClick = FechaClick
   end
   object btnProgramar: TButton
     Left = 232
@@ -95,6 +76,7 @@ object Form5: TForm5
     Top = 336
     Width = 168
     Caption = 'Programar'
+    OnClick = btnProgramarClick
     TabOrder = 4
   end
 end

@@ -144,7 +144,7 @@ begin
 
   // Insertar correo en la bandeja del destinatario
   InsertarCorreo(BandejaDestino^.BandejaEntrada, NuevoId,
-    UsuarioActual^.Email, 'N', False, Asunto, FechaActual, Mensaje);
+    UsuarioActual^.Email, Destinatario, 'N', False, Asunto, FechaActual, Mensaje);
 
   // Actualizar matriz de relaciones
   IndiceRemitente := BuscarIndiceUsuario(UsuarioActual^.Email);

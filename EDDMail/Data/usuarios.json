@@ -13,6 +13,13 @@
       "usuario": "fes",
       "email": "fes@edd.com",
       "telefono": "12345678"
+    },
+    {
+      "id": 3,
+      "nombre": "nato",
+      "usuario": "nato",
+      "email": "nato@edd.com",
+      "telefono": "78945612"
     }
   ]
 }

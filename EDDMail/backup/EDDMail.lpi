@@ -53,6 +53,7 @@
         <Filename Value="uroot.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form2"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UROOT"/>
       </Unit>
@@ -98,6 +99,7 @@
         <Filename Value="uenviarcorreo.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form4"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UEnviarCorreo"/>
       </Unit>
@@ -135,6 +137,7 @@
         <Filename Value="ubandejaentrada.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form9"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UBandejaEntrada"/>
       </Unit>
@@ -142,6 +145,7 @@
         <Filename Value="uvistadecorreo.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form10"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UVistadeCorreo"/>
       </Unit>
