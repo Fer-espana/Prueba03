@@ -1,4 +1,3 @@
-// UPrincipal.pas - MODIFICACIONES
 unit UPrincipal;
 
 {$mode objfpc}{$H+}

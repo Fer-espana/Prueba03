@@ -7,8 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, UListaSimpleUsuarios,
   UBandejaEntrada, UEnviarCorreo, UPapelera, UProgramarCorreo, UCorreosProgramados,
-  UAgregarContacto, UVentanaContactos, UActualizarPerfil, UGLOBAL;
-  // Removemos UNAVEGACION ya que no existe
+  UAgregarContacto, UVentanaContactos, UActualizarPerfil, UGLOBAL, UPrincipal;
 
 type
 
@@ -24,6 +23,7 @@ type
     btnContactos: TButton;
     btnActualizarPerfil: TButton;
     btnGenerarReportes: TButton;
+    btnRegresarLogin: TButton;
     procedure btnBandejaEntradaClick(Sender: TObject);
     procedure bntEnviarCorreoClick(Sender: TObject);
     procedure btnPapeleraClick(Sender: TObject);
@@ -33,6 +33,7 @@ type
     procedure btnContactosClick(Sender: TObject);
     procedure btnActualizarPerfilClick(Sender: TObject);
     procedure btnGenerarReportesClick(Sender: TObject);
+    procedure btnRegresarLoginClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -53,12 +54,13 @@ implementation
 
 procedure TForm3.FormCreate(Sender: TObject);
 begin
-
+  // Configurar botón de cerrar sesión
+  btnRegresarLogin.Caption := 'Cerrar Sesión';
 end;
 
 procedure TForm3.FormDestroy(Sender: TObject);
 begin
-
+  // Limpiar recursos si es necesario
 end;
 
 procedure TForm3.btnBandejaEntradaClick(Sender: TObject);
@@ -117,6 +119,29 @@ begin
   // Aquí irá la lógica para generar reportes
 end;
 
+procedure TForm3.btnRegresarLoginClick(Sender: TObject);
+begin
+  // Cerrar sesión del usuario actual
+  UsuarioActual := nil;
+  EsUsuarioRoot := False;
+
+  // Mostrar mensaje de confirmación
+  ShowMessage('Sesión cerrada exitosamente');
+
+  // Cerrar este formulario
+  Close;
+
+  // Mostrar el formulario de login principal
+  if Assigned(Form1) then
+    Form1.Show
+  else
+  begin
+    // Si Form1 no está asignado, crearlo
+    Application.CreateForm(TForm1, Form1);
+    Form1.Show;
+  end;
+end;
+
 procedure TForm3.SetUsuarioActual(Usuario: PUsuario);
 begin
   UsuarioActual := Usuario;
@@ -127,8 +152,7 @@ end;
 procedure TForm3.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   CloseAction := caFree;
-  if Application.MainForm <> nil then
-    Application.MainForm.Show;
+  // No mostrar automáticamente el login para permitir cerrar sesión manualmente
 end;
 
 end.

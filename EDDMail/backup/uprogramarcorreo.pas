@@ -15,7 +15,7 @@ type
 
   TForm5 = class(TForm)
     btnProgramar: TButton;
-    Fecha: TDateEdit;  // CAMBIADO: TDateTimePicker -> TDateEdit
+    Fecha: TDateEdit;
     editAsunto: TEdit;
     editDestinatario: TEdit;
     Label1: TLabel;
@@ -169,8 +169,7 @@ end;
 function TForm5.ObtenerFechaHoraProgramada: TDateTime;
 begin
   // Como solo tenemos fecha, programaremos para la fecha seleccionada a las 09:00 AM
-  // O podríamos usar la fecha seleccionada + 1 hora desde ahora
-  Result := Trunc(Fecha.Date) + Frac(IncHour(Now, 1));
+  Result := Trunc(Fecha.Date) + EncodeTime(9, 0, 0, 0); // 09:00 AM
 end;
 
 procedure TForm5.btnProgramarClick(Sender: TObject);

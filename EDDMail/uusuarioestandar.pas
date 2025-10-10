@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, UListaSimpleUsuarios,
   UBandejaEntrada, UEnviarCorreo, UPapelera, UProgramarCorreo, UCorreosProgramados,
   UAgregarContacto, UVentanaContactos, UActualizarPerfil, UGLOBAL;
-  // Removemos UNAVEGACION ya que no existe
+  // Removemos UPrincipal para evitar referencia circular
 
 type
 
@@ -55,12 +55,13 @@ implementation
 
 procedure TForm3.FormCreate(Sender: TObject);
 begin
-
+  // Configurar botón de cerrar sesión
+  btnRegresarLogin.Caption := 'Cerrar Sesión';
 end;
 
 procedure TForm3.FormDestroy(Sender: TObject);
 begin
-
+  // Limpiar recursos si es necesario
 end;
 
 procedure TForm3.btnBandejaEntradaClick(Sender: TObject);
@@ -121,7 +122,35 @@ end;
 
 procedure TForm3.btnRegresarLoginClick(Sender: TObject);
 begin
+  // Cerrar sesión del usuario actual
+  UsuarioActual := nil;
+  EsUsuarioRoot := False;
 
+  // Mostrar mensaje de confirmación
+  ShowMessage('Sesión cerrada exitosamente');
+
+  // Buscar y mostrar el formulario de login principal
+  // En lugar de referenciar directamente Form1, lo buscamos en Application
+  var
+    i: Integer;
+    MainForm: TForm;
+  begin
+    for i := 0 to Application.ComponentCount - 1 do
+    begin
+      if Application.Components[i] is TForm then
+      begin
+        MainForm := TForm(Application.Components[i]);
+        if (MainForm <> Self) and (MainForm.Visible = False) then
+        begin
+          MainForm.Show;
+          Break;
+        end;
+      end;
+    end;
+  end;
+
+  // Cerrar este formulario
+  Close;
 end;
 
 procedure TForm3.SetUsuarioActual(Usuario: PUsuario);
@@ -134,8 +163,7 @@ end;
 procedure TForm3.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   CloseAction := caFree;
-  if Application.MainForm <> nil then
-    Application.MainForm.Show;
+  // No mostrar automáticamente el login para permitir cerrar sesión manualmente
 end;
 
 end.

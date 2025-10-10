@@ -6,7 +6,6 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, UGLOBAL;
-  // QUITAMOS UPrincipal de aquí
 
 type
 
@@ -47,13 +46,6 @@ begin
   CloseAction := caFree;
   if Application.MainForm <> nil then
     Application.MainForm.Show;
-end;
-
-procedure TForm2.FormClose(Sender: TObject; var CloseAction: TCloseAction);
-begin
-  // Al cerrar el formulario Root, volver al login
-  CloseAction := caFree;
-  Form1.Show;
 end;
 
 procedure TForm2.btnCargaMasivaClick(Sender: TObject);

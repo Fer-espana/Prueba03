@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls,
-  UListaSimpleUsuarios, URegistrarse, UUsuarioEstandar, UROOT, UGLOBAL;
+  UListaSimpleUsuarios, URegistrarse, UUsuarioEstandar, UROOT, UGLOBAL, fpjson, jsonparser;
 
 type
 
@@ -26,6 +26,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
+    procedure CargarUsuariosDesdeJSON;
   public
   end;
 
@@ -46,6 +47,9 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
   Caption := 'EDDMail - Login';
 
+  // Cargar usuarios desde JSON al iniciar
+  CargarUsuariosDesdeJSON;
+
   // Insertar usuario root si no existe
   if BuscarUsuarioPorEmail(ListaUsuariosGlobal, ROOT_EMAIL) = nil then
   begin
@@ -54,7 +58,71 @@ begin
     StatusBar1.SimpleText := 'Sistema inicializado. Usuario root creado.';
   end
   else
-    StatusBar1.SimpleText := 'Sistema inicializado. Listo para usar.';
+    StatusBar1.SimpleText := 'Sistema inicializado. ' + IntToStr(ListaUsuariosGlobal.Count) + ' usuario(s) cargados.';
+end;
+
+procedure TForm1.CargarUsuariosDesdeJSON;
+var
+  Archivo: TextFile;
+  Linea, JSONContent: string;
+  Parser: TJSONParser;
+  JSONData: TJSONData;
+  UsuariosArray: TJSONArray;
+  i: Integer;
+  UsuarioObj: TJSONObject;
+  RutaArchivo: string;
+begin
+  RutaArchivo := ExtractFilePath(Application.ExeName) + 'Data' + PathDelim + 'usuarios.json';
+
+  if not FileExists(RutaArchivo) then
+  begin
+    // Crear directorio Data si no existe
+    ForceDirectories(ExtractFilePath(RutaArchivo));
+    Exit;
+  end;
+
+  try
+    // Leer archivo JSON
+    AssignFile(Archivo, RutaArchivo);
+    Reset(Archivo);
+    JSONContent := '';
+    while not EOF(Archivo) do
+    begin
+      ReadLn(Archivo, Linea);
+      JSONContent := JSONContent + Linea;
+    end;
+    CloseFile(Archivo);
+
+    // Parsear JSON
+    Parser := TJSONParser.Create(JSONContent);
+    try
+      JSONData := Parser.Parse;
+      if (JSONData <> nil) and (JSONData.FindPath('usuarios') <> nil) then
+      begin
+        UsuariosArray := TJSONArray(JSONData.FindPath('usuarios'));
+        for i := 0 to UsuariosArray.Count - 1 do
+        begin
+          UsuarioObj := TJSONObject(UsuariosArray.Items[i]);
+
+          // Insertar usuario en la lista global (evitar duplicados)
+          if BuscarUsuarioPorEmail(ListaUsuariosGlobal, UsuarioObj.Get('email', '')) = nil then
+          begin
+            InsertarUsuario(ListaUsuariosGlobal,
+              UsuarioObj.Get('id', 0),
+              UsuarioObj.Get('nombre', ''),
+              UsuarioObj.Get('usuario', ''),
+              UsuarioObj.Get('email', ''),
+              UsuarioObj.Get('telefono', ''));
+          end;
+        end;
+      end;
+    finally
+      Parser.Free;
+    end;
+  except
+    on E: Exception do
+      // Silenciosamente ignorar errores de carga
+  end;
 end;
 
 procedure TForm1.btnLoginClick(Sender: TObject);

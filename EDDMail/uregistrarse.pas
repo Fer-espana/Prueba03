@@ -224,6 +224,7 @@ begin
   ShowMessage('Usuarios guardados exitosamente en: ' + RutaArchivo);
 end;
 
+// En URegistrarse.pas, en el procedimiento btnRegistrarClick, agregar:
 procedure TForm8.btnRegistrarClick(Sender: TObject);
 var
   NuevoId: Integer;

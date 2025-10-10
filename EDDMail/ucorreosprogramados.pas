@@ -24,6 +24,7 @@ type
     { private declarations }
     procedure ActualizarTablaCorreosProgramados;
     procedure EnviarCorreosProgramados;
+    function ObtenerCorreoSeleccionado: PCorreo;
   public
     { public declarations }
   end;
@@ -41,11 +42,9 @@ procedure TForm12.FormCreate(Sender: TObject);
 begin
   Caption := 'Correos Programados';
 
-  // La tabla ya está configurada en el .lfm con 3 columnas: Asunto, Remitente, Fecha de Envio
-  // Solo configuramos comportamiento
+  // Configurar la tabla según el .lfm (3 columnas: Asunto, Remitente, Fecha de Envio)
   tablaCorreosProgramados.Options := tablaCorreosProgramados.Options - [goEditing];
 
-  // Configurar botón según el .lfm
   btnEnviarCorreosProgramados.Caption := 'Enviar';
 end;
 
@@ -65,11 +64,10 @@ var
   Fila: Integer;
 begin
   // Limpiar tabla (mantener encabezados que ya están en el .lfm)
-  tablaCorreosProgramados.RowCount := 1; // Fila 0 son los encabezados
+  tablaCorreosProgramados.RowCount := 1;
 
   if ColaVacia(ColaCorreosProgramados) then
   begin
-    // No mostrar mensaje aquí para no ser intrusivo
     Exit;
   end;
 
@@ -94,56 +92,92 @@ begin
   end;
 end;
 
+function TForm12.ObtenerCorreoSeleccionado: PCorreo;
+var
+  FilaSeleccionada: Integer;
+  NodoActual: PNodoCola;
+  AsuntoSeleccionado: string;
+begin
+  Result := nil;
+  FilaSeleccionada := tablaCorreosProgramados.Row;
+
+  if (FilaSeleccionada <= 0) or ColaVacia(ColaCorreosProgramados) then
+    Exit;
+
+  // Obtener el asunto del correo seleccionado
+  AsuntoSeleccionado := tablaCorreosProgramados.Cells[0, FilaSeleccionada];
+
+  // Buscar el correo en la cola por asunto
+  NodoActual := ColaCorreosProgramados.Frente;
+
+  while NodoActual <> nil do
+  begin
+    if (NodoActual^.Correo <> nil) and (NodoActual^.Correo^.Asunto = AsuntoSeleccionado) then
+    begin
+      Result := NodoActual^.Correo;
+      Exit;
+    end;
+    NodoActual := NodoActual^.Siguiente;
+  end;
+end;
+
 procedure TForm12.EnviarCorreosProgramados;
 var
   CorreoProgramado: PCorreo;
   BandejaDestino: PBandejaUsuario;
-  CorreosEnviados: Integer;
+  CorreoSeleccionado: PCorreo;
 begin
-  if ColaVacia(ColaCorreosProgramados) then
+  // Obtener el correo seleccionado
+  CorreoSeleccionado := ObtenerCorreoSeleccionado;
+
+  if CorreoSeleccionado = nil then
   begin
-    ShowMessage('No hay correos programados para enviar');
+    ShowMessage('Seleccione un correo de la lista para enviar');
     Exit;
   end;
 
-  CorreosEnviados := 0;
+  // Obtener o crear bandeja del destinatario
+  BandejaDestino := ObtenerBandejaUsuario(CorreoSeleccionado^.Destinatario);
+  if BandejaDestino = nil then
+    BandejaDestino := CrearBandejaUsuario(CorreoSeleccionado^.Destinatario);
 
-  // Procesar todos los correos programados en la cola
-  while not ColaVacia(ColaCorreosProgramados) do
-  begin
-    CorreoProgramado := Desencolar(ColaCorreosProgramados);
+  // Crear una copia del correo para enviar
+  New(CorreoProgramado);
+  try
+    CorreoProgramado^.Id := CorreoSeleccionado^.Id;
+    CorreoProgramado^.Remitente := CorreoSeleccionado^.Remitente;
+    CorreoProgramado^.Destinatario := CorreoSeleccionado^.Destinatario;
+    CorreoProgramado^.Asunto := CorreoSeleccionado^.Asunto;
+    CorreoProgramado^.Mensaje := CorreoSeleccionado^.Mensaje;
+    CorreoProgramado^.Fecha := FormatDateTime('yyyy-mm-dd hh:nn:ss', Now); // Fecha actual
+    CorreoProgramado^.Estado := 'N'; // 'N' para No leído
+    CorreoProgramado^.Programado := False;
+    CorreoProgramado^.Anterior := nil;
+    CorreoProgramado^.Siguiente := nil;
 
-    if CorreoProgramado <> nil then
+    // Insertar en la bandeja de entrada del destinatario
+    InsertarCorreo(BandejaDestino^.BandejaEntrada,
+      CorreoProgramado^.Id,
+      CorreoProgramado^.Remitente,
+      CorreoProgramado^.Destinatario,
+      CorreoProgramado^.Estado,
+      CorreoProgramado^.Programado,
+      CorreoProgramado^.Asunto,
+      CorreoProgramado^.Fecha,
+      CorreoProgramado^.Mensaje);
+
+    ShowMessage('Correo enviado exitosamente a: ' + CorreoSeleccionado^.Destinatario);
+
+    // Actualizar la tabla
+    ActualizarTablaCorreosProgramados;
+
+  except
+    on E: Exception do
     begin
-      // Obtener o crear bandeja del destinatario
-      BandejaDestino := ObtenerBandejaUsuario(CorreoProgramado^.Destinatario);
-      if BandejaDestino = nil then
-        BandejaDestino := CrearBandejaUsuario(CorreoProgramado^.Destinatario);
-
-      // Cambiar estado a "No leído" y quitar programación
-      CorreoProgramado^.Estado := 'N';
-      CorreoProgramado^.Programado := False;
-
-      // Insertar en la bandeja de entrada del destinatario
-      InsertarCorreo(BandejaDestino^.BandejaEntrada,
-        CorreoProgramado^.Id,
-        CorreoProgramado^.Remitente,
-        CorreoProgramado^.Destinatario,
-        CorreoProgramado^.Estado,
-        CorreoProgramado^.Programado,
-        CorreoProgramado^.Asunto,
-        CorreoProgramado^.Fecha,
-        CorreoProgramado^.Mensaje);
-
-      Inc(CorreosEnviados);
-
-      // Liberar el correo original de la cola
+      ShowMessage('Error al enviar correo: ' + E.Message);
       Dispose(CorreoProgramado);
     end;
   end;
-
-  ShowMessage('Se enviaron ' + IntToStr(CorreosEnviados) + ' correo(s) programados');
-  ActualizarTablaCorreosProgramados;
 end;
 
 procedure TForm12.btnEnviarCorreosProgramadosClick(Sender: TObject);
@@ -155,17 +189,13 @@ begin
   end;
 
   if MessageDlg('Confirmar Envío',
-                '¿Está seguro de que desea enviar todos los correos programados?' + sLineBreak +
-                'Esta acción enviará ' + IntToStr(ColaCorreosProgramados.Count) + ' correo(s).',
+                '¿Está seguro de que desea enviar el correo seleccionado?' + sLineBreak +
+                'Asunto: ' + ObtenerCorreoSeleccionado^.Asunto,
                 mtConfirmation, [mbYes, mbNo], 0) = mrYes then
   begin
     EnviarCorreosProgramados;
   end;
 end;
-
-// =============================================================================
-// EVENTOS VACÍOS PERO NECESARIOS
-// =============================================================================
 
 procedure TForm12.tablaCorreosProgramadosClick(Sender: TObject);
 begin

@@ -177,7 +177,6 @@ var
   NuevoCorreo: PCorreo;
   FechaProgramada: TDateTime;
   Destinatario: string;
-  BandejaDestino: PBandejaUsuario;
   NuevoId: Integer;
 begin
   if not ValidarCampos then
@@ -203,24 +202,13 @@ begin
     NuevoCorreo^.Anterior := nil;
     NuevoCorreo^.Siguiente := nil;
 
-    // Encolar en la cola de correos programados
+    // ENCOLAR EN LA COLA GLOBAL - ESTO ES CLAVE
     Encolar(ColaCorreosProgramados, NuevoCorreo);
-
-    // También guardar en la bandeja de salida del remitente (opcional)
-    BandejaDestino := ObtenerBandejaUsuario(UsuarioActual^.Email);
-    if BandejaDestino <> nil then
-    begin
-      // Insertar copia en bandeja de salida
-      InsertarCorreo(BandejaDestino^.BandejaEntrada, NuevoId,
-        UsuarioActual^.Email, Destinatario, 'P', True,
-        Trim(editAsunto.Text),
-        FormatDateTime('yyyy-mm-dd hh:nn:ss', FechaProgramada),
-        Trim(MemoMensaje.Text));
-    end;
 
     ShowMessage('Correo programado exitosamente para: ' +
                 DateTimeToStr(FechaProgramada) + sLineBreak +
-                'ID: ' + IntToStr(NuevoId));
+                'ID: ' + IntToStr(NuevoId) + sLineBreak +
+                'Ahora puedes verlo en "Correos Programados"');
 
     // Cerrar formulario
     Close;

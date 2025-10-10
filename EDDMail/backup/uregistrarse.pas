@@ -61,6 +61,14 @@ begin
 end;
 
 // =============================================================================
+// AGREGAR ESTE PROCEDIMIENTO QUE FALTABA
+// =============================================================================
+procedure TForm8.FormDestroy(Sender: TObject);
+begin
+  // Evento vacío pero necesario para evitar errores
+end;
+
+// =============================================================================
 // EVENTOS DE CAMBIO EN EDITs - SOLO PARA EVITAR ERRORES
 // =============================================================================
 
@@ -262,6 +270,5 @@ begin
   // Cerrar formulario
   Close;
 end;
-
 
 end.
