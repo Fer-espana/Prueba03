@@ -129,7 +129,7 @@
         <ComponentName Value="Form8"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="URegistrarseNuevo"/>
+        <UnitName Value="URegistrarse"/>
       </Unit>
       <Unit>
         <Filename Value="ubandejaentrada.pas"/>
@@ -167,6 +167,16 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UVentanaContactos"/>
+      </Unit>
+      <Unit>
+        <Filename Value="uglobal.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UGLOBAL"/>
+      </Unit>
+      <Unit>
+        <Filename Value="unavegacion.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UNAVEGACION"/>
       </Unit>
     </Units>
   </ProjectOptions>

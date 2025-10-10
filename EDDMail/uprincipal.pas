@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls,
-  UListaSimpleUsuarios, URegistrarse;
+  UListaSimpleUsuarios, URegistrarse, UUsuarioEstandar, UROOT, UGLOBAL;
 
 type
 
@@ -15,8 +15,6 @@ type
   TForm1 = class(TForm)
     btnLogin: TButton;
     btnRegistrar: TButton;
-    Button1: TButton;
-    Button2: TButton;
     edtEmail: TEdit;
     edtPassword: TEdit;
     Label1: TLabel;
@@ -28,9 +26,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
-    // Ya no necesitamos ListaUsuarios local, usamos la global
   public
-
   end;
 
 var
@@ -50,8 +46,7 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
   Caption := 'EDDMail - Login';
 
-  // La lista global ya se inicializó en UListaSimpleUsuarios
-  // Solo insertamos el usuario root si no existe
+  // Insertar usuario root si no existe
   if BuscarUsuarioPorEmail(ListaUsuariosGlobal, ROOT_EMAIL) = nil then
   begin
     InsertarUsuario(ListaUsuariosGlobal, 1, 'Administrador Root', 'root',
@@ -59,18 +54,28 @@ begin
     StatusBar1.SimpleText := 'Sistema inicializado. Usuario root creado.';
   end
   else
-    StatusBar1.SimpleText := 'Sistema inicializado.';
+    StatusBar1.SimpleText := 'Sistema inicializado. Listo para usar.';
 end;
 
 procedure TForm1.btnLoginClick(Sender: TObject);
 var
   Usuario: PUsuario;
+  FormUsuario: TForm3;
+  FormRoot: TForm2;
 begin
   // Verificar credenciales root
   if (edtEmail.Text = ROOT_EMAIL) and (edtPassword.Text = ROOT_PASSWORD) then
   begin
+    EsUsuarioRoot := True;
+    UsuarioActual := nil;
+
     ShowMessage('¡Bienvenido Root!');
     StatusBar1.SimpleText := 'Sesión root iniciada';
+
+    // Navegar a formulario Root
+    FormRoot := TForm2.Create(Application);
+    FormRoot.Show;
+    Self.Hide; // Ocultar login
     Exit;
   end;
 
@@ -82,9 +87,18 @@ begin
     Exit;
   end;
 
-  // Por ahora, cualquier contraseña funciona para usuarios normales
+  // Configurar usuario actual
+  EsUsuarioRoot := False;
+  UsuarioActual := Usuario;
+
   ShowMessage('¡Bienvenido ' + Usuario^.Nombre + '!');
   StatusBar1.SimpleText := 'Sesión de usuario iniciada: ' + Usuario^.Nombre;
+
+  // Navegar a formulario de usuario estándar
+  FormUsuario := TForm3.Create(Application);
+  FormUsuario.SetUsuarioActual(Usuario);
+  FormUsuario.Show;
+  Self.Hide; // Ocultar login
 end;
 
 procedure TForm1.btnRegistrarClick(Sender: TObject);
@@ -100,7 +114,6 @@ end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
-  // Liberar memoria de la lista GLOBAL al cerrar
   LiberarListaUsuarios(ListaUsuariosGlobal);
 end;
 

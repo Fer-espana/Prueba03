@@ -1,0 +1,93 @@
+object Form3: TForm3
+  Left = 752
+  Height = 453
+  Top = 272
+  Width = 349
+  Caption = 'Usuario Estandar'
+  ClientHeight = 453
+  ClientWidth = 349
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  LCLVersion = '2.2.6.0'
+  object btnBandejaEntrada: TButton
+    Left = 72
+    Height = 29
+    Top = 48
+    Width = 216
+    Caption = 'Bandeja de Entrada'
+    OnClick = btnBandejaEntradaClick
+    TabOrder = 0
+  end
+  object bntEnviarCorreo: TButton
+    Left = 72
+    Height = 29
+    Top = 85
+    Width = 216
+    Caption = 'Enviar Correo'
+    OnClick = bntEnviarCorreoClick
+    TabOrder = 1
+  end
+  object btnPapelera: TButton
+    Left = 72
+    Height = 29
+    Top = 131
+    Width = 216
+    Caption = 'Papelera'
+    OnClick = btnPapeleraClick
+    TabOrder = 2
+  end
+  object btnProgramarCorreo: TButton
+    Left = 72
+    Height = 29
+    Top = 171
+    Width = 216
+    Caption = 'Programar Correo'
+    OnClick = btnProgramarCorreoClick
+    TabOrder = 3
+  end
+  object btnCorreosProgramados: TButton
+    Left = 72
+    Height = 29
+    Top = 214
+    Width = 216
+    Caption = 'Correos Programados'
+    OnClick = btnCorreosProgramadosClick
+    TabOrder = 4
+  end
+  object btnAgregarContacto: TButton
+    Left = 72
+    Height = 29
+    Top = 260
+    Width = 216
+    Caption = 'Agregar Contacto'
+    OnClick = btnAgregarContactoClick
+    TabOrder = 5
+  end
+  object btnContactos: TButton
+    Left = 72
+    Height = 29
+    Top = 305
+    Width = 216
+    Caption = 'Contactos'
+    OnClick = btnContactosClick
+    TabOrder = 6
+  end
+  object btnActualizarPerfil: TButton
+    Left = 72
+    Height = 29
+    Top = 351
+    Width = 216
+    Caption = 'Actualizar Perfil'
+    OnClick = btnActualizarPerfilClick
+    TabOrder = 7
+  end
+  object btnGenerarReportes: TButton
+    Left = 72
+    Height = 29
+    Top = 388
+    Width = 216
+    Caption = 'Generar Reportes'
+    OnClick = btnGenerarReportesClick
+    TabOrder = 8
+  end
+end

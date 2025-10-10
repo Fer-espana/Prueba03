@@ -9,10 +9,10 @@
     },
     {
       "id": 2,
-      "nombre": "fernando espana",
+      "nombre": "fes",
       "usuario": "fes",
-      "email": "fer@edd.com",
-      "telefono": "45612345"
+      "email": "fes@edd.com",
+      "telefono": "12345678"
     }
   ]
 }

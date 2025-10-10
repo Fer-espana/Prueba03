@@ -7,7 +7,8 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, UListaSimpleUsuarios,
   UBandejaEntrada, UEnviarCorreo, UPapelera, UProgramarCorreo, UCorreosProgramados,
-  UAgregarContacto, UVentanaContactos, UActualizarPerfil;
+  UAgregarContacto, UVentanaContactos, UActualizarPerfil, UGLOBAL;
+  // Removemos UNAVEGACION ya que no existe
 
 type
 
@@ -32,6 +33,7 @@ type
     procedure btnContactosClick(Sender: TObject);
     procedure btnActualizarPerfilClick(Sender: TObject);
     procedure btnGenerarReportesClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
@@ -62,12 +64,14 @@ end;
 procedure TForm3.btnBandejaEntradaClick(Sender: TObject);
 begin
   Form9 := TForm9.Create(Application);
+  Form9.SetBandejaActual(UsuarioActual^.Email);
   Form9.Show;
 end;
 
 procedure TForm3.bntEnviarCorreoClick(Sender: TObject);
 begin
   Form4 := TForm4.Create(Application);
+  Form4.SetBandejaActual(UsuarioActual^.Email);
   Form4.Show;
 end;
 
@@ -120,5 +124,11 @@ begin
     Caption := 'EDDMail - ' + UsuarioActual^.Nombre;
 end;
 
-end.
+procedure TForm3.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  CloseAction := caFree;
+  if Application.MainForm <> nil then
+    Application.MainForm.Show;
+end;
 
+end.

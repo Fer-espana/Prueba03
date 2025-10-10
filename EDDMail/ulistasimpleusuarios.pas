@@ -43,6 +43,26 @@ begin
   Lista.Count := 0;
 end;
 
+// En UListaSimpleUsuarios.pas - AGREGAR EN LA SECCIÓN implementation
+function BuscarIndiceUsuario(Email: string): Integer;
+var
+  Actual: PUsuario;
+  Index: Integer;
+begin
+  Actual := ListaUsuariosGlobal.Cabeza;
+  Index := 0;
+
+  while Actual <> nil do
+  begin
+    if Actual^.Email = Email then
+      Exit(Index);
+    Actual := Actual^.Siguiente;
+    Inc(Index);
+  end;
+
+  Result := -1; // No encontrado
+end;
+
 procedure InsertarUsuario(var Lista: TListaUsuarios; Id: Integer;
   Nombre, Usuario, Email, Telefono: string);
 var
