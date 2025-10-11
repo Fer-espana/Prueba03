@@ -90,4 +90,13 @@ object Form3: TForm3
     OnClick = btnGenerarReportesClick
     TabOrder = 8
   end
+  object btnRegresarLogin: TButton
+    Left = 72
+    Height = 25
+    Top = 16
+    Width = 216
+    Caption = 'Regresar a Login'
+    OnClick = btnRegresarLoginClick
+    TabOrder = 9
+  end
 end

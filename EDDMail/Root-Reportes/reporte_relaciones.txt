@@ -1,0 +1,3 @@
+Reporte de Relaciones - Matriz Dispersa
+=====================================
+Fila 1 | Columna 2 | Valor: 1

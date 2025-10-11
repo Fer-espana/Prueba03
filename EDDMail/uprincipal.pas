@@ -27,6 +27,7 @@ type
     procedure FormDestroy(Sender: TObject);
   private
     procedure CargarUsuariosDesdeJSON;
+    procedure GuardarUsuariosEnJSON; // AGREGAR ESTA DECLARACIÓN
   public
   end;
 
@@ -56,9 +57,67 @@ begin
     InsertarUsuario(ListaUsuariosGlobal, 1, 'Administrador Root', 'root',
       ROOT_EMAIL, '0000-0000');
     StatusBar1.SimpleText := 'Sistema inicializado. Usuario root creado.';
+
+    // Guardar el usuario root en el JSON
+    GuardarUsuariosEnJSON;
   end
   else
     StatusBar1.SimpleText := 'Sistema inicializado. ' + IntToStr(ListaUsuariosGlobal.Count) + ' usuario(s) cargados.';
+end;
+
+// MANTENER LA IMPLEMENTACIÓN DE GuardarUsuariosEnJSON DONDE ESTÁ
+procedure TForm1.GuardarUsuariosEnJSON;
+var
+  Archivo: TextFile;
+  Actual: PUsuario;
+  RutaArchivo, RutaCarpeta: string;
+  EsPrimerUsuario: Boolean;
+begin
+  RutaCarpeta := ExtractFilePath(Application.ExeName) + 'Data';
+  RutaArchivo := RutaCarpeta + PathDelim + 'usuarios.json';
+
+  // Crear carpeta Data si no existe
+  if not DirectoryExists(RutaCarpeta) then
+    ForceDirectories(RutaCarpeta);
+
+  // Crear o sobrescribir archivo
+  AssignFile(Archivo, RutaArchivo);
+  try
+    Rewrite(Archivo);
+
+    // Escribir encabezado JSON
+    WriteLn(Archivo, '{');
+    WriteLn(Archivo, '  "usuarios": [');
+
+    // Escribir usuarios
+    Actual := ListaUsuariosGlobal.Cabeza;
+    EsPrimerUsuario := True;
+
+    while Actual <> nil do
+    begin
+      if not EsPrimerUsuario then
+        WriteLn(Archivo, ',');
+
+      WriteLn(Archivo, '    {');
+      WriteLn(Archivo, '      "id": ', Actual^.Id, ',');
+      WriteLn(Archivo, '      "nombre": "', Actual^.Nombre, '",');
+      WriteLn(Archivo, '      "usuario": "', Actual^.Usuario, '",');
+      WriteLn(Archivo, '      "email": "', Actual^.Email, '",');
+      WriteLn(Archivo, '      "telefono": "', Actual^.Telefono, '"');
+      Write(Archivo, '    }');
+
+      EsPrimerUsuario := False;
+      Actual := Actual^.Siguiente;
+    end;
+
+    // Escribir cierre JSON
+    WriteLn(Archivo);
+    WriteLn(Archivo, '  ]');
+    WriteLn(Archivo, '}');
+
+  finally
+    CloseFile(Archivo);
+  end;
 end;
 
 procedure TForm1.CargarUsuariosDesdeJSON;
@@ -140,8 +199,8 @@ begin
     ShowMessage('¡Bienvenido Root!');
     StatusBar1.SimpleText := 'Sesión root iniciada';
 
-    // Navegar a formulario Root
-    FormRoot := TForm2.Create(Application);
+    // Navegar a formulario Root - CORREGIDO
+    FormRoot := TForm2.Create(nil);
     FormRoot.Show;
     Self.Hide; // Ocultar login
     Exit;
@@ -162,8 +221,8 @@ begin
   ShowMessage('¡Bienvenido ' + Usuario^.Nombre + '!');
   StatusBar1.SimpleText := 'Sesión de usuario iniciada: ' + Usuario^.Nombre;
 
-  // Navegar a formulario de usuario estándar
-  FormUsuario := TForm3.Create(Application);
+  // Navegar a formulario de usuario estándar - CORREGIDO
+  FormUsuario := TForm3.Create(nil);
   FormUsuario.SetUsuarioActual(Usuario);
   FormUsuario.Show;
   Self.Hide; // Ocultar login
@@ -171,8 +230,8 @@ end;
 
 procedure TForm1.btnRegistrarClick(Sender: TObject);
 begin
-  // Abrir formulario de registro
-  Form8 := TForm8.Create(Application);
+  // Abrir formulario de registro - CORREGIDO
+  Form8 := TForm8.Create(nil);
   try
     Form8.ShowModal;
   finally

@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, EditBtn,
   UGLOBAL, UListaSimpleUsuarios, UListaCircularContactos, UColaCorreosProgramados,
-  UListaDobleEnlazadaCorreos, DateUtils;
+  UListaDobleEnlazadaCorreos, DateUtils, UCorreosProgramados; // AGREGAR UCorreosProgramados
 
 type
 
@@ -178,12 +178,15 @@ var
   FechaProgramada: TDateTime;
   Destinatario: string;
   NuevoId: Integer;
+  FechaProgramadaStr: string;
+  i: Integer;
 begin
   if not ValidarCampos then
     Exit;
 
   Destinatario := Trim(editDestinatario.Text);
   FechaProgramada := ObtenerFechaHoraProgramada;
+  FechaProgramadaStr := FormatDateTime('yyyy-mm-dd hh:nn:ss', FechaProgramada);
 
   // Generar nuevo ID
   NuevoId := GenerarIdCorreo;
@@ -196,19 +199,43 @@ begin
     NuevoCorreo^.Destinatario := Destinatario;
     NuevoCorreo^.Asunto := Trim(editAsunto.Text);
     NuevoCorreo^.Mensaje := Trim(MemoMensaje.Text);
-    NuevoCorreo^.Fecha := FormatDateTime('yyyy-mm-dd hh:nn:ss', FechaProgramada);
+    NuevoCorreo^.Fecha := FechaProgramadaStr;
     NuevoCorreo^.Estado := 'P'; // 'P' para Programado
     NuevoCorreo^.Programado := True;
     NuevoCorreo^.Anterior := nil;
     NuevoCorreo^.Siguiente := nil;
 
-    // ENCOLAR EN LA COLA GLOBAL - ESTO ES CLAVE
+    // DEBUG: Mostrar información antes de encolar
+    ShowMessage('Antes de encolar - Correo creado:' + sLineBreak +
+                'Asunto: ' + NuevoCorreo^.Asunto + sLineBreak +
+                'Remitente: ' + NuevoCorreo^.Remitente + sLineBreak +
+                'Destinatario: ' + NuevoCorreo^.Destinatario);
+
+    // ENCOLAR EN LA COLA GLOBAL
     Encolar(ColaCorreosProgramados, NuevoCorreo);
+
+    // DEBUG: Verificar que se encoló
+    ShowMessage('Después de encolar - Total en cola: ' + IntToStr(ColaCorreosProgramados.Count));
+
+    // NOTIFICAR A TODAS LAS INSTANCIAS ABIERTAS DE CORREOS PROGRAMADOS
+    for i := 0 to Screen.FormCount - 1 do
+    begin
+      if Screen.Forms[i] is TForm12 then
+      begin
+        ShowMessage('Encontrada instancia de TForm12, refrescando tabla...');
+        (Screen.Forms[i] as TForm12).RefrescarTabla;
+      end;
+    end;
 
     ShowMessage('Correo programado exitosamente para: ' +
                 DateTimeToStr(FechaProgramada) + sLineBreak +
                 'ID: ' + IntToStr(NuevoId) + sLineBreak +
                 'Ahora puedes verlo en "Correos Programados"');
+
+    // Limpiar campos
+    editDestinatario.Text := '';
+    editAsunto.Text := '';
+    MemoMensaje.Text := '';
 
     // Cerrar formulario
     Close;

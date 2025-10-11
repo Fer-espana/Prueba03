@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, EditBtn,
   UGLOBAL, UListaSimpleUsuarios, UListaCircularContactos, UColaCorreosProgramados,
-  UListaDobleEnlazadaCorreos, DateUtils;
+  UListaDobleEnlazadaCorreos, DateUtils, UCorreosProgramados; // AGREGAR UCorreosProgramados
 
 type
 
@@ -177,14 +177,16 @@ var
   NuevoCorreo: PCorreo;
   FechaProgramada: TDateTime;
   Destinatario: string;
-  BandejaDestino: PBandejaUsuario;
   NuevoId: Integer;
+  FechaProgramadaStr: string;
+  i: Integer;
 begin
   if not ValidarCampos then
     Exit;
 
   Destinatario := Trim(editDestinatario.Text);
   FechaProgramada := ObtenerFechaHoraProgramada;
+  FechaProgramadaStr := FormatDateTime('yyyy-mm-dd hh:nn:ss', FechaProgramada);
 
   // Generar nuevo ID
   NuevoId := GenerarIdCorreo;
@@ -197,30 +199,34 @@ begin
     NuevoCorreo^.Destinatario := Destinatario;
     NuevoCorreo^.Asunto := Trim(editAsunto.Text);
     NuevoCorreo^.Mensaje := Trim(MemoMensaje.Text);
-    NuevoCorreo^.Fecha := FormatDateTime('yyyy-mm-dd hh:nn:ss', FechaProgramada);
+    NuevoCorreo^.Fecha := FechaProgramadaStr;
     NuevoCorreo^.Estado := 'P'; // 'P' para Programado
     NuevoCorreo^.Programado := True;
     NuevoCorreo^.Anterior := nil;
     NuevoCorreo^.Siguiente := nil;
 
-    // Encolar en la cola de correos programados
+    // ENCOLAR EN LA COLA GLOBAL
     Encolar(ColaCorreosProgramados, NuevoCorreo);
+    ShowMessage('Correo encolado. Total en cola: ' + IntToStr(ColaCorreosProgramados.Count));
 
-    // También guardar en la bandeja de salida del remitente (opcional)
-    BandejaDestino := ObtenerBandejaUsuario(UsuarioActual^.Email);
-    if BandejaDestino <> nil then
+    // NOTIFICAR A TODAS LAS INSTANCIAS ABIERTAS DE CORREOS PROGRAMADOS
+    for i := 0 to Screen.FormCount - 1 do
     begin
-      // Insertar copia en bandeja de salida
-      InsertarCorreo(BandejaDestino^.BandejaEntrada, NuevoId,
-        UsuarioActual^.Email, Destinatario, 'P', True,
-        Trim(editAsunto.Text),
-        FormatDateTime('yyyy-mm-dd hh:nn:ss', FechaProgramada),
-        Trim(MemoMensaje.Text));
+      if Screen.Forms[i] is TForm12 then
+      begin
+        (Screen.Forms[i] as TForm12).RefrescarTabla;
+      end;
     end;
 
     ShowMessage('Correo programado exitosamente para: ' +
                 DateTimeToStr(FechaProgramada) + sLineBreak +
-                'ID: ' + IntToStr(NuevoId));
+                'ID: ' + IntToStr(NuevoId) + sLineBreak +
+                'Ahora puedes verlo en "Correos Programados"');
+
+    // Limpiar campos
+    editDestinatario.Text := '';
+    editAsunto.Text := '';
+    MemoMensaje.Text := '';
 
     // Cerrar formulario
     Close;

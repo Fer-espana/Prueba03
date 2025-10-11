@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls,
-  UListaSimpleUsuarios, URegistrarse, UUsuarioEstandar, UROOT, UGLOBAL;
+  UListaSimpleUsuarios, URegistrarse, UUsuarioEstandar, UROOT, UGLOBAL, fpjson, jsonparser;
 
 type
 
@@ -26,6 +26,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
+    procedure CargarUsuariosDesdeJSON;
   public
   end;
 
@@ -46,15 +47,139 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
   Caption := 'EDDMail - Login';
 
+  // Cargar usuarios desde JSON al iniciar - CORREGIDO
+  CargarUsuariosDesdeJSON;
+
   // Insertar usuario root si no existe
   if BuscarUsuarioPorEmail(ListaUsuariosGlobal, ROOT_EMAIL) = nil then
   begin
     InsertarUsuario(ListaUsuariosGlobal, 1, 'Administrador Root', 'root',
       ROOT_EMAIL, '0000-0000');
     StatusBar1.SimpleText := 'Sistema inicializado. Usuario root creado.';
+
+    // Guardar el usuario root en el JSON
+    GuardarUsuariosEnJSON;
   end
   else
-    StatusBar1.SimpleText := 'Sistema inicializado. Listo para usar.';
+    StatusBar1.SimpleText := 'Sistema inicializado. ' + IntToStr(ListaUsuariosGlobal.Count) + ' usuario(s) cargados.';
+end;
+
+procedure TForm1.GuardarUsuariosEnJSON;
+var
+  Archivo: TextFile;
+  Actual: PUsuario;
+  RutaArchivo, RutaCarpeta: string;
+  EsPrimerUsuario: Boolean;
+begin
+  RutaCarpeta := ExtractFilePath(Application.ExeName) + 'Data';
+  RutaArchivo := RutaCarpeta + PathDelim + 'usuarios.json';
+
+  // Crear carpeta Data si no existe
+  if not DirectoryExists(RutaCarpeta) then
+    ForceDirectories(RutaCarpeta);
+
+  // Crear o sobrescribir archivo
+  AssignFile(Archivo, RutaArchivo);
+  try
+    Rewrite(Archivo);
+
+    // Escribir encabezado JSON
+    WriteLn(Archivo, '{');
+    WriteLn(Archivo, '  "usuarios": [');
+
+    // Escribir usuarios
+    Actual := ListaUsuariosGlobal.Cabeza;
+    EsPrimerUsuario := True;
+
+    while Actual <> nil do
+    begin
+      if not EsPrimerUsuario then
+        WriteLn(Archivo, ',');
+
+      WriteLn(Archivo, '    {');
+      WriteLn(Archivo, '      "id": ', Actual^.Id, ',');
+      WriteLn(Archivo, '      "nombre": "', Actual^.Nombre, '",');
+      WriteLn(Archivo, '      "usuario": "', Actual^.Usuario, '",');
+      WriteLn(Archivo, '      "email": "', Actual^.Email, '",');
+      WriteLn(Archivo, '      "telefono": "', Actual^.Telefono, '"');
+      Write(Archivo, '    }');
+
+      EsPrimerUsuario := False;
+      Actual := Actual^.Siguiente;
+    end;
+
+    // Escribir cierre JSON
+    WriteLn(Archivo);
+    WriteLn(Archivo, '  ]');
+    WriteLn(Archivo, '}');
+
+  finally
+    CloseFile(Archivo);
+  end;
+end;
+
+procedure TForm1.CargarUsuariosDesdeJSON;
+var
+  Archivo: TextFile;
+  Linea, JSONContent: string;
+  Parser: TJSONParser;
+  JSONData: TJSONData;
+  UsuariosArray: TJSONArray;
+  i: Integer;
+  UsuarioObj: TJSONObject;
+  RutaArchivo: string;
+begin
+  RutaArchivo := ExtractFilePath(Application.ExeName) + 'Data' + PathDelim + 'usuarios.json';
+
+  if not FileExists(RutaArchivo) then
+  begin
+    // Crear directorio Data si no existe
+    ForceDirectories(ExtractFilePath(RutaArchivo));
+    Exit;
+  end;
+
+  try
+    // Leer archivo JSON
+    AssignFile(Archivo, RutaArchivo);
+    Reset(Archivo);
+    JSONContent := '';
+    while not EOF(Archivo) do
+    begin
+      ReadLn(Archivo, Linea);
+      JSONContent := JSONContent + Linea;
+    end;
+    CloseFile(Archivo);
+
+    // Parsear JSON
+    Parser := TJSONParser.Create(JSONContent);
+    try
+      JSONData := Parser.Parse;
+      if (JSONData <> nil) and (JSONData.FindPath('usuarios') <> nil) then
+      begin
+        UsuariosArray := TJSONArray(JSONData.FindPath('usuarios'));
+        for i := 0 to UsuariosArray.Count - 1 do
+        begin
+          UsuarioObj := TJSONObject(UsuariosArray.Items[i]);
+
+          // Insertar usuario en la lista global (evitar duplicados)
+          if BuscarUsuarioPorEmail(ListaUsuariosGlobal, UsuarioObj.Get('email', '')) = nil then
+          begin
+            InsertarUsuario(ListaUsuariosGlobal,
+              UsuarioObj.Get('id', 0),
+              UsuarioObj.Get('nombre', ''),
+              UsuarioObj.Get('usuario', ''),
+              UsuarioObj.Get('email', ''),
+              UsuarioObj.Get('telefono', ''));
+          end;
+        end;
+      end;
+    finally
+      Parser.Free;
+    end;
+  except
+    on E: Exception do
+      // Silenciosamente ignorar errores de carga
+  end;
 end;
 
 procedure TForm1.btnLoginClick(Sender: TObject);
@@ -73,7 +198,7 @@ begin
     StatusBar1.SimpleText := 'Sesión root iniciada';
 
     // Navegar a formulario Root
-    FormRoot := TForm2.Create(Application);
+    FormRoot := TForm2.Create(nil);
     FormRoot.Show;
     Self.Hide; // Ocultar login
     Exit;

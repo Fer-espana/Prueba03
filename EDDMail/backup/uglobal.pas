@@ -72,11 +72,12 @@ begin
   ListaBandejas := nil;
 end;
 
+// En UGLOBAL.pas - verificar que tenga esto en initialization
 initialization
 begin
   UsuarioActual := nil;
   EsUsuarioRoot := False;
-  InicializarCola(ColaCorreosProgramados);
+  InicializarCola(ColaCorreosProgramados);  // ESTA LÍNEA DEBE ESTAR
   InicializarPila(PilaPapeleraGlobal);
   InicializarMatriz(MatrizRelaciones);
   InicializarBandejasGlobales;

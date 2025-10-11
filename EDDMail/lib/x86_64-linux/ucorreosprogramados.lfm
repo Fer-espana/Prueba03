@@ -18,24 +18,26 @@ object Form12: TForm12
     OnClick = btnEnviarCorreosProgramadosClick
     TabOrder = 0
   end
-  object tablaCorreosProgramados: TStringGrid
+  object ListView1: TListView
     Left = 32
     Height = 180
     Top = 96
     Width = 360
+    Columns = <    
+      item
+        Caption = 'Asunto'
+        Width = 150
+      end    
+      item
+        Caption = 'Remitente'
+        Width = 120
+      end    
+      item
+        Caption = 'Fecha de Envio'
+        Width = 120
+      end>
     TabOrder = 1
-    OnClick = tablaCorreosProgramadosClick
-    Cells = (
-      3
-      0
-      0
-      'Asunto'
-      1
-      0
-      'Remitente'
-      2
-      0
-      'Fecha de Envio'
-    )
+    ViewStyle = vsReport
+    OnClick = ListView1Click
   end
 end

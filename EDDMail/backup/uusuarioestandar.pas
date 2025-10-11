@@ -7,7 +7,8 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, UListaSimpleUsuarios,
   UBandejaEntrada, UEnviarCorreo, UPapelera, UProgramarCorreo, UCorreosProgramados,
-  UAgregarContacto, UVentanaContactos, UActualizarPerfil, UGLOBAL, UPrincipal;
+  UAgregarContacto, UVentanaContactos, UActualizarPerfil, UGLOBAL;
+  // Removemos UPrincipal para evitar referencia circular
 
 type
 
@@ -120,6 +121,9 @@ begin
 end;
 
 procedure TForm3.btnRegresarLoginClick(Sender: TObject);
+var
+
+  i: Integer;
 begin
   // Cerrar sesión del usuario actual
   UsuarioActual := nil;
@@ -128,19 +132,20 @@ begin
   // Mostrar mensaje de confirmación
   ShowMessage('Sesión cerrada exitosamente');
 
+  // Buscar y mostrar el formulario de login principal
+  for i := 0 to Screen.FormCount - 1 do
+  begin
+    if Screen.Forms[i].Name = 'Form1' then
+    begin
+      Screen.Forms[i].Show;
+      Break;
+    end;
+  end;
+
   // Cerrar este formulario
   Close;
-
-  // Mostrar el formulario de login principal
-  if Assigned(Form1) then
-    Form1.Show
-  else
-  begin
-    // Si Form1 no está asignado, crearlo
-    Application.CreateForm(TForm1, Form1);
-    Form1.Show;
-  end;
 end;
+
 
 procedure TForm3.SetUsuarioActual(Usuario: PUsuario);
 begin
@@ -152,7 +157,10 @@ end;
 procedure TForm3.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   CloseAction := caFree;
-  // No mostrar automáticamente el login para permitir cerrar sesión manualmente
+
+  // Mostrar el login cuando se cierra este formulario
+  if Application.MainForm <> nil then
+    Application.MainForm.Show;
 end;
 
 end.

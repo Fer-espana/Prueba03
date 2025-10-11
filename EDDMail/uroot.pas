@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, UGLOBAL,
-  UListaSimpleUsuarios, fpjson, jsonparser;
+  UListaSimpleUsuarios, fpjson, jsonparser, UMatrizDispersaRelaciones;
 
 type
 
@@ -169,20 +169,31 @@ procedure TForm2.btnCargaMasivaClick(Sender: TObject);
 begin
   // Recargar usuarios desde JSON
   CargarUsuariosDesdeJSON;
-  ShowMessage('Usuarios cargados desde Data/usuarios.json');
+  ShowMessage('Usuarios cargados exitosamente desde Data/usuarios.json' + sLineBreak +
+              'Total: ' + IntToStr(ListaUsuariosGlobal.Count) + ' usuarios');
 end;
 
 procedure TForm2.btnReporteUsuariosClick(Sender: TObject);
 begin
   // Guardar usuarios actuales en JSON
   GuardarUsuariosEnJSON;
-  ShowMessage('Reporte de usuarios generado en Data/usuarios.json');
+  ShowMessage('Reporte de usuarios generado en: Data/usuarios.json');
 end;
 
 procedure TForm2.btnReporteRelacionesClick(Sender: TObject);
+var
+  RutaCarpeta, RutaArchivo: string;
 begin
-  ShowMessage('Generando reporte de relaciones...');
-  // Aquí irá la lógica para generar reporte de relaciones con la matriz dispersa
+  RutaCarpeta := ExtractFilePath(Application.ExeName) + 'Root-Reportes';
+  RutaArchivo := RutaCarpeta + PathDelim + 'reporte_relaciones.txt';
+
+  // Crear carpeta si no existe
+  if not DirectoryExists(RutaCarpeta) then
+    ForceDirectories(RutaCarpeta);
+
+  // Generar reporte de relaciones
+  GenerarReporteRelaciones(MatrizRelaciones, RutaArchivo);
+  ShowMessage('Reporte de relaciones generado en: ' + RutaArchivo);
 end;
 
 procedure TForm2.FormDestroy(Sender: TObject);

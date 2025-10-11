@@ -121,6 +121,8 @@ begin
 end;
 
 procedure TForm3.btnRegresarLoginClick(Sender: TObject);
+var
+  i: Integer;
 begin
   // Cerrar sesión del usuario actual
   UsuarioActual := nil;
@@ -130,28 +132,19 @@ begin
   ShowMessage('Sesión cerrada exitosamente');
 
   // Buscar y mostrar el formulario de login principal
-  // En lugar de referenciar directamente Form1, lo buscamos en Application
-  var
-    i: Integer;
-    MainForm: TForm;
+  for i := 0 to Screen.FormCount - 1 do
   begin
-    for i := 0 to Application.ComponentCount - 1 do
+    if Screen.Forms[i].Name = 'Form1' then
     begin
-      if Application.Components[i] is TForm then
-      begin
-        MainForm := TForm(Application.Components[i]);
-        if (MainForm <> Self) and (MainForm.Visible = False) then
-        begin
-          MainForm.Show;
-          Break;
-        end;
-      end;
+      Screen.Forms[i].Show;
+      Break;
     end;
   end;
 
   // Cerrar este formulario
   Close;
 end;
+
 
 procedure TForm3.SetUsuarioActual(Usuario: PUsuario);
 begin
@@ -163,7 +156,10 @@ end;
 procedure TForm3.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   CloseAction := caFree;
-  // No mostrar automáticamente el login para permitir cerrar sesión manualmente
+
+  // Mostrar el login cuando se cierra este formulario
+  if Application.MainForm <> nil then
+    Application.MainForm.Show;
 end;
 
 end.

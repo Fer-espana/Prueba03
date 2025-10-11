@@ -5,7 +5,7 @@ unit UCorreosProgramados;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Grids,
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls, // AGREGAR ComCtrls
   UGLOBAL, UColaCorreosProgramados, UListaDobleEnlazadaCorreos, UListaSimpleUsuarios;
 
 type
@@ -14,19 +14,21 @@ type
 
   TForm12 = class(TForm)
     btnEnviarCorreosProgramados: TButton;
-    tablaCorreosProgramados: TStringGrid;
+    ListView1: TListView;  // CAMBIAR de tablaCorreosProgramados a ListView1
     procedure btnEnviarCorreosProgramadosClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure tablaCorreosProgramadosClick(Sender: TObject);
+    procedure ListView1Click(Sender: TObject);  // CAMBIAR el evento de click
   private
     { private declarations }
     procedure ActualizarTablaCorreosProgramados;
-    procedure EnviarCorreosProgramados;
+    procedure EnviarCorreoSeleccionado;
     function ObtenerCorreoSeleccionado: PCorreo;
+    function GenerarNuevoId: Integer;
   public
     { public declarations }
+    procedure RefrescarTabla;
   end;
 
 var
@@ -42,10 +44,28 @@ procedure TForm12.FormCreate(Sender: TObject);
 begin
   Caption := 'Correos Programados';
 
-  // Configurar la tabla según el .lfm (3 columnas: Asunto, Remitente, Fecha de Envio)
-  tablaCorreosProgramados.Options := tablaCorreosProgramados.Options - [goEditing];
+  // Configurar el ListView
+  with ListView1 do
+  begin
+    ViewStyle := vsReport;
+    GridLines := True;
+    ReadOnly := True;
+    // Agregar columnas
+    Columns.Add.Caption := 'Asunto';
+    Columns.Add.Caption := 'Remitente';
+    Columns.Add.Caption := 'Fecha de Envio';
+    // Ajustar anchos de columnas
+    Columns[0].Width := 150;
+    Columns[1].Width := 120;
+    Columns[2].Width := 120;
+  end;
 
   btnEnviarCorreosProgramados.Caption := 'Enviar';
+end;
+
+procedure TForm12.RefrescarTabla;
+begin
+  ActualizarTablaCorreosProgramados;
 end;
 
 procedure TForm12.FormShow(Sender: TObject);
@@ -61,71 +81,81 @@ end;
 procedure TForm12.ActualizarTablaCorreosProgramados;
 var
   NodoActual: PNodoCola;
-  Fila: Integer;
+  ListItem: TListItem;
 begin
-  // Limpiar tabla (mantener encabezados que ya están en el .lfm)
-  tablaCorreosProgramados.RowCount := 1;
+  ListView1.Items.Clear;
 
   if ColaVacia(ColaCorreosProgramados) then
-  begin
     Exit;
-  end;
 
-  // Recorrer la cola y mostrar los correos programados
   NodoActual := ColaCorreosProgramados.Frente;
-  Fila := 1;
 
   while NodoActual <> nil do
   begin
     if NodoActual^.Correo <> nil then
     begin
-      tablaCorreosProgramados.RowCount := tablaCorreosProgramados.RowCount + 1;
-
-      // Usar las 3 columnas definidas en el .lfm: Asunto, Remitente, Fecha de Envio
-      tablaCorreosProgramados.Cells[0, Fila] := NodoActual^.Correo^.Asunto;
-      tablaCorreosProgramados.Cells[1, Fila] := NodoActual^.Correo^.Remitente;
-      tablaCorreosProgramados.Cells[2, Fila] := NodoActual^.Correo^.Fecha;
-
-      Inc(Fila);
+      ListItem := ListView1.Items.Add;
+      ListItem.Caption := NodoActual^.Correo^.Asunto;
+      ListItem.SubItems.Add(NodoActual^.Correo^.Remitente);
+      ListItem.SubItems.Add(NodoActual^.Correo^.Fecha);
+      ListItem.Data := NodoActual^.Correo; // Guardar referencia al correo
     end;
     NodoActual := NodoActual^.Siguiente;
   end;
 end;
 
 function TForm12.ObtenerCorreoSeleccionado: PCorreo;
-var
-  FilaSeleccionada: Integer;
-  NodoActual: PNodoCola;
-  AsuntoSeleccionado: string;
 begin
   Result := nil;
-  FilaSeleccionada := tablaCorreosProgramados.Row;
-
-  if (FilaSeleccionada <= 0) or ColaVacia(ColaCorreosProgramados) then
-    Exit;
-
-  // Obtener el asunto del correo seleccionado
-  AsuntoSeleccionado := tablaCorreosProgramados.Cells[0, FilaSeleccionada];
-
-  // Buscar el correo en la cola por asunto
-  NodoActual := ColaCorreosProgramados.Frente;
-
-  while NodoActual <> nil do
-  begin
-    if (NodoActual^.Correo <> nil) and (NodoActual^.Correo^.Asunto = AsuntoSeleccionado) then
-    begin
-      Result := NodoActual^.Correo;
-      Exit;
-    end;
-    NodoActual := NodoActual^.Siguiente;
-  end;
+  if (ListView1.Selected <> nil) then
+    Result := PCorreo(ListView1.Selected.Data);
 end;
 
-procedure TForm12.EnviarCorreosProgramados;
+function TForm12.GenerarNuevoId: Integer;
 var
-  CorreoProgramado: PCorreo;
-  BandejaDestino: PBandejaUsuario;
+  MaxId: Integer;
+  BandejaUsuario: PBandejaUsuario;
+  CorreoActual: PCorreo;
+  NodoActual: PNodoCola;
+begin
+  MaxId := 0;
+
+  // Buscar el ID máximo en todas las bandejas
+  BandejaUsuario := ListaBandejas;
+  while BandejaUsuario <> nil do
+  begin
+    CorreoActual := BandejaUsuario^.BandejaEntrada.Cabeza;
+    while CorreoActual <> nil do
+    begin
+      if CorreoActual^.Id > MaxId then
+        MaxId := CorreoActual^.Id;
+      CorreoActual := CorreoActual^.Siguiente;
+    end;
+    BandejaUsuario := BandejaUsuario^.Siguiente;
+  end;
+
+  // Buscar también en los correos programados
+  if not ColaVacia(ColaCorreosProgramados) then
+  begin
+    NodoActual := ColaCorreosProgramados.Frente;
+    while NodoActual <> nil do
+    begin
+      if (NodoActual^.Correo <> nil) and (NodoActual^.Correo^.Id > MaxId) then
+        MaxId := NodoActual^.Correo^.Id;
+      NodoActual := NodoActual^.Siguiente;
+    end;
+  end;
+
+  Result := MaxId + 1;
+end;
+
+procedure TForm12.EnviarCorreoSeleccionado;
+var
   CorreoSeleccionado: PCorreo;
+  BandejaDestino: PBandejaUsuario;
+  NuevoId: Integer;
+  FechaActual: string;
+  CorreoEnviado: PCorreo;
 begin
   // Obtener el correo seleccionado
   CorreoSeleccionado := ObtenerCorreoSeleccionado;
@@ -141,30 +171,34 @@ begin
   if BandejaDestino = nil then
     BandejaDestino := CrearBandejaUsuario(CorreoSeleccionado^.Destinatario);
 
-  // Crear una copia del correo para enviar
-  New(CorreoProgramado);
-  try
-    CorreoProgramado^.Id := CorreoSeleccionado^.Id;
-    CorreoProgramado^.Remitente := CorreoSeleccionado^.Remitente;
-    CorreoProgramado^.Destinatario := CorreoSeleccionado^.Destinatario;
-    CorreoProgramado^.Asunto := CorreoSeleccionado^.Asunto;
-    CorreoProgramado^.Mensaje := CorreoSeleccionado^.Mensaje;
-    CorreoProgramado^.Fecha := FormatDateTime('yyyy-mm-dd hh:nn:ss', Now); // Fecha actual
-    CorreoProgramado^.Estado := 'N'; // 'N' para No leído
-    CorreoProgramado^.Programado := False;
-    CorreoProgramado^.Anterior := nil;
-    CorreoProgramado^.Siguiente := nil;
+  // Generar nuevo ID y fecha actual
+  NuevoId := GenerarNuevoId;
+  FechaActual := FormatDateTime('yyyy-mm-dd hh:nn:ss', Now);
 
-    // Insertar en la bandeja de entrada del destinatario
+  // Crear una copia del correo para enviar (no usar el mismo objeto)
+  New(CorreoEnviado);
+  try
+    CorreoEnviado^.Id := NuevoId;
+    CorreoEnviado^.Remitente := CorreoSeleccionado^.Remitente;
+    CorreoEnviado^.Destinatario := CorreoSeleccionado^.Destinatario;
+    CorreoEnviado^.Asunto := CorreoSeleccionado^.Asunto;
+    CorreoEnviado^.Mensaje := CorreoSeleccionado^.Mensaje;
+    CorreoEnviado^.Fecha := FechaActual;
+    CorreoEnviado^.Estado := 'N'; // No leído
+    CorreoEnviado^.Programado := False;
+    CorreoEnviado^.Anterior := nil;
+    CorreoEnviado^.Siguiente := nil;
+
+    // Insertar correo en la bandeja del destinatario
     InsertarCorreo(BandejaDestino^.BandejaEntrada,
-      CorreoProgramado^.Id,
-      CorreoProgramado^.Remitente,
-      CorreoProgramado^.Destinatario,
-      CorreoProgramado^.Estado,
-      CorreoProgramado^.Programado,
-      CorreoProgramado^.Asunto,
-      CorreoProgramado^.Fecha,
-      CorreoProgramado^.Mensaje);
+      CorreoEnviado^.Id,
+      CorreoEnviado^.Remitente,
+      CorreoEnviado^.Destinatario,
+      CorreoEnviado^.Estado,
+      CorreoEnviado^.Programado,
+      CorreoEnviado^.Asunto,
+      CorreoEnviado^.Fecha,
+      CorreoEnviado^.Mensaje);
 
     ShowMessage('Correo enviado exitosamente a: ' + CorreoSeleccionado^.Destinatario);
 
@@ -175,12 +209,14 @@ begin
     on E: Exception do
     begin
       ShowMessage('Error al enviar correo: ' + E.Message);
-      Dispose(CorreoProgramado);
+      Dispose(CorreoEnviado);
     end;
   end;
 end;
 
 procedure TForm12.btnEnviarCorreosProgramadosClick(Sender: TObject);
+var
+  CorreoSeleccionado: PCorreo;
 begin
   if ColaVacia(ColaCorreosProgramados) then
   begin
@@ -188,16 +224,24 @@ begin
     Exit;
   end;
 
+  CorreoSeleccionado := ObtenerCorreoSeleccionado;
+  if CorreoSeleccionado = nil then
+  begin
+    ShowMessage('Seleccione un correo de la lista para enviar');
+    Exit;
+  end;
+
   if MessageDlg('Confirmar Envío',
                 '¿Está seguro de que desea enviar el correo seleccionado?' + sLineBreak +
-                'Asunto: ' + ObtenerCorreoSeleccionado^.Asunto,
+                'Asunto: ' + CorreoSeleccionado^.Asunto + sLineBreak +
+                'Destinatario: ' + CorreoSeleccionado^.Destinatario,
                 mtConfirmation, [mbYes, mbNo], 0) = mrYes then
   begin
-    EnviarCorreosProgramados;
+    EnviarCorreoSeleccionado;
   end;
 end;
 
-procedure TForm12.tablaCorreosProgramadosClick(Sender: TObject);
+procedure TForm12.ListView1Click(Sender: TObject);
 begin
   // Evento vacío pero necesario
 end;

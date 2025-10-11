@@ -77,8 +77,8 @@ initialization
 begin
   UsuarioActual := nil;
   EsUsuarioRoot := False;
-  InicializarCola(ColaCorreosProgramados);
-  InicializarPila(PilaPapeleraGlobal);  // Esta línea debe estar
+  InicializarCola(ColaCorreosProgramados);  // ESTA LÍNEA ES CRÍTICA
+  InicializarPila(PilaPapeleraGlobal);
   InicializarMatriz(MatrizRelaciones);
   InicializarBandejasGlobales;
 end;
