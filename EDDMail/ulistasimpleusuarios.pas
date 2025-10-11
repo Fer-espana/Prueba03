@@ -15,6 +15,7 @@ type
     Usuario: string;
     Email: string;
     Telefono: string;
+    Password: string; // NUEVO CAMPO
     Siguiente: PUsuario;
   end;
 
@@ -28,12 +29,12 @@ var
 
 // Procedimientos básicos
 procedure InicializarListaUsuarios(var Lista: TListaUsuarios);
+// CORREGIR: Agregar el parámetro Password en la declaración
 procedure InsertarUsuario(var Lista: TListaUsuarios; Id: Integer;
-  Nombre, Usuario, Email, Telefono: string);
+  Nombre, Usuario, Email, Telefono, Password: string);
 function BuscarUsuarioPorEmail(Lista: TListaUsuarios; Email: string): PUsuario;
 procedure MostrarUsuarios(Lista: TListaUsuarios);
 procedure LiberarListaUsuarios(var Lista: TListaUsuarios);
-// ELIMINAR: procedure CargarUsuariosDesdeJSON(var Lista: TListaUsuarios; NombreArchivo: string);
 
 implementation
 
@@ -63,8 +64,9 @@ begin
   Result := -1; // No encontrado
 end;
 
+// ESTA IMPLEMENTACIÓN YA ESTÁ CORRECTA CON 7 PARÁMETROS
 procedure InsertarUsuario(var Lista: TListaUsuarios; Id: Integer;
-  Nombre, Usuario, Email, Telefono: string);
+  Nombre, Usuario, Email, Telefono, Password: string);
 var
   Nuevo, Actual: PUsuario;
 begin
@@ -74,6 +76,7 @@ begin
   Nuevo^.Usuario := Usuario;
   Nuevo^.Email := Email;
   Nuevo^.Telefono := Telefono;
+  Nuevo^.Password := Password; // GUARDAR CONTRASEÑA
   Nuevo^.Siguiente := nil;
 
   if Lista.Cabeza = nil then

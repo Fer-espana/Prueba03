@@ -25,6 +25,9 @@ type
 var
   UsuarioActual: PUsuario;
   EsUsuarioRoot: Boolean;
+  UltimoIdCorreo: Integer;
+  UltimoIdUsuario: Integer;
+  UltimoIdContacto: Integer;
 
   // Estructuras globales
   ColaCorreosProgramados: TCola;
@@ -38,6 +41,25 @@ function CrearBandejaUsuario(Email: string): PBandejaUsuario;
 procedure InicializarBandejasGlobales;
 
 implementation
+
+function GenerarIdCorreo: Integer;
+begin
+  Inc(UltimoIdCorreo);
+  Result := UltimoIdCorreo;
+end;
+
+function GenerarIdUsuario: Integer;
+begin
+  Inc(UltimoIdUsuario);
+  Result := UltimoIdUsuario;
+end;
+
+function GenerarIdContacto: Integer;
+begin
+  Inc(UltimoIdContacto);
+  Result := UltimoIdContacto;
+end;
+
 
 function ObtenerBandejaUsuario(Email: string): PBandejaUsuario;
 var
@@ -75,9 +97,12 @@ end;
 // En UGLOBAL.pas - verificar que tenga esto en initialization
 initialization
 begin
+  UltimoIdCorreo := 0;
+  UltimoIdUsuario := 0;
+  UltimoIdContacto := 0;
   UsuarioActual := nil;
   EsUsuarioRoot := False;
-  InicializarCola(ColaCorreosProgramados);  // ESTA LÍNEA DEBE ESTAR
+  InicializarCola(ColaCorreosProgramados);  // ESTA LÍNEA ES CRÍTICA
   InicializarPila(PilaPapeleraGlobal);
   InicializarMatriz(MatrizRelaciones);
   InicializarBandejasGlobales;

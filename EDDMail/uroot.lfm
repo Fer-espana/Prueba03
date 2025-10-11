@@ -1,11 +1,11 @@
 object Form2: TForm2
   Left = 726
-  Height = 240
+  Height = 270
   Top = 318
-  Width = 320
+  Width = 326
   Caption = 'ROOT'
-  ClientHeight = 240
-  ClientWidth = 320
+  ClientHeight = 270
+  ClientWidth = 326
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   LCLVersion = '2.2.6.0'
@@ -35,5 +35,14 @@ object Form2: TForm2
     Caption = 'Reporte de Relaciones'
     OnClick = btnReporteRelacionesClick
     TabOrder = 2
+  end
+  object btnGestionComunidades: TButton
+    Left = 88
+    Height = 29
+    Top = 195
+    Width = 155
+    Caption = 'Gestion Comunidades'
+    OnClick = btnGestionComunidadesClick
+    TabOrder = 3
   end
 end

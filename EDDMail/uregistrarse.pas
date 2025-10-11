@@ -230,11 +230,8 @@ var
   NuevoId: Integer;
   UsuarioExistente: PUsuario;
 begin
-  // Validar campos
-  if not ValidarCampos then
-    Exit;
+  if not ValidarCampos then Exit;
 
-  // Verificar si el email ya existe
   UsuarioExistente := BuscarUsuarioPorEmail(ListaUsuariosGlobal, Trim(editEmail.Text));
   if UsuarioExistente <> nil then
   begin
@@ -243,17 +240,16 @@ begin
     Exit;
   end;
 
-  // Generar nuevo ID
   NuevoId := GenerarNuevoId;
 
-  // Insertar nuevo usuario en la lista global
+  // INSERTAR CON CONTRASEÑA
   InsertarUsuario(ListaUsuariosGlobal, NuevoId,
     Trim(editNombre.Text),
     Trim(editUsuario.Text),
     Trim(editEmail.Text),
-    Trim(editTelefono.Text));
+    Trim(editTelefono.Text),
+    Trim(editPassword.Text)); // PASSWORD AQUÍ
 
-  // Guardar en archivo JSON
   GuardarListaUsuariosEnJSON;
 
   ShowMessage('¡Usuario registrado exitosamente!' + sLineBreak +

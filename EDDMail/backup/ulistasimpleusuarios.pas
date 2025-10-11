@@ -15,6 +15,7 @@ type
     Usuario: string;
     Email: string;
     Telefono: string;
+    Password: string; // NUEVO CAMPO
     Siguiente: PUsuario;
   end;
 
@@ -43,7 +44,7 @@ begin
   Lista.Count := 0;
 end;
 
-// En UListaSimpleUsuarios.pas - AGREGAR ESTA FUNCIÓN
+// En UListaSimpleUsuarios.pas - AGREGAR EN LA SECCIÓN implementation
 function BuscarIndiceUsuario(Email: string): Integer;
 var
   Actual: PUsuario;
@@ -64,7 +65,7 @@ begin
 end;
 
 procedure InsertarUsuario(var Lista: TListaUsuarios; Id: Integer;
-  Nombre, Usuario, Email, Telefono: string);
+  Nombre, Usuario, Email, Telefono, Password: string);
 var
   Nuevo, Actual: PUsuario;
 begin
@@ -74,6 +75,7 @@ begin
   Nuevo^.Usuario := Usuario;
   Nuevo^.Email := Email;
   Nuevo^.Telefono := Telefono;
+  Nuevo^.Password := Password; // GUARDAR CONTRASEÑA
   Nuevo^.Siguiente := nil;
 
   if Lista.Cabeza = nil then

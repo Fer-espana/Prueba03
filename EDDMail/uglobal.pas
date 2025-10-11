@@ -32,10 +32,16 @@ var
   MatrizRelaciones: TMatrizDispersa;
   ListaBandejas: PBandejaUsuario;  // Lista de todas las bandejas
 
+  // Variables para generación de IDs
+  UltimoIdCorreo: Integer;
+
 // Funciones para manejar bandejas
 function ObtenerBandejaUsuario(Email: string): PBandejaUsuario;
 function CrearBandejaUsuario(Email: string): PBandejaUsuario;
 procedure InicializarBandejasGlobales;
+
+// Función para generar IDs de correos
+function GenerarIdCorreo: Integer;
 
 implementation
 
@@ -72,6 +78,12 @@ begin
   ListaBandejas := nil;
 end;
 
+function GenerarIdCorreo: Integer;
+begin
+  Inc(UltimoIdCorreo);
+  Result := UltimoIdCorreo;
+end;
+
 // En UGLOBAL.pas - verificar que tenga esto en initialization
 initialization
 begin
@@ -81,6 +93,7 @@ begin
   InicializarPila(PilaPapeleraGlobal);
   InicializarMatriz(MatrizRelaciones);
   InicializarBandejasGlobales;
+  UltimoIdCorreo := 0;  // INICIALIZAR EL CONTADOR
 end;
 
 end.

@@ -5,7 +5,7 @@ unit UListadeListasComunidades;
 interface
 
 uses
-  Classes, SysUtils, UUsuarios;
+  Classes, SysUtils, UListaSimpleUsuarios;
 
 type
   PComunidad = ^TComunidad;

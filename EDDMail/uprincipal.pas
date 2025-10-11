@@ -52,11 +52,11 @@ begin
   CargarUsuariosDesdeJSON;
 
   // Insertar usuario root si no existe
-  if BuscarUsuarioPorEmail(ListaUsuariosGlobal, ROOT_EMAIL) = nil then
-  begin
-    InsertarUsuario(ListaUsuariosGlobal, 1, 'Administrador Root', 'root',
-      ROOT_EMAIL, '0000-0000');
-    StatusBar1.SimpleText := 'Sistema inicializado. Usuario root creado.';
+   if BuscarUsuarioPorEmail(ListaUsuariosGlobal, ROOT_EMAIL) = nil then
+   begin
+     InsertarUsuario(ListaUsuariosGlobal, 1, 'Administrador Root', 'root',
+       ROOT_EMAIL, '0000-0000', ROOT_PASSWORD); // AGREGAR ROOT_PASSWORD
+     StatusBar1.SimpleText := 'Sistema inicializado. Usuario root creado.';
 
     // Guardar el usuario root en el JSON
     GuardarUsuariosEnJSON;
@@ -98,12 +98,14 @@ begin
       if not EsPrimerUsuario then
         WriteLn(Archivo, ',');
 
+      // En la sección donde escribes el JSON, agregar la contraseña:
       WriteLn(Archivo, '    {');
       WriteLn(Archivo, '      "id": ', Actual^.Id, ',');
       WriteLn(Archivo, '      "nombre": "', Actual^.Nombre, '",');
       WriteLn(Archivo, '      "usuario": "', Actual^.Usuario, '",');
       WriteLn(Archivo, '      "email": "', Actual^.Email, '",');
-      WriteLn(Archivo, '      "telefono": "', Actual^.Telefono, '"');
+      WriteLn(Archivo, '      "telefono": "', Actual^.Telefono, '",'); // Agregar coma
+      WriteLn(Archivo, '      "password": "', Actual^.Password, '"'); // NUEVA LÍNEA
       Write(Archivo, '    }');
 
       EsPrimerUsuario := False;
@@ -124,8 +126,7 @@ procedure TForm1.CargarUsuariosDesdeJSON;
 var
   Archivo: TextFile;
   Linea, JSONContent: string;
-  Parser: TJSONParser;
-  JSONData: TJSONData;
+  JSONData: TJSONData; // CAMBIAR: eliminar Parser
   UsuariosArray: TJSONArray;
   i: Integer;
   UsuarioObj: TJSONObject;
@@ -152,10 +153,9 @@ begin
     end;
     CloseFile(Archivo);
 
-    // Parsear JSON
-    Parser := TJSONParser.Create(JSONContent);
+    // Parsear JSON - USAR GetJSON
+    JSONData := GetJSON(JSONContent);
     try
-      JSONData := Parser.Parse;
       if (JSONData <> nil) and (JSONData.FindPath('usuarios') <> nil) then
       begin
         UsuariosArray := TJSONArray(JSONData.FindPath('usuarios'));
@@ -171,12 +171,13 @@ begin
               UsuarioObj.Get('nombre', ''),
               UsuarioObj.Get('usuario', ''),
               UsuarioObj.Get('email', ''),
-              UsuarioObj.Get('telefono', ''));
+              UsuarioObj.Get('telefono', ''),
+              UsuarioObj.Get('password', '')); // AGREGAR ESTE PARÁMETRO
           end;
         end;
       end;
     finally
-      Parser.Free;
+      JSONData.Free; // LIBERAR JSONData
     end;
   except
     on E: Exception do
@@ -206,13 +207,20 @@ begin
     Exit;
   end;
 
-  // Buscar usuario normal en la lista GLOBAL
-  Usuario := BuscarUsuarioPorEmail(ListaUsuariosGlobal, edtEmail.Text);
-  if Usuario = nil then
-  begin
-    ShowMessage('Error: Usuario no encontrado');
-    Exit;
-  end;
+  // Buscar usuario normal
+   Usuario := BuscarUsuarioPorEmail(ListaUsuariosGlobal, edtEmail.Text);
+   if Usuario = nil then
+   begin
+     ShowMessage('Error: Usuario no encontrado');
+     Exit;
+   end;
+
+   // VERIFICAR CONTRASEÑA
+   if Usuario^.Password <> edtPassword.Text then
+   begin
+     ShowMessage('Error: Contraseña incorrecta');
+     Exit;
+   end;
 
   // Configurar usuario actual
   EsUsuarioRoot := False;

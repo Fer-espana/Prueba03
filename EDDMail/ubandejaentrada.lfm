@@ -26,18 +26,6 @@ object Form9: TForm9
     TabOrder = 1
     OnClick = tablaInformacionClick
     OnDblClick = tablaInformacionDblClick
-    Cells = (
-      3
-      0
-      0
-      'Estado'
-      1
-      0
-      'Asunto'
-      2
-      0
-      'Remitente'
-    )
   end
   object editNumeroNoLeidos: TEdit
     Left = 328

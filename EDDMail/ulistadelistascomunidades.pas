@@ -192,6 +192,49 @@ begin
   ListaComunidades := nil;
 end;
 
+procedure GenerarReporteGraphvizComunidades(NombreArchivo: string);
+var
+  Archivo: TextFile;
+  Comunidad: PComunidad;
+  Usuario: PUsuario;
+begin
+  AssignFile(Archivo, NombreArchivo);
+  try
+    Rewrite(Archivo);
+
+    // Encabezado DOT
+    WriteLn(Archivo, 'digraph Comunidades {');
+    WriteLn(Archivo, '  rankdir=TB;');
+    WriteLn(Archivo, '  node [shape=box, style=filled, fillcolor=lightblue];');
+    WriteLn(Archivo, '  edge [color=darkgreen];');
+    WriteLn(Archivo, '');
+
+    // Nodos de comunidades
+    Comunidad := ListaComunidades;
+    while Comunidad <> nil do
+    begin
+      WriteLn(Archivo, '  "', Comunidad^.Nombre, '" [shape=ellipse, fillcolor=orange];');
+
+      // Nodos de usuarios y conexiones
+      Usuario := Comunidad^.Usuarios;
+      while Usuario <> nil do
+      begin
+        WriteLn(Archivo, '  "', Usuario^.Email, '" [label="', Usuario^.Nombre, '\n', Usuario^.Email, '"];');
+        WriteLn(Archivo, '  "', Comunidad^.Nombre, '" -> "', Usuario^.Email, '";');
+        Usuario := Usuario^.Siguiente;
+      end;
+
+      Comunidad := Comunidad^.Siguiente;
+      WriteLn(Archivo, '');
+    end;
+
+    WriteLn(Archivo, '}');
+
+  finally
+    CloseFile(Archivo);
+  end;
+end;
+
 // Función adicional: Remover usuario de comunidad
 function RemoverUsuarioDeComunidad(NombreComunidad: string; Correo: string): Boolean;
 var

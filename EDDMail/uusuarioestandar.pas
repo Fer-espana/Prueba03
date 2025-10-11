@@ -65,53 +65,75 @@ begin
 end;
 
 procedure TForm3.btnBandejaEntradaClick(Sender: TObject);
+var
+  FormBandeja: TForm9;
 begin
-  Form9 := TForm9.Create(Application);
-  Form9.SetBandejaActual(UsuarioActual^.Email);
-  Form9.Show;
+  FormBandeja := TForm9.Create(Application);
+  FormBandeja.SetBandejaActual(UsuarioActual^.Email);
+  FormBandeja.Show;
 end;
 
 procedure TForm3.bntEnviarCorreoClick(Sender: TObject);
+var
+  FormEnviar: TForm4;
 begin
-  Form4 := TForm4.Create(Application);
-  Form4.SetBandejaActual(UsuarioActual^.Email);
-  Form4.Show;
+  FormEnviar := TForm4.Create(Application);
+  FormEnviar.SetBandejaActual(UsuarioActual^.Email);
+  FormEnviar.Show;
 end;
 
 procedure TForm3.btnPapeleraClick(Sender: TObject);
+var
+  FormPapelera: TForm11;
 begin
-  Form11 := TForm11.Create(Application);
-  Form11.Show;
+  FormPapelera := TForm11.Create(Application);
+  // FormPapelera NO tiene SetBandejaActual - ELIMINAR ESTA LÍNEA
+  FormPapelera.Show;
 end;
 
 procedure TForm3.btnProgramarCorreoClick(Sender: TObject);
+var
+  FormProgramarCorreo: TForm5;
 begin
-  Form5 := TForm5.Create(Application);
-  Form5.Show;
+  FormProgramarCorreo := TForm5.Create(Application);
+  // FormProgramarCorreo NO tiene SetBandejaActual - ELIMINAR ESTA LÍNEA
+  FormProgramarCorreo.Show;
 end;
 
 procedure TForm3.btnCorreosProgramadosClick(Sender: TObject);
+var
+  FormCorreosProgramados: TForm12;
 begin
-  Form12 := TForm12.Create(Application);
-  Form12.Show;
+  FormCorreosProgramados := TForm12.Create(Application);
+  // FormCorreosProgramados NO tiene SetBandejaActual - ELIMINAR ESTA LÍNEA
+  FormCorreosProgramados.Show;
 end;
 
 procedure TForm3.btnAgregarContactoClick(Sender: TObject);
+var
+  FormAgregarContacto: TForm6;
 begin
-  Form6 := TForm6.Create(Application);
-  Form6.Show;
+  FormAgregarContacto := TForm6.Create(Application);
+  // FormAgregarContacto NO tiene SetBandejaActual - ELIMINAR ESTA LÍNEA
+  FormAgregarContacto.Show;
 end;
 
 procedure TForm3.btnContactosClick(Sender: TObject);
+var
+  FormContactos: TForm13;
 begin
-  Form13 := TForm13.Create(Application);
-  Form13.Show;
+  FormContactos := TForm13.Create(Application);
+  // FormContactos NO tiene SetBandejaActual - ELIMINAR ESTA LÍNEA
+  FormContactos.Show;
 end;
 
 procedure TForm3.btnActualizarPerfilClick(Sender: TObject);
+var
+   FormActualizarPerfil: TForm7;
 begin
-  Form7 := TForm7.Create(Application);
-  Form7.Show;
+  FormActualizarPerfil := TForm7.Create(Application);
+  // FormActualizarPerfil NO tiene SetBandejaActual - ELIMINAR ESTA LÍNEA
+  FormActualizarPerfil.Show;
 end;
 
 procedure TForm3.btnGenerarReportesClick(Sender: TObject);

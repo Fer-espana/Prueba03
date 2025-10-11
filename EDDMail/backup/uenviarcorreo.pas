@@ -58,12 +58,8 @@ begin
 end;
 
 function TForm4.GenerarIdCorreo: Integer;
-var
-  CorreoId: Integer;
 begin
-  Randomize;
-  CorreoId := Random(100000) + 1;
-  Result := CorreoId;
+  Result := UGLOBAL.GenerarIdCorreo; // Usar función centralizada
 end;
 
 function TForm4.BuscarIndiceUsuario(Email: string): Integer;

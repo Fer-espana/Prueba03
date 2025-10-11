@@ -39,8 +39,26 @@ end;
 
 procedure InsertarValor(var Matriz: TMatrizDispersa; Fila, Columna, Valor: Integer);
 var
-  NuevaCelda, Actual, Anterior: PCelda;
+  NuevaCelda, ActualFila, ActualColumna, AnteriorFila, AnteriorColumna: PCelda;
+  Encontrado: Boolean;
 begin
+  // Buscar si ya existe la celda
+  ActualFila := Matriz.CabezaFila;
+  Encontrado := False;
+
+  while (ActualFila <> nil) and not Encontrado do
+  begin
+    if (ActualFila^.Fila = Fila) and (ActualFila^.Columna = Columna) then
+    begin
+      // Actualizar valor existente
+      ActualFila^.Valor := Valor;
+      Encontrado := True;
+    end;
+    ActualFila := ActualFila^.SiguienteFila;
+  end;
+
+  if Encontrado then Exit;
+
   // Crear nueva celda
   New(NuevaCelda);
   NuevaCelda^.Fila := Fila;
@@ -49,48 +67,37 @@ begin
   NuevaCelda^.SiguienteFila := nil;
   NuevaCelda^.SiguienteColumna := nil;
 
-  // Actualizar dimensiones
-  if Fila > Matriz.Filas then Matriz.Filas := Fila;
-  if Columna > Matriz.Columnas then Matriz.Columnas := Columna;
-
   // Insertar en lista de filas
-  if (Matriz.CabezaFila = nil) or (Matriz.CabezaFila^.Fila > Fila) then
+  if (Matriz.CabezaFila = nil) or
+     (Matriz.CabezaFila^.Fila > Fila) or
+     ((Matriz.CabezaFila^.Fila = Fila) and (Matriz.CabezaFila^.Columna > Columna)) then
   begin
     NuevaCelda^.SiguienteFila := Matriz.CabezaFila;
     Matriz.CabezaFila := NuevaCelda;
   end
   else
   begin
-    Actual := Matriz.CabezaFila;
-    Anterior := nil;
-    while (Actual <> nil) and (Actual^.Fila < Fila) do
+    ActualFila := Matriz.CabezaFila;
+    AnteriorFila := nil;
+
+    while (ActualFila <> nil) and
+          ((ActualFila^.Fila < Fila) or
+           ((ActualFila^.Fila = Fila) and (ActualFila^.Columna < Columna))) do
     begin
-      Anterior := Actual;
-      Actual := Actual^.SiguienteFila;
+      AnteriorFila := ActualFila;
+      ActualFila := ActualFila^.SiguienteFila;
     end;
 
-    if (Actual <> nil) and (Actual^.Fila = Fila) then
-    begin
-      // Buscar en la misma fila por columna
-      while (Actual <> nil) and (Actual^.Fila = Fila) and (Actual^.Columna < Columna) do
-      begin
-        Anterior := Actual;
-        Actual := Actual^.SiguienteFila;
-      end;
-
-      if (Actual <> nil) and (Actual^.Fila = Fila) and (Actual^.Columna = Columna) then
-      begin
-        // Actualizar valor existente
-        Actual^.Valor := Valor;
-        Dispose(NuevaCelda);
-        Exit;
-      end;
-    end;
-
-    NuevaCelda^.SiguienteFila := Actual;
-    if Anterior <> nil then
-      Anterior^.SiguienteFila := NuevaCelda;
+    NuevaCelda^.SiguienteFila := ActualFila;
+    if AnteriorFila <> nil then
+      AnteriorFila^.SiguienteFila := NuevaCelda;
   end;
+
+    if Fila > Matriz.Filas then Matriz.Filas := Fila;
+  if Columna > Matriz.Columnas then Matriz.Columnas := Columna;
+
+  Inc(Matriz.Filas);
+  Inc(Matriz.Columnas);
 
   // Insertar en lista de columnas (similar lógica)
   // Por simplicidad, aquí solo implementamos una dirección

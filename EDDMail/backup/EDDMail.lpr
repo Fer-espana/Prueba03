@@ -16,7 +16,7 @@ uses
   UBandejaEntrada, UVistadeCorreo, UPapelera, UCorreosProgramados,
   UVentanaContactos, UListaSimpleUsuarios, UListaDobleEnlazadaCorreos,
   UListaCircularContactos, UColaCorreosProgramados, UPilaPapelera,
-  UMatrizDispersaRelaciones, UListadeListasComunidades, UGLOBAL, unit1;
+  UMatrizDispersaRelaciones, UListadeListasComunidades, UGLOBAL, UNAVEGACION;
 
 {$R *.res}
 

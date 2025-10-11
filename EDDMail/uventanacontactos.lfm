@@ -7,31 +7,9 @@ object Form13: TForm13
   ClientHeight = 352
   ClientWidth = 446
   OnCreate = FormCreate
+  OnShow = FormShow
   OnDestroy = FormDestroy
   LCLVersion = '2.2.6.0'
-  object tablaContacto: TStringGrid
-    Left = 48
-    Height = 216
-    Top = 80
-    Width = 344
-    TabOrder = 0
-    OnClick = tablaContactoClick
-    Cells = (
-      4
-      0
-      0
-      'Nombre'
-      0
-      1
-      'Usuario'
-      0
-      2
-      'Correo'
-      0
-      3
-      'Telefono'
-    )
-  end
   object btnContactoAnterior: TButton
     Left = 48
     Height = 25
@@ -39,7 +17,7 @@ object Form13: TForm13
     Width = 88
     Caption = 'Anterior'
     OnClick = btnContactoAnteriorClick
-    TabOrder = 1
+    TabOrder = 0
   end
   object btnContactoSiguiente: TButton
     Left = 304
@@ -48,6 +26,16 @@ object Form13: TForm13
     Width = 88
     Caption = 'Siguiente'
     OnClick = btnContactoSiguienteClick
+    TabOrder = 1
+  end
+  object tablaContacto: TStringGrid
+    Left = 48
+    Height = 216
+    Top = 80
+    Width = 344
+    ColCount = 4
+    FixedCols = 0
+    RowCount = 2
     TabOrder = 2
   end
 end

@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, UGLOBAL,
-  UListaSimpleUsuarios, fpjson, jsonparser, UMatrizDispersaRelaciones;
+  UListaSimpleUsuarios, fpjson, jsonparser, UMatrizDispersaRelaciones,
+  UGestionComunidades; // AGREGAR ESTA UNIDAD
 
 type
 
@@ -14,11 +15,13 @@ type
 
   TForm2 = class(TForm)
     btnCargaMasiva: TButton;
+    btnGestionComunidades: TButton;
     btnReporteUsuarios: TButton;
     btnReporteRelaciones: TButton;
     procedure btnCargaMasivaClick(Sender: TObject);
     procedure btnReporteUsuariosClick(Sender: TObject);
     procedure btnReporteRelacionesClick(Sender: TObject);
+    procedure btnGestionComunidadesClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -52,12 +55,12 @@ begin
     Application.MainForm.Show;
 end;
 
+// EN UROOT.pas - MODIFICAR CargarUsuariosDesdeJSON
 procedure TForm2.CargarUsuariosDesdeJSON;
 var
   Archivo: TextFile;
   Linea, JSONContent: string;
-  Parser: TJSONParser;
-  JSONData: TJSONData;
+  JSONData: TJSONData; // CAMBIAR: eliminar Parser
   UsuariosArray: TJSONArray;
   i: Integer;
   UsuarioObj: TJSONObject;
@@ -80,10 +83,9 @@ begin
     end;
     CloseFile(Archivo);
 
-    // Parsear JSON
-    Parser := TJSONParser.Create(JSONContent);
+    // Parsear JSON - USAR GetJSON EN LUGAR DE TJSONParser
+    JSONData := GetJSON(JSONContent);
     try
-      JSONData := Parser.Parse;
       if JSONData.FindPath('usuarios') <> nil then
       begin
         UsuariosArray := TJSONArray(JSONData.FindPath('usuarios'));
@@ -97,12 +99,13 @@ begin
             UsuarioObj.Get('nombre', ''),
             UsuarioObj.Get('usuario', ''),
             UsuarioObj.Get('email', ''),
-            UsuarioObj.Get('telefono', ''));
+            UsuarioObj.Get('telefono', ''),
+            UsuarioObj.Get('password', '')); // Contraseña vacía por defecto
         end;
         ShowMessage('Usuarios cargados exitosamente desde Data/usuarios.json');
       end;
     finally
-      Parser.Free;
+      JSONData.Free; // LIBERAR JSONData en lugar de Parser
     end;
   except
     on E: Exception do
@@ -147,7 +150,8 @@ begin
       WriteLn(Archivo, '      "nombre": "', Actual^.Nombre, '",');
       WriteLn(Archivo, '      "usuario": "', Actual^.Usuario, '",');
       WriteLn(Archivo, '      "email": "', Actual^.Email, '",');
-      WriteLn(Archivo, '      "telefono": "', Actual^.Telefono, '"');
+      WriteLn(Archivo, '      "telefono": "', Actual^.Telefono, '",'); // Agregar coma
+      WriteLn(Archivo, '      "password": "', Actual^.Password, '"');  // NUEVA LÍNEA
       Write(Archivo, '    }');
 
       EsPrimerUsuario := False;
@@ -194,6 +198,14 @@ begin
   // Generar reporte de relaciones
   GenerarReporteRelaciones(MatrizRelaciones, RutaArchivo);
   ShowMessage('Reporte de relaciones generado en: ' + RutaArchivo);
+end;
+
+procedure TForm2.btnGestionComunidadesClick(Sender: TObject);
+var
+  FormGestion: TForm14;
+begin
+  FormGestion := TForm14.Create(Application);
+  FormGestion.Show;
 end;
 
 procedure TForm2.FormDestroy(Sender: TObject);
