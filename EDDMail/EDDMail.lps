@@ -218,10 +218,11 @@
         <UnitName Value="UPapelera"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="16"/>
-        <TopLine Value="213"/>
+        <TopLine Value="210"/>
         <CursorPos X="90" Y="222"/>
         <UsageCount Value="55"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="ucorreosprogramados.pas"/>
@@ -269,9 +270,7 @@
       <Unit>
         <Filename Value="ugestioncomunidades.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="Form14"/>
         <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
         <UnitName Value="UGestionComunidades"/>
         <EditorIndex Value="8"/>
         <TopLine Value="56"/>
