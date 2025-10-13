@@ -1,0 +1,18 @@
+digraph CorreosRecibidos {
+  rankdir=TB;
+  node [shape=record, style=filled, fillcolor=lightblue];
+  edge [color=darkblue];
+
+  correo0 [label="
+ID: 2\\n
+Remitente: fes@edd.com\\n
+Asunto: asdlkashdkñh\\n
+Fecha: 2025-10-13 12:20:22\\n
+Estado: LEIDO"];
+
+  // Leyenda
+  subgraph cluster_leyenda {
+    label="Leyenda";
+    leyenda1 [label="Flecha azul: Siguiente\\nFlecha roja: Anterior", shape=note, fillcolor=lightyellow];
+  }
+}

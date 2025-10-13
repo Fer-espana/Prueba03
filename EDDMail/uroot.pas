@@ -177,27 +177,47 @@ begin
               'Total: ' + IntToStr(ListaUsuariosGlobal.Count) + ' usuarios');
 end;
 
+// =======================================================
+// REPORTE DE USUARIOS (LISTA SIMPLE ENLAZADA) - IMPLEMENTACIÓN DOT
+// =======================================================
 procedure TForm2.btnReporteUsuariosClick(Sender: TObject);
+var
+  RutaCarpeta, RutaArchivo: string;
 begin
-  // Guardar usuarios actuales en JSON
-  GuardarUsuariosEnJSON;
-  ShowMessage('Reporte de usuarios generado en: Data/usuarios.json');
+  RutaCarpeta := ExtractFilePath(Application.ExeName) + 'Root-Reportes';
+  RutaArchivo := RutaCarpeta + PathDelim + 'reporte_usuarios.dot';
+
+  // 1. Crear la carpeta si no existe
+  if not DirectoryExists(RutaCarpeta) then
+    ForceDirectories(RutaCarpeta);
+
+  // 2. Generar el archivo DOT de la Lista de Usuarios (UListaSimpleUsuarios)
+  GenerarReporteDOTUsuarios(ListaUsuariosGlobal, RutaArchivo);
+
+  ShowMessage('Reporte de Usuarios (Lista Simple) generado en: ' + RutaArchivo + sLineBreak +
+              'Para generar la imagen, ejecute: dot -Tpng reporte_usuarios.dot -o reporte_usuarios.png');
 end;
 
+
+// =======================================================
+// REPORTE DE RELACIONES (MATRIZ DISPERSA) - IMPLEMENTACIÓN DOT
+// =======================================================
 procedure TForm2.btnReporteRelacionesClick(Sender: TObject);
 var
   RutaCarpeta, RutaArchivo: string;
 begin
   RutaCarpeta := ExtractFilePath(Application.ExeName) + 'Root-Reportes';
-  RutaArchivo := RutaCarpeta + PathDelim + 'reporte_relaciones.txt';
+  RutaArchivo := RutaCarpeta + PathDelim + 'reporte_relaciones.dot'; // <-- Extensión DOT
 
-  // Crear carpeta si no existe
+  // 1. Crear carpeta si no existe
   if not DirectoryExists(RutaCarpeta) then
     ForceDirectories(RutaCarpeta);
 
-  // Generar reporte de relaciones
+  // 2. Generar reporte de relaciones (Matriz Dispersa a DOT)
   GenerarReporteRelaciones(MatrizRelaciones, RutaArchivo);
-  ShowMessage('Reporte de relaciones generado en: ' + RutaArchivo);
+
+  ShowMessage('Reporte de Relaciones (Matriz Dispersa) generado en: ' + RutaArchivo + sLineBreak +
+              'Para generar la imagen, ejecute: dot -Tpng reporte_relaciones.dot -o reporte_relaciones.png');
 end;
 
 procedure TForm2.btnGestionComunidadesClick(Sender: TObject);

@@ -1,0 +1,47 @@
+digraph Usuarios {
+  rankdir=LR; // De izquierda a derecha
+  node [shape=record, style=filled, fillcolor=lightblue];
+  edge [color=darkblue, arrowhead=vee];
+
+  user_1 [label="{<data> ID: 1 | Nombre: Administrador Root | Email: root@edd.com|<next> Siguiente }"];
+  user_1:next -> user_2:data;
+  user_2 [label="{<data> ID: 2 | Nombre: fes | Email: fes@edd.com|<next> Siguiente }"];
+  user_2:next -> user_3:data;
+  user_3 [label="{<data> ID: 3 | Nombre: fes1 | Email: fes1@edd.com|<next> Siguiente }"];
+  user_3:next -> user_4:data;
+  user_4 [label="{<data> ID: 4 | Nombre: fes2 | Email: fes2@edd.com|<next> Siguiente }"];
+  user_4:next -> user_1:data;
+  user_1 [label="{<data> ID: 1 | Nombre: Administrador Root | Email: root@edd.com|<next> Siguiente }"];
+  user_1:next -> user_2:data;
+  user_2 [label="{<data> ID: 2 | Nombre: fes | Email: fes@edd.com|<next> Siguiente }"];
+  user_2:next -> user_3:data;
+  user_3 [label="{<data> ID: 3 | Nombre: fes1 | Email: fes1@edd.com|<next> Siguiente }"];
+  user_3:next -> user_4:data;
+  user_4 [label="{<data> ID: 4 | Nombre: fes2 | Email: fes2@edd.com|<next> Siguiente }"];
+  user_4:next -> user_1:data;
+  user_1 [label="{<data> ID: 1 | Nombre: Administrador Root | Email: root@edd.com|<next> Siguiente }"];
+  user_1:next -> user_2:data;
+  user_2 [label="{<data> ID: 2 | Nombre: fes | Email: fes@edd.com|<next> Siguiente }"];
+  user_2:next -> user_3:data;
+  user_3 [label="{<data> ID: 3 | Nombre: fes1 | Email: fes1@edd.com|<next> Siguiente }"];
+  user_3:next -> user_4:data;
+  user_4 [label="{<data> ID: 4 | Nombre: fes2 | Email: fes2@edd.com|<next> Siguiente }"];
+  user_4:next -> user_1:data;
+  user_1 [label="{<data> ID: 1 | Nombre: Administrador Root | Email: root@edd.com|<next> Siguiente }"];
+  user_1:next -> user_2:data;
+  user_2 [label="{<data> ID: 2 | Nombre: fes | Email: fes@edd.com|<next> Siguiente }"];
+  user_2:next -> user_3:data;
+  user_3 [label="{<data> ID: 3 | Nombre: fes1 | Email: fes1@edd.com|<next> Siguiente }"];
+  user_3:next -> user_4:data;
+  user_4 [label="{<data> ID: 4 | Nombre: fes2 | Email: fes2@edd.com|<next> Siguiente }"];
+  user_4:next -> user_1:data;
+  user_1 [label="{<data> ID: 1 | Nombre: Administrador Root | Email: root@edd.com|<next> Siguiente }"];
+  user_1:next -> user_2:data;
+  user_2 [label="{<data> ID: 2 | Nombre: fes | Email: fes@edd.com|<next> Siguiente }"];
+  user_2:next -> user_3:data;
+  user_3 [label="{<data> ID: 3 | Nombre: fes1 | Email: fes1@edd.com|<next> Siguiente }"];
+  user_3:next -> user_4:data;
+  user_4 [label="{<data> ID: 4 | Nombre: fes2 | Email: fes2@edd.com|<next> Siguiente }"];
+  cabeza [label="CABEZA", shape=ellipse, fillcolor=orange];
+  cabeza -> user_1:data;
+}

@@ -5,7 +5,7 @@ unit UMatrizDispersaRelaciones;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils, UListaSimpleUsuarios;
 
 type
   PCelda = ^TCelda;
@@ -121,19 +121,47 @@ procedure GenerarReporteRelaciones(Matriz: TMatrizDispersa; NombreArchivo: strin
 var
   Archivo: TextFile;
   Actual: PCelda;
+  InfoRemitente, InfoDestinatario: string;
 begin
   AssignFile(Archivo, NombreArchivo);
   try
     Rewrite(Archivo);
-    WriteLn(Archivo, 'Reporte de Relaciones - Matriz Dispersa');
-    WriteLn(Archivo, '=====================================');
+
+    // Encabezado DOT
+    WriteLn(Archivo, 'digraph RelacionesUsuario {');
+    WriteLn(Archivo, '  rankdir=TB;');
+    WriteLn(Archivo, '  node [shape=box, style=filled, fillcolor=lightcoral];');
+    WriteLn(Archivo, '  edge [color=red, arrowhead=normal];');
+    WriteLn(Archivo, '  label="Relaciones de Interacción Remitente vs. Destinatario";');
+    WriteLn(Archivo, '');
 
     Actual := Matriz.CabezaFila;
+
     while Actual <> nil do
     begin
-      WriteLn(Archivo, 'Fila ', Actual^.Fila, ' | Columna ', Actual^.Columna, ' | Valor: ', Actual^.Valor);
+      // Una relación (Fila, Columna) con un Valor > 0 representa una interacción.
+      if Actual^.Valor > 0 then
+      begin
+        // *** 1. Usar la nueva función de mapeo a la lista global de usuarios ***
+        // ListaUsuariosGlobal debe estar declarada en UGLOBAL.pas
+        InfoRemitente := ObtenerIDyEmailPorID(ListaUsuariosGlobal, Actual^.Fila);
+        InfoDestinatario := ObtenerIDyEmailPorID(ListaUsuariosGlobal, Actual^.Columna);
+
+        // 2. Crear nodos con la información completa
+        // Usamos InfoRemitente/InfoDestinatario como ID de nodo y etiqueta para Graphviz
+        WriteLn(Archivo, '  "', InfoRemitente, '" [label="', InfoRemitente, '"];');
+        WriteLn(Archivo, '  "', InfoDestinatario, '" [label="', InfoDestinatario, '"];');
+
+        // 3. Conexión con la cantidad de correos
+        WriteLn(Archivo, '  "', InfoRemitente, '" -> "', InfoDestinatario, '" [label="',
+          Actual^.Valor, ' correos", color="darkgreen"];');
+      end;
+
       Actual := Actual^.SiguienteFila;
     end;
+
+    // Pie del archivo DOT
+    WriteLn(Archivo, '}');
 
   finally
     CloseFile(Archivo);

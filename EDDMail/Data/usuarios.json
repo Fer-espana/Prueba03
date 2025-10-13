@@ -95,6 +95,38 @@
       "email": "fes2@edd.com",
       "telefono": "46578925",
       "password": "123123"
+    },
+    {
+      "id": 1,
+      "nombre": "Administrador Root",
+      "usuario": "root",
+      "email": "root@edd.com",
+      "telefono": "0000-0000",
+      "password": "root123"
+    },
+    {
+      "id": 2,
+      "nombre": "fes",
+      "usuario": "fes",
+      "email": "fes@edd.com",
+      "telefono": "12345678",
+      "password": "123123"
+    },
+    {
+      "id": 3,
+      "nombre": "fes1",
+      "usuario": "fes1",
+      "email": "fes1@edd.com",
+      "telefono": "78945696",
+      "password": "123123"
+    },
+    {
+      "id": 4,
+      "nombre": "fes2",
+      "usuario": "fes2",
+      "email": "fes2@edd.com",
+      "telefono": "46578925",
+      "password": "123123"
     }
   ]
 }

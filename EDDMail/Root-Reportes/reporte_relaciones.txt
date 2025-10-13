@@ -1,2 +1,7 @@
-Reporte de Relaciones - Matriz Dispersa
-=====================================
+digraph RelacionesUsuario {
+  rankdir=TB;
+  node [shape=box, style=filled, fillcolor=lightcoral];
+  edge [color=red, arrowhead=normal];
+  label="Relaciones de Interacción Remitente vs. Destinatario";
+
+}

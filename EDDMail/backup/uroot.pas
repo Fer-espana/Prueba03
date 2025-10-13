@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, UGLOBAL,
-  UListaSimpleUsuarios, fpjson, jsonparser, UMatrizDispersaRelaciones;
+  UListaSimpleUsuarios, fpjson, jsonparser, UMatrizDispersaRelaciones,
+  UGestionComunidades; // AGREGAR ESTA UNIDAD
 
 type
 

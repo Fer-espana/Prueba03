@@ -8,7 +8,7 @@
         <Filename Value="EDDMail.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="1"/>
-        <UsageCount Value="66"/>
+        <UsageCount Value="71"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -21,7 +21,7 @@
         <EditorIndex Value="15"/>
         <TopLine Value="233"/>
         <CursorPos X="5" Y="255"/>
-        <UsageCount Value="66"/>
+        <UsageCount Value="71"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -29,9 +29,9 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="UListaSimpleUsuarios"/>
         <EditorIndex Value="10"/>
-        <TopLine Value="58"/>
-        <CursorPos X="11" Y="68"/>
-        <UsageCount Value="66"/>
+        <TopLine Value="205"/>
+        <CursorPos X="5" Y="227"/>
+        <UsageCount Value="71"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -42,9 +42,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UROOT"/>
         <EditorIndex Value="16"/>
-        <TopLine Value="196"/>
-        <CursorPos X="5" Y="218"/>
-        <UsageCount Value="66"/>
+        <CursorPos X="39" Y="14"/>
+        <UsageCount Value="71"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -57,7 +56,7 @@
         <EditorIndex Value="4"/>
         <TopLine Value="132"/>
         <CursorPos X="5" Y="149"/>
-        <UsageCount Value="66"/>
+        <UsageCount Value="71"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -65,9 +64,8 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="UListaDobleEnlazadaCorreos"/>
         <EditorIndex Value="9"/>
-        <TopLine Value="166"/>
-        <CursorPos Y="170"/>
-        <UsageCount Value="65"/>
+        <CursorPos X="32"/>
+        <UsageCount Value="70"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -75,9 +73,9 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="UListaCircularContactos"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="170"/>
-        <CursorPos Y="188"/>
-        <UsageCount Value="65"/>
+        <TopLine Value="231"/>
+        <CursorPos X="38" Y="239"/>
+        <UsageCount Value="70"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -87,7 +85,7 @@
         <EditorIndex Value="20"/>
         <TopLine Value="107"/>
         <CursorPos Y="123"/>
-        <UsageCount Value="65"/>
+        <UsageCount Value="70"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -97,17 +95,18 @@
         <EditorIndex Value="14"/>
         <TopLine Value="100"/>
         <CursorPos Y="110"/>
-        <UsageCount Value="65"/>
+        <UsageCount Value="70"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="umatrizdispersarelaciones.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UMatrizDispersaRelaciones"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="11"/>
-        <TopLine Value="85"/>
-        <CursorPos X="23" Y="100"/>
-        <UsageCount Value="65"/>
+        <TopLine Value="13"/>
+        <CursorPos X="54" Y="28"/>
+        <UsageCount Value="70"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -117,7 +116,7 @@
         <EditorIndex Value="8"/>
         <TopLine Value="215"/>
         <CursorPos X="5" Y="236"/>
-        <UsageCount Value="65"/>
+        <UsageCount Value="70"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -130,7 +129,7 @@
         <EditorIndex Value="22"/>
         <TopLine Value="45"/>
         <CursorPos X="5" Y="67"/>
-        <UsageCount Value="65"/>
+        <UsageCount Value="70"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -143,7 +142,7 @@
         <EditorIndex Value="3"/>
         <TopLine Value="260"/>
         <CursorPos X="5" Y="282"/>
-        <UsageCount Value="65"/>
+        <UsageCount Value="70"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -156,7 +155,7 @@
         <EditorIndex Value="18"/>
         <TopLine Value="141"/>
         <CursorPos X="5" Y="163"/>
-        <UsageCount Value="65"/>
+        <UsageCount Value="70"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -168,7 +167,7 @@
         <EditorIndex Value="17"/>
         <TopLine Value="155"/>
         <CursorPos X="5" Y="177"/>
-        <UsageCount Value="65"/>
+        <UsageCount Value="70"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -181,7 +180,7 @@
         <EditorIndex Value="7"/>
         <TopLine Value="244"/>
         <CursorPos X="58" Y="265"/>
-        <UsageCount Value="65"/>
+        <UsageCount Value="70"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -194,7 +193,7 @@
         <EditorIndex Value="19"/>
         <TopLine Value="227"/>
         <CursorPos X="5" Y="249"/>
-        <UsageCount Value="63"/>
+        <UsageCount Value="68"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -206,7 +205,7 @@
         <UnitName Value="UVistadeCorreo"/>
         <EditorIndex Value="6"/>
         <CursorPos X="28" Y="7"/>
-        <UsageCount Value="63"/>
+        <UsageCount Value="68"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -219,7 +218,7 @@
         <EditorIndex Value="13"/>
         <TopLine Value="178"/>
         <CursorPos X="3" Y="185"/>
-        <UsageCount Value="63"/>
+        <UsageCount Value="68"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -232,9 +231,8 @@
         <EditorIndex Value="21"/>
         <TopLine Value="285"/>
         <CursorPos X="46" Y="291"/>
-        <UsageCount Value="62"/>
+        <UsageCount Value="67"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="uventanacontactos.pas"/>
@@ -246,17 +244,16 @@
         <EditorIndex Value="5"/>
         <TopLine Value="40"/>
         <CursorPos X="5" Y="62"/>
-        <UsageCount Value="62"/>
+        <UsageCount Value="67"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="uglobal.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UGLOBAL"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="103"/>
+        <TopLine Value="105"/>
         <CursorPos X="5" Y="127"/>
-        <UsageCount Value="53"/>
+        <UsageCount Value="58"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -265,7 +262,7 @@
         <UnitName Value="UNAVEGACION"/>
         <EditorIndex Value="12"/>
         <CursorPos X="34" Y="4"/>
-        <UsageCount Value="52"/>
+        <UsageCount Value="57"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -276,53 +273,17 @@
         <EditorIndex Value="23"/>
         <TopLine Value="56"/>
         <CursorPos X="86" Y="69"/>
-        <UsageCount Value="34"/>
+        <UsageCount Value="39"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="ugestioncomunidades.lfm"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
         <DefaultSyntaxHighlighter Value="LFM"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="uvistadecorreo.pas"/>
-        <Caret Line="16" Column="79"/>
-      </Position>
-      <Position>
-        <Filename Value="upapelera.pas"/>
-        <Caret Line="10" Column="71"/>
-      </Position>
-      <Position>
-        <Filename Value="uvistadecorreo.pas"/>
-        <Caret Line="116" Column="97" TopLine="106"/>
-      </Position>
-      <Position>
-        <Filename Value="upapelera.pas"/>
-        <Caret Line="228" Column="51"/>
-      </Position>
-      <Position>
-        <Filename Value="ubandejaentrada.pas"/>
-        <Caret Line="164" Column="99" TopLine="152"/>
-      </Position>
-      <Position>
-        <Filename Value="ubandejaentrada.pas"/>
-        <Caret Line="199" Column="7" TopLine="188"/>
-      </Position>
-      <Position>
-        <Filename Value="ubandejaentrada.pas"/>
-        <Caret Line="205" Column="18" TopLine="194"/>
-      </Position>
-      <Position>
-        <Filename Value="ubandejaentrada.pas"/>
-        <Caret Line="212" Column="27" TopLine="201"/>
-      </Position>
-      <Position>
-        <Filename Value="ubandejaentrada.pas"/>
-        <Caret Line="214" Column="27" TopLine="203"/>
-      </Position>
       <Position>
         <Filename Value="ubandejaentrada.pas"/>
         <Caret Line="28" Column="66"/>
@@ -405,6 +366,42 @@
       <Position>
         <Filename Value="uglobal.pas"/>
         <Caret Line="143" Column="27" TopLine="121"/>
+      </Position>
+      <Position>
+        <Filename Value="umatrizdispersarelaciones.pas"/>
+        <Caret Line="170" Column="5" TopLine="149"/>
+      </Position>
+      <Position>
+        <Filename Value="ulistasimpleusuarios.pas"/>
+        <Caret Line="177" Column="42" TopLine="159"/>
+      </Position>
+      <Position>
+        <Filename Value="ulistasimpleusuarios.pas"/>
+        <Caret Line="227" Column="5" TopLine="205"/>
+      </Position>
+      <Position>
+        <Filename Value="umatrizdispersarelaciones.pas"/>
+        <Caret Line="11" Column="59"/>
+      </Position>
+      <Position>
+        <Filename Value="umatrizdispersarelaciones.pas"/>
+        <Caret Line="189" Column="5" TopLine="167"/>
+      </Position>
+      <Position>
+        <Filename Value="uglobal.pas"/>
+        <Caret Line="114" Column="26" TopLine="105"/>
+      </Position>
+      <Position>
+        <Filename Value="uvistadecorreo.pas"/>
+        <Caret Line="7" Column="28"/>
+      </Position>
+      <Position>
+        <Filename Value="umatrizdispersarelaciones.pas"/>
+        <Caret Line="8" Column="20"/>
+      </Position>
+      <Position>
+        <Filename Value="umatrizdispersarelaciones.pas"/>
+        <Caret Line="29" Column="55" TopLine="18"/>
       </Position>
     </JumpHistory>
     <RunParams>

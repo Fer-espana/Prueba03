@@ -1,0 +1,7 @@
+digraph Papelera {
+  rankdir=TB;
+  node [shape=record, style=filled, fillcolor=lightcoral];
+  edge [color=darkred, dir=back];
+
+  cima [label="CIMA DE PILA", shape=ellipse, fillcolor=orange];
+}
