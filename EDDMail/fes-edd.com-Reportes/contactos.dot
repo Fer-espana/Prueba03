@@ -1,0 +1,20 @@
+digraph Contactos {
+  layout=circo; // Diseño circular
+  node [shape=record, style=filled, fillcolor=lightgreen];
+  edge [color=darkgreen];
+
+  contacto0 [label="
+ID: 1\\n
+Nombre: fes1\\n
+Email: fes1@edd.com\\n
+Teléfono: 78945696"];
+  contacto0 -> contacto1;
+  contacto1 [label="
+ID: 2\\n
+Nombre: fes2\\n
+Email: fes2@edd.com\\n
+Teléfono: 46578925"];
+  contacto1 -> contacto0;
+  cabeza [label="CABEZA", shape=ellipse, fillcolor=orange];
+  cabeza -> contacto0;
+}

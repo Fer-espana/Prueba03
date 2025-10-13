@@ -31,6 +31,7 @@ procedure EliminarContacto(var Lista: TListaContactos; Email: string);
 procedure MostrarContactos(Lista: TListaContactos);
 procedure LiberarListaContactos(var Lista: TListaContactos);
 function ObtenerSiguienteContacto(Lista: TListaContactos; Actual: PContacto): PContacto;
+procedure GenerarReporteDOTContactos(Lista: TListaContactos; NombreArchivo: string);
 
 implementation
 
@@ -183,6 +184,70 @@ begin
   end;
   Lista.Cabeza := nil;
   Lista.Count := 0;
+end;
+
+procedure GenerarReporteDOTContactos(Lista: TListaContactos; NombreArchivo: string);
+var
+  Archivo: TextFile;
+  Actual: PContacto;
+  Contador, TotalContactos: Integer;
+begin
+  AssignFile(Archivo, NombreArchivo);
+  try
+    Rewrite(Archivo);
+
+    // Encabezado DOT
+    WriteLn(Archivo, 'digraph Contactos {');
+    WriteLn(Archivo, '  layout=circo; // Diseño circular');
+    WriteLn(Archivo, '  node [shape=record, style=filled, fillcolor=lightgreen];');
+    WriteLn(Archivo, '  edge [color=darkgreen];');
+    WriteLn(Archivo, '');
+
+    if Lista.Cabeza = nil then
+    begin
+      WriteLn(Archivo, '  vacio [label="No hay contactos", shape=plaintext];');
+    end
+    else
+    begin
+      Contador := 0;
+      Actual := Lista.Cabeza;
+      TotalContactos := Lista.Count;
+
+      repeat
+        // Crear nodo para cada contacto
+        WriteLn(Archivo, '  contacto', Contador, ' [label="');
+        WriteLn(Archivo, 'ID: ', Actual^.Id, '\\n');
+        WriteLn(Archivo, 'Nombre: ', Actual^.Nombre, '\\n');
+        WriteLn(Archivo, 'Email: ', Actual^.Email, '\\n');
+        WriteLn(Archivo, 'Teléfono: ', Actual^.Telefono, '"];');
+
+        // Conectar con el siguiente contacto (comportamiento circular)
+        if Contador < TotalContactos - 1 then
+        begin
+          WriteLn(Archivo, '  contacto', Contador, ' -> contacto', Contador + 1, ';');
+        end;
+
+        Inc(Contador);
+        Actual := Actual^.Siguiente;
+
+      until (Actual = Lista.Cabeza) or (Contador >= TotalContactos);
+
+      // Conectar el último con el primero para completar el círculo
+      if TotalContactos > 1 then
+      begin
+        WriteLn(Archivo, '  contacto', TotalContactos - 1, ' -> contacto0;');
+      end;
+
+      // Mostrar el nodo cabeza
+      WriteLn(Archivo, '  cabeza [label="CABEZA", shape=ellipse, fillcolor=orange];');
+      WriteLn(Archivo, '  cabeza -> contacto0;');
+    end;
+
+    WriteLn(Archivo, '}');
+
+  finally
+    CloseFile(Archivo);
+  end;
 end;
 
 end.

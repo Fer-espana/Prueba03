@@ -194,6 +194,24 @@ begin
 
       // Actualizar la tabla después de cerrar la vista (por si se eliminó el correo)
       ActualizarTabla;
+
+      // Notificar a la papelera para que se actualice si está abierta
+      NotificarPapeleraSiEstaAbierta;
+    end;
+  end;
+end;
+
+// Agregar este procedimiento en la sección private de UBandejaEntrada.pas
+procedure TForm9.NotificarPapeleraSiEstaAbierta;
+var
+  i: Integer;
+begin
+  // Buscar si el formulario de papelera está abierto y actualizarlo
+  for i := 0 to Screen.FormCount - 1 do
+  begin
+    if Screen.Forms[i] is TForm11 then
+    begin
+      (Screen.Forms[i] as TForm11).RefrescarPapelera;
     end;
   end;
 end;

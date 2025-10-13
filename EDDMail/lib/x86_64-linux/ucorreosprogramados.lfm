@@ -2,19 +2,20 @@ object Form12: TForm12
   Left = 718
   Height = 316
   Top = 362
-  Width = 418
+  Width = 500
   Caption = 'Correos Programados'
   ClientHeight = 316
-  ClientWidth = 418
+  ClientWidth = 500
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnShow = FormShow
   LCLVersion = '2.2.6.0'
   object btnEnviarCorreosProgramados: TButton
     Left = 32
     Height = 25
     Top = 56
-    Width = 75
-    Caption = 'Enviar'
+    Width = 120
+    Caption = 'Enviar Seleccionado'
     OnClick = btnEnviarCorreosProgramadosClick
     TabOrder = 0
   end
@@ -22,7 +23,7 @@ object Form12: TForm12
     Left = 32
     Height = 180
     Top = 96
-    Width = 360
+    Width = 440
     Columns = <    
       item
         Caption = 'Asunto'
@@ -33,7 +34,11 @@ object Form12: TForm12
         Width = 120
       end    
       item
-        Caption = 'Fecha de Envio'
+        Caption = 'Destinatario'
+        Width = 120
+      end    
+      item
+        Caption = 'Fecha Programada'
         Width = 120
       end>
     TabOrder = 1

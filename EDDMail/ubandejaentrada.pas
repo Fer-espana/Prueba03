@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Grids,
-  UListaDobleEnlazadaCorreos, UGLOBAL, UVistadeCorreo;
+  UListaDobleEnlazadaCorreos, UGLOBAL, UVistadeCorreo, UPapelera; // AGREGAR UPapelera
 
 type
 
@@ -29,6 +29,7 @@ type
     procedure ActualizarTabla;
     procedure OrdenarPorAsunto;
     function ContarCorreosNoLeidos: Integer;
+    procedure NotificarPapeleraSiEstaAbierta; // AGREGAR ESTA DECLARACIÓN
   public
     procedure SetBandejaActual(Email: string);
   end;
@@ -158,6 +159,21 @@ begin
   ShowMessage('Correos ordenados por asunto (A-Z)');
 end;
 
+// AGREGAR ESTE MÉTODO NUEVO
+procedure TForm9.NotificarPapeleraSiEstaAbierta;
+var
+  i: Integer;
+begin
+  // Buscar si el formulario de papelera está abierto y actualizarlo
+  for i := 0 to Screen.FormCount - 1 do
+  begin
+    if Screen.Forms[i] is TForm11 then  // TForm11 es el formulario de la papelera
+    begin
+      (Screen.Forms[i] as TForm11).RefrescarPapelera;
+    end;
+  end;
+end;
+
 procedure TForm9.btnOrdenAlfabeticoClick(Sender: TObject);
 begin
   OrdenarPorAsunto;
@@ -194,6 +210,9 @@ begin
 
       // Actualizar la tabla después de cerrar la vista (por si se eliminó el correo)
       ActualizarTabla;
+
+      // Notificar a la papelera para que se actualice si está abierta
+      NotificarPapeleraSiEstaAbierta;  // LLAMAR AL MÉTODO NUEVO
     end;
   end;
 end;

@@ -5,7 +5,7 @@ unit UPilaPapelera;
 interface
 
 uses
-  Classes, SysUtils, UCorreos;
+  Classes, SysUtils, UListaDobleEnlazadaCorreos;
 
 type
   PNodoPila = ^TNodoPila;
@@ -27,6 +27,7 @@ function CimaPila(Pila: TPila): PCorreo;
 function PilaVacia(Pila: TPila): Boolean;
 procedure MostrarPila(Pila: TPila);
 procedure LiberarPila(var Pila: TPila);
+procedure GenerarReporteDOTPapelera(Pila: TPila; NombreArchivo: string);
 
 implementation
 
@@ -96,6 +97,11 @@ begin
   while Pila.Cima <> nil do
   begin
     Temp := Pila.Cima;
+
+    // Liberar el correo si existe
+    if Temp^.Correo <> nil then
+      Dispose(Temp^.Correo);
+
     Pila.Cima := Pila.Cima^.Siguiente;
     Dispose(Temp);
   end;

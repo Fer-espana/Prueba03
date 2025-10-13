@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, EditBtn,
   UGLOBAL, UListaSimpleUsuarios, UListaCircularContactos, UColaCorreosProgramados,
-  UListaDobleEnlazadaCorreos, DateUtils, UCorreosProgramados; // AGREGAR UCorreosProgramados
+  UListaDobleEnlazadaCorreos, DateUtils, UCorreosProgramados;
 
 type
 
@@ -34,6 +34,7 @@ type
     function ValidarCampos: Boolean;
     function GenerarIdCorreo: Integer;
     function ObtenerFechaHoraProgramada: TDateTime;
+    procedure NotificarCorreosProgramados;
   public
     { public declarations }
   end;
@@ -146,6 +147,7 @@ var
   MaxId: Integer;
   BandejaUsuario: PBandejaUsuario;
   CorreoActual: PCorreo;
+  NodoActual: PNodoCola;
 begin
   MaxId := 0;
 
@@ -163,6 +165,18 @@ begin
     BandejaUsuario := BandejaUsuario^.Siguiente;
   end;
 
+  // Buscar también en los correos programados
+  if not ColaVacia(ColaCorreosProgramados) then
+  begin
+    NodoActual := ColaCorreosProgramados.Frente;
+    while NodoActual <> nil do
+    begin
+      if (NodoActual^.Correo <> nil) and (NodoActual^.Correo^.Id > MaxId) then
+        MaxId := NodoActual^.Correo^.Id;
+      NodoActual := NodoActual^.Siguiente;
+    end;
+  end;
+
   Result := MaxId + 1;
 end;
 
@@ -172,6 +186,20 @@ begin
   Result := Trunc(Fecha.Date) + EncodeTime(9, 0, 0, 0); // 09:00 AM
 end;
 
+// NUEVO MÉTODO: Notificar a todos los formularios de correos programados
+procedure TForm5.NotificarCorreosProgramados;
+var
+  i: Integer;
+begin
+  for i := 0 to Screen.FormCount - 1 do
+  begin
+    if Screen.Forms[i] is TForm12 then
+    begin
+      (Screen.Forms[i] as TForm12).RefrescarTabla;
+    end;
+  end;
+end;
+
 procedure TForm5.btnProgramarClick(Sender: TObject);
 var
   NuevoCorreo: PCorreo;
@@ -179,7 +207,6 @@ var
   Destinatario: string;
   NuevoId: Integer;
   FechaProgramadaStr: string;
-  i: Integer;
 begin
   if not ValidarCampos then
     Exit;
@@ -205,32 +232,16 @@ begin
     NuevoCorreo^.Anterior := nil;
     NuevoCorreo^.Siguiente := nil;
 
-    // DEBUG: Mostrar información antes de encolar
-    ShowMessage('Antes de encolar - Correo creado:' + sLineBreak +
-                'Asunto: ' + NuevoCorreo^.Asunto + sLineBreak +
-                'Remitente: ' + NuevoCorreo^.Remitente + sLineBreak +
-                'Destinatario: ' + NuevoCorreo^.Destinatario);
-
     // ENCOLAR EN LA COLA GLOBAL
     Encolar(ColaCorreosProgramados, NuevoCorreo);
 
-    // DEBUG: Verificar que se encoló
-    ShowMessage('Después de encolar - Total en cola: ' + IntToStr(ColaCorreosProgramados.Count));
-
-    // NOTIFICAR A TODAS LAS INSTANCIAS ABIERTAS DE CORREOS PROGRAMADOS
-    for i := 0 to Screen.FormCount - 1 do
-    begin
-      if Screen.Forms[i] is TForm12 then
-      begin
-        ShowMessage('Encontrada instancia de TForm12, refrescando tabla...');
-        (Screen.Forms[i] as TForm12).RefrescarTabla;
-      end;
-    end;
+    // Notificar a todos los formularios de correos programados
+    NotificarCorreosProgramados;
 
     ShowMessage('Correo programado exitosamente para: ' +
                 DateTimeToStr(FechaProgramada) + sLineBreak +
                 'ID: ' + IntToStr(NuevoId) + sLineBreak +
-                'Ahora puedes verlo en "Correos Programados"');
+                'Total en cola: ' + IntToStr(ColaCorreosProgramados.Count));
 
     // Limpiar campos
     editDestinatario.Text := '';

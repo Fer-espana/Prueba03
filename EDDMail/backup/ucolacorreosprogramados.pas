@@ -5,7 +5,7 @@ unit UColaCorreosProgramados;
 interface
 
 uses
-  Classes, SysUtils, UCorreos;
+  Classes, SysUtils, UListaDobleEnlazadaCorreos;
 
 type
   PNodoCola = ^TNodoCola;
@@ -28,6 +28,7 @@ function FrenteCola(Cola: TCola): PCorreo;
 function ColaVacia(Cola: TCola): Boolean;
 procedure MostrarCola(Cola: TCola);
 procedure LiberarCola(var Cola: TCola);
+procedure GenerarReporteDOTCorreosProgramados(Cola: TCola; NombreArchivo: string);
 
 implementation
 

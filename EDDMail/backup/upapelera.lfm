@@ -1,0 +1,65 @@
+object Form11: TForm11
+  Left = 613
+  Height = 400
+  Top = 335
+  Width = 600
+  Caption = 'Papelera'
+  ClientHeight = 400
+  ClientWidth = 600
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  LCLVersion = '2.2.6.0'
+  object btnBuscarPorAsunto: TButton
+    Left = 192
+    Height = 25
+    Top = 38
+    Width = 75
+    Caption = 'Buscar'
+    OnClick = btnBuscarPorAsuntoClick
+    TabOrder = 0
+  end
+  object btnEliminarCorreo: TButton
+    Left = 352
+    Height = 25
+    Top = 38
+    Width = 160
+    Caption = 'Eliminar Permanentemente'
+    OnClick = btnEliminarCorreoClick
+    TabOrder = 1
+  end
+  object ListView1: TListView
+    Left = 24
+    Height = 250
+    Top = 80
+    Width = 552
+    Columns = <    
+      item
+        Caption = 'Asunto'
+        Width = 150
+      end    
+      item
+        Caption = 'Remitente'
+        Width = 120
+      end    
+      item
+        Caption = 'Fecha'
+        Width = 100
+      end    
+      item
+        Caption = 'Preview Mensaje'
+        Width = 150
+      end>
+    TabOrder = 2
+    ViewStyle = vsReport
+    OnClick = ListView1Click
+  end
+  object editBuscarCorreoPorAsunto: TEdit
+    Left = 24
+    Height = 36
+    Top = 38
+    Width = 152
+    OnChange = editBuscarCorreoPorAsuntoChange
+    TabOrder = 3
+  end
+end

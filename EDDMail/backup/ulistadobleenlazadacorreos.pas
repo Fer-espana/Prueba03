@@ -30,12 +30,15 @@ type
 
 // Procedimientos básicos
 procedure InicializarListaCorreos(var Lista: TListaCorreos);
-procedure InsertarCorreo(var Lista: TListaCorreos; Id: Integer; Remitente: string;
-  Estado: Char; Programado: Boolean; Asunto, Fecha, Mensaje: string);
+// CORREGIR: Agregar el parámetro Destinatario en la declaración
+procedure InsertarCorreo(var Lista: TListaCorreos; Id: Integer;
+  Remitente, Destinatario: string; Estado: Char; Programado: Boolean;
+  Asunto, Fecha, Mensaje: string);
 function BuscarCorreoPorId(Lista: TListaCorreos; Id: Integer): PCorreo;
 procedure EliminarCorreo(var Lista: TListaCorreos; Id: Integer);
 procedure MostrarCorreos(Lista: TListaCorreos);
 procedure LiberarListaCorreos(var Lista: TListaCorreos);
+procedure GenerarReporteDOTCorreosRecibidos(Lista: TListaCorreos; NombreArchivo: string);
 function ObtenerCorreoPorPosicion(Lista: TListaCorreos; Posicion: Integer): PCorreo;
 
 implementation
@@ -124,6 +127,7 @@ begin
   begin
     WriteLn('ID: ', Actual^.Id);
     WriteLn('Remitente: ', Actual^.Remitente);
+    WriteLn('Destinatario: ', Actual^.Destinatario);
     WriteLn('Estado: ', Actual^.Estado);
     WriteLn('Asunto: ', Actual^.Asunto);
     WriteLn('-------------------');
@@ -162,6 +166,77 @@ begin
   Lista.Cabeza := nil;
   Lista.Cola := nil;
   Lista.Count := 0;
+end;
+
+
+procedure GenerarReporteDOTCorreosRecibidos(Lista: TListaCorreos; NombreArchivo: string);
+var
+  Archivo: TextFile;
+  Actual: PCorreo;
+  Contador: Integer;
+  EstadoStr: string;
+begin
+  AssignFile(Archivo, NombreArchivo);
+  try
+    Rewrite(Archivo);
+
+    // Encabezado DOT
+    WriteLn(Archivo, 'digraph CorreosRecibidos {');
+    WriteLn(Archivo, '  rankdir=TB;');
+    WriteLn(Archivo, '  node [shape=record, style=filled, fillcolor=lightblue];');
+    WriteLn(Archivo, '  edge [color=darkblue];');
+    WriteLn(Archivo, '');
+
+    Contador := 0;
+    Actual := Lista.Cabeza;
+
+    while Actual <> nil do
+    begin
+      // Convertir estado a texto legible
+      case Actual^.Estado of
+        'N': EstadoStr := 'NO LEIDO';
+        'L': EstadoStr := 'LEIDO';
+        'E': EstadoStr := 'ELIMINADO';
+        'P': EstadoStr := 'PROGRAMADO';
+        else EstadoStr := 'DESCONOCIDO';
+      end;
+
+      // Crear nodo para cada correo
+      WriteLn(Archivo, '  correo', Contador, ' [label="');
+      WriteLn(Archivo, 'ID: ', Actual^.Id, '\\n');
+      WriteLn(Archivo, 'Remitente: ', Actual^.Remitente, '\\n');
+      WriteLn(Archivo, 'Asunto: ', Actual^.Asunto, '\\n');
+      WriteLn(Archivo, 'Fecha: ', Actual^.Fecha, '\\n');
+      WriteLn(Archivo, 'Estado: ', EstadoStr, '"];');
+
+      // Conectar con el siguiente correo
+      if (Actual^.Siguiente <> nil) then
+      begin
+        WriteLn(Archivo, '  correo', Contador, ' -> correo', Contador + 1, ';');
+      end;
+
+      // Conectar con el correo anterior (para mostrar doble enlace)
+      if (Actual^.Anterior <> nil) then
+      begin
+        WriteLn(Archivo, '  correo', Contador, ' -> correo', Contador - 1, ' [color=red, style=dashed];');
+      end;
+
+      Inc(Contador);
+      Actual := Actual^.Siguiente;
+    end;
+
+    // Pie del archivo DOT
+    WriteLn(Archivo, '');
+    WriteLn(Archivo, '  // Leyenda');
+    WriteLn(Archivo, '  subgraph cluster_leyenda {');
+    WriteLn(Archivo, '    label="Leyenda";');
+    WriteLn(Archivo, '    leyenda1 [label="Flecha azul: Siguiente\\nFlecha roja: Anterior", shape=note, fillcolor=lightyellow];');
+    WriteLn(Archivo, '  }');
+    WriteLn(Archivo, '}');
+
+  finally
+    CloseFile(Archivo);
+  end;
 end;
 
 end.

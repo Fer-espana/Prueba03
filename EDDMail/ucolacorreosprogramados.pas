@@ -28,6 +28,7 @@ function FrenteCola(Cola: TCola): PCorreo;
 function ColaVacia(Cola: TCola): Boolean;
 procedure MostrarCola(Cola: TCola);
 procedure LiberarCola(var Cola: TCola);
+procedure GenerarReporteDOTCorreosProgramados(Cola: TCola; NombreArchivo: string);
 
 implementation
 
@@ -118,6 +119,78 @@ begin
   end;
   Cola.Final := nil;
   Cola.Count := 0;
+end;
+
+procedure GenerarReporteDOTCorreosProgramados(Cola: TCola; NombreArchivo: string);
+var
+  Archivo: TextFile;
+  Actual: PNodoCola;
+  Contador: Integer;
+begin
+  AssignFile(Archivo, NombreArchivo);
+  try
+    Rewrite(Archivo);
+
+    // Encabezado DOT
+    WriteLn(Archivo, 'digraph CorreosProgramados {');
+    WriteLn(Archivo, '  rankdir=LR;');
+    WriteLn(Archivo, '  node [shape=record, style=filled, fillcolor=lightyellow];');
+    WriteLn(Archivo, '  edge [color=darkorange];');
+    WriteLn(Archivo, '');
+
+    Contador := 0;
+    Actual := Cola.Frente;
+
+    // Mostrar nodos de frente y final
+    WriteLn(Archivo, '  frente [label="FRENTE", shape=ellipse, fillcolor=orange];');
+    WriteLn(Archivo, '  final [label="FINAL", shape=ellipse, fillcolor=lightgreen];');
+
+    while Actual <> nil do
+    begin
+      if Actual^.Correo <> nil then
+      begin
+        // Crear nodo para cada correo programado
+        WriteLn(Archivo, '  programado', Contador, ' [label="');
+        WriteLn(Archivo, 'ID: ', Actual^.Correo^.Id, '\\n');
+        WriteLn(Archivo, 'Remitente: ', Actual^.Correo^.Remitente, '\\n');
+        WriteLn(Archivo, 'Destinatario: ', Actual^.Correo^.Destinatario, '\\n');
+        WriteLn(Archivo, 'Asunto: ', Actual^.Correo^.Asunto, '\\n');
+        WriteLn(Archivo, 'Fecha Prog.: ', Actual^.Correo^.Fecha, '"];');
+
+        // Conectar con el siguiente elemento de la cola
+        if Contador = 0 then
+        begin
+          WriteLn(Archivo, '  frente -> programado', Contador, ';');
+        end
+        else
+        begin
+          WriteLn(Archivo, '  programado', Contador - 1, ' -> programado', Contador, ';');
+        end;
+
+        // Si es el último elemento, conectar con "final"
+        if Actual^.Siguiente = nil then
+        begin
+          WriteLn(Archivo, '  programado', Contador, ' -> final;');
+        end;
+
+        Inc(Contador);
+      end;
+      Actual := Actual^.Siguiente;
+    end;
+
+    // Si la cola está vacía
+    if Contador = 0 then
+    begin
+      WriteLn(Archivo, '  vacio [label="COLA VACÍA", shape=plaintext];');
+      WriteLn(Archivo, '  frente -> vacio;');
+      WriteLn(Archivo, '  vacio -> final;');
+    end;
+
+    WriteLn(Archivo, '}');
+
+  finally
+    CloseFile(Archivo);
+  end;
 end;
 
 end.

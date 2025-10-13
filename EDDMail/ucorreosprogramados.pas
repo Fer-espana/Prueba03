@@ -5,7 +5,7 @@ unit UCorreosProgramados;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls, // AGREGAR ComCtrls
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls,
   UGLOBAL, UColaCorreosProgramados, UListaDobleEnlazadaCorreos, UListaSimpleUsuarios;
 
 type
@@ -14,18 +14,19 @@ type
 
   TForm12 = class(TForm)
     btnEnviarCorreosProgramados: TButton;
-    ListView1: TListView;  // CAMBIAR de tablaCorreosProgramados a ListView1
+    ListView1: TListView;
     procedure btnEnviarCorreosProgramadosClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure ListView1Click(Sender: TObject);  // CAMBIAR el evento de click
+    procedure ListView1Click(Sender: TObject);
   private
     { private declarations }
     procedure ActualizarTablaCorreosProgramados;
     procedure EnviarCorreoSeleccionado;
     function ObtenerCorreoSeleccionado: PCorreo;
     function GenerarNuevoId: Integer;
+    function DesencolarCorreoPorId(Id: Integer): Boolean; // NUEVO MÉTODO
   public
     { public declarations }
     procedure RefrescarTabla;
@@ -53,14 +54,16 @@ begin
     // Agregar columnas
     Columns.Add.Caption := 'Asunto';
     Columns.Add.Caption := 'Remitente';
-    Columns.Add.Caption := 'Fecha de Envio';
+    Columns.Add.Caption := 'Destinatario'; // NUEVA COLUMNA
+    Columns.Add.Caption := 'Fecha Programada';
     // Ajustar anchos de columnas
     Columns[0].Width := 150;
     Columns[1].Width := 120;
     Columns[2].Width := 120;
+    Columns[3].Width := 120;
   end;
 
-  btnEnviarCorreosProgramados.Caption := 'Enviar';
+  btnEnviarCorreosProgramados.Caption := 'Enviar Seleccionado';
 end;
 
 procedure TForm12.RefrescarTabla;
@@ -97,6 +100,7 @@ begin
       ListItem := ListView1.Items.Add;
       ListItem.Caption := NodoActual^.Correo^.Asunto;
       ListItem.SubItems.Add(NodoActual^.Correo^.Remitente);
+      ListItem.SubItems.Add(NodoActual^.Correo^.Destinatario); // NUEVA COLUMNA
       ListItem.SubItems.Add(NodoActual^.Correo^.Fecha);
       ListItem.Data := NodoActual^.Correo; // Guardar referencia al correo
     end;
@@ -147,6 +151,53 @@ begin
   end;
 
   Result := MaxId + 1;
+end;
+
+// NUEVO MÉTODO: Desencolar un correo específico por ID
+function TForm12.DesencolarCorreoPorId(Id: Integer): Boolean;
+var
+  TempCola: TCola;  // CORRECCIÓN: Cambiar TPila por TCola
+  NodoActual: PNodoCola;
+  CorreoEncontrado: Boolean;
+begin
+  Result := False;
+  if ColaVacia(ColaCorreosProgramados) then Exit;
+
+  // INICIALIZAR CORRECTAMENTE
+  InicializarCola(TempCola);
+  CorreoEncontrado := False;
+
+  NodoActual := ColaCorreosProgramados.Frente;
+
+  while NodoActual <> nil do
+  begin
+    if (NodoActual^.Correo <> nil) and (NodoActual^.Correo^.Id = Id) then
+    begin
+      // Encontrado, no lo encolamos en la temporal (lo eliminamos)
+      CorreoEncontrado := True;
+      // Liberar memoria del correo
+      Dispose(NodoActual^.Correo);
+    end
+    else
+    begin
+      // Encolar en la temporal
+      Encolar(TempCola, NodoActual^.Correo);
+    end;
+    NodoActual := NodoActual^.Siguiente;
+  end;
+
+  if CorreoEncontrado then
+  begin
+    // Reemplazar la cola original con la temporal
+    LiberarCola(ColaCorreosProgramados); // Solo libera nodos, no correos
+    ColaCorreosProgramados := TempCola;
+    Result := True;
+  end
+  else
+  begin
+    // Liberar la cola temporal si no se usó
+    LiberarCola(TempCola);
+  end;
 end;
 
 procedure TForm12.EnviarCorreoSeleccionado;
@@ -200,10 +251,18 @@ begin
       CorreoEnviado^.Fecha,
       CorreoEnviado^.Mensaje);
 
-    ShowMessage('Correo enviado exitosamente a: ' + CorreoSeleccionado^.Destinatario);
+    // DESENCOLAR el correo programado después de enviarlo
+    if DesencolarCorreoPorId(CorreoSeleccionado^.Id) then
+    begin
+      ShowMessage('Correo enviado exitosamente a: ' + CorreoSeleccionado^.Destinatario);
 
-    // Actualizar la tabla
-    ActualizarTablaCorreosProgramados;
+      // Actualizar la tabla
+      ActualizarTablaCorreosProgramados;
+    end
+    else
+    begin
+      ShowMessage('Error: No se pudo remover el correo de la cola de programados');
+    end;
 
   except
     on E: Exception do

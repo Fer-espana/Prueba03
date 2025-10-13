@@ -205,15 +205,24 @@ begin
     NuevoCorreo^.Anterior := nil;
     NuevoCorreo^.Siguiente := nil;
 
+    // DEBUG: Mostrar información antes de encolar
+    ShowMessage('Antes de encolar - Correo creado:' + sLineBreak +
+                'Asunto: ' + NuevoCorreo^.Asunto + sLineBreak +
+                'Remitente: ' + NuevoCorreo^.Remitente + sLineBreak +
+                'Destinatario: ' + NuevoCorreo^.Destinatario);
+
     // ENCOLAR EN LA COLA GLOBAL
     Encolar(ColaCorreosProgramados, NuevoCorreo);
-    ShowMessage('Correo encolado. Total en cola: ' + IntToStr(ColaCorreosProgramados.Count));
+
+    // DEBUG: Verificar que se encoló
+    ShowMessage('Después de encolar - Total en cola: ' + IntToStr(ColaCorreosProgramados.Count));
 
     // NOTIFICAR A TODAS LAS INSTANCIAS ABIERTAS DE CORREOS PROGRAMADOS
     for i := 0 to Screen.FormCount - 1 do
     begin
       if Screen.Forms[i] is TForm12 then
       begin
+        ShowMessage('Encontrada instancia de TForm12, refrescando tabla...');
         (Screen.Forms[i] as TForm12).RefrescarTabla;
       end;
     end;

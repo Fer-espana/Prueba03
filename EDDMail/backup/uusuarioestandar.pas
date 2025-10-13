@@ -45,7 +45,7 @@ type
   end;
 
 var
-  Form3: Form3;
+  Form3: TForm3;
 
 implementation
 

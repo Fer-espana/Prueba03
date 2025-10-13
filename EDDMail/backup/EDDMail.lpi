@@ -187,6 +187,7 @@
       <Unit>
         <Filename Value="ugestioncomunidades.pas"/>
         <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
         <UnitName Value="UGestionComunidades"/>
       </Unit>
     </Units>

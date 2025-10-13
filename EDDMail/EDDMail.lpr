@@ -1,4 +1,3 @@
-// EDDMail.lpr - MODIFICACIONES
 program EDDMail;
 
 {$mode objfpc}{$H+}

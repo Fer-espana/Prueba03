@@ -1,0 +1,21 @@
+digraph Papelera {
+  rankdir=TB;
+  node [shape=record, style=filled, fillcolor=lightcoral];
+  edge [color=darkred, dir=back];
+
+  cima [label="CIMA DE PILA", shape=ellipse, fillcolor=orange];
+  papelera0 [label="
+ID: 66787\\n
+Remitente: fes2@edd.com\\n
+Asunto: asdkjlnasdlvjn\\n
+Fecha: 2025-10-13 10:08:40"];
+  cima -> papelera0;
+  papelera1 [label="
+ID: 13076\\n
+Remitente: fes1@edd.com\\n
+Asunto: asdlfksadjlfkj\\n
+Fecha: 2025-10-13 10:07:13"];
+  papelera0 -> papelera1;
+  base [label="BASE DE PILA", shape=ellipse, fillcolor=lightgreen];
+  papelera1 -> base;
+}

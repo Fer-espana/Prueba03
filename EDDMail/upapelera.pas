@@ -5,7 +5,7 @@ unit UPapelera;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Grids,
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls,
   UGLOBAL, UPilaPapelera, UListaDobleEnlazadaCorreos;
 
 type
@@ -16,21 +16,22 @@ type
     btnBuscarPorAsunto: TButton;
     btnEliminarCorreo: TButton;
     editBuscarCorreoPorAsunto: TEdit;
-    tablaInformacionCorreo: TStringGrid;
+    ListView1: TListView;
     procedure btnBuscarPorAsuntoClick(Sender: TObject);
     procedure btnEliminarCorreoClick(Sender: TObject);
     procedure editBuscarCorreoPorAsuntoChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure tablaInformacionCorreoClick(Sender: TObject);
-    procedure tablaInformacionCorreoEditingDone(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure ListView1Click(Sender: TObject);
   private
     { private declarations }
-    procedure ActualizarTablaPapelera;
+    procedure ActualizarListView;
     procedure BuscarPorAsunto(Asunto: string);
     function ObtenerCorreoSeleccionado: PCorreo;
   public
     { public declarations }
+    procedure RefrescarPapelera;
   end;
 
 var
@@ -46,14 +47,33 @@ procedure TForm11.FormCreate(Sender: TObject);
 begin
   Caption := 'Papelera';
 
-  // Configurar la tabla según el .lfm (3 columnas: Asunto, Remitente, Mensaje)
-  // Las columnas ya están definidas en el .lfm, solo configuramos comportamiento
-  tablaInformacionCorreo.Options := tablaInformacionCorreo.Options - [goEditing];
+  // Configurar ListView
+  with ListView1 do
+  begin
+    ViewStyle := vsReport;
+    GridLines := True;
+    ReadOnly := True;
+    // Agregar columnas
+    Columns.Add.Caption := 'Asunto';
+    Columns.Add.Caption := 'Remitente';
+    Columns.Add.Caption := 'Fecha';
+    Columns.Add.Caption := 'Preview Mensaje';
+    // Ajustar anchos de columnas
+    Columns[0].Width := 150;
+    Columns[1].Width := 120;
+    Columns[2].Width := 100;
+    Columns[3].Width := 200;
+  end;
 
-  // Configurar botones según el .lfm
+  // Configurar botones
   btnBuscarPorAsunto.Caption := 'Buscar';
-  btnEliminarCorreo.Caption := 'Eliminar';
+  btnEliminarCorreo.Caption := 'Eliminar Permanentemente';
   editBuscarCorreoPorAsunto.TextHint := 'Buscar por asunto...';
+end;
+
+procedure TForm11.FormShow(Sender: TObject);
+begin
+  ActualizarListView;
 end;
 
 procedure TForm11.FormDestroy(Sender: TObject);
@@ -61,38 +81,40 @@ begin
   // Evento vacío pero necesario
 end;
 
-procedure TForm11.ActualizarTablaPapelera;
+procedure TForm11.RefrescarPapelera;
+begin
+  ActualizarListView;
+end;
+
+procedure TForm11.ActualizarListView;
 var
   NodoActual: PNodoPila;
-  Fila: Integer;
+  ListItem: TListItem;
 begin
-  // Limpiar tabla (mantener encabezados que ya están en el .lfm)
-  tablaInformacionCorreo.RowCount := 1; // Fila 0 son los encabezados
+  ListView1.Items.Clear;
 
   if PilaVacia(PilaPapeleraGlobal) then
     Exit;
 
-  // Recorrer la pila y mostrar los correos
   NodoActual := PilaPapeleraGlobal.Cima;
-  Fila := 1;
 
   while NodoActual <> nil do
   begin
     if NodoActual^.Correo <> nil then
     begin
-      tablaInformacionCorreo.RowCount := tablaInformacionCorreo.RowCount + 1;
+      ListItem := ListView1.Items.Add;
+      ListItem.Caption := NodoActual^.Correo^.Asunto;
+      ListItem.SubItems.Add(NodoActual^.Correo^.Remitente);
+      ListItem.SubItems.Add(NodoActual^.Correo^.Fecha);
 
-      // Usar las 3 columnas definidas en el .lfm: Asunto, Remitente, Mensaje
-      tablaInformacionCorreo.Cells[0, Fila] := NodoActual^.Correo^.Asunto;
-      tablaInformacionCorreo.Cells[1, Fila] := NodoActual^.Correo^.Remitente;
-
-      // Mostrar solo un preview del mensaje (primeros 50 caracteres)
-      if Length(NodoActual^.Correo^.Mensaje) > 50 then
-        tablaInformacionCorreo.Cells[2, Fila] := Copy(NodoActual^.Correo^.Mensaje, 1, 50) + '...'
+      // Mostrar solo un preview del mensaje (primeros 30 caracteres)
+      if Length(NodoActual^.Correo^.Mensaje) > 30 then
+        ListItem.SubItems.Add(Copy(NodoActual^.Correo^.Mensaje, 1, 30) + '...')
       else
-        tablaInformacionCorreo.Cells[2, Fila] := NodoActual^.Correo^.Mensaje;
+        ListItem.SubItems.Add(NodoActual^.Correo^.Mensaje);
 
-      Inc(Fila);
+      // Guardar referencia al correo en el Data del ListItem
+      ListItem.Data := NodoActual^.Correo;
     end;
     NodoActual := NodoActual^.Siguiente;
   end;
@@ -101,43 +123,35 @@ end;
 procedure TForm11.BuscarPorAsunto(Asunto: string);
 var
   NodoActual: PNodoPila;
-  Fila, Coincidencias: Integer;
+  ListItem: TListItem;
   AsuntoBuscado: string;
+  Coincidencias: Integer;
 begin
-  if Asunto = '' then
-  begin
-    ActualizarTablaPapelera;
-    Exit;
-  end;
-
-  // Limpiar tabla (mantener encabezados)
-  tablaInformacionCorreo.RowCount := 1;
+  ListView1.Items.Clear;
+  Coincidencias := 0;
 
   if PilaVacia(PilaPapeleraGlobal) then
     Exit;
 
   AsuntoBuscado := UpperCase(Trim(Asunto));
   NodoActual := PilaPapeleraGlobal.Cima;
-  Fila := 1;
-  Coincidencias := 0;
 
   while NodoActual <> nil do
   begin
     if (NodoActual^.Correo <> nil) and
        (Pos(AsuntoBuscado, UpperCase(NodoActual^.Correo^.Asunto)) > 0) then
     begin
-      tablaInformacionCorreo.RowCount := tablaInformacionCorreo.RowCount + 1;
+      ListItem := ListView1.Items.Add;
+      ListItem.Caption := NodoActual^.Correo^.Asunto;
+      ListItem.SubItems.Add(NodoActual^.Correo^.Remitente);
+      ListItem.SubItems.Add(NodoActual^.Correo^.Fecha);
 
-      tablaInformacionCorreo.Cells[0, Fila] := NodoActual^.Correo^.Asunto;
-      tablaInformacionCorreo.Cells[1, Fila] := NodoActual^.Correo^.Remitente;
-
-      // Mostrar solo un preview del mensaje
-      if Length(NodoActual^.Correo^.Mensaje) > 50 then
-        tablaInformacionCorreo.Cells[2, Fila] := Copy(NodoActual^.Correo^.Mensaje, 1, 50) + '...'
+      if Length(NodoActual^.Correo^.Mensaje) > 30 then
+        ListItem.SubItems.Add(Copy(NodoActual^.Correo^.Mensaje, 1, 30) + '...')
       else
-        tablaInformacionCorreo.Cells[2, Fila] := NodoActual^.Correo^.Mensaje;
+        ListItem.SubItems.Add(NodoActual^.Correo^.Mensaje);
 
-      Inc(Fila);
+      ListItem.Data := NodoActual^.Correo;
       Inc(Coincidencias);
     end;
     NodoActual := NodoActual^.Siguiente;
@@ -150,35 +164,10 @@ begin
 end;
 
 function TForm11.ObtenerCorreoSeleccionado: PCorreo;
-var
-  FilaSeleccionada: Integer;
-  NodoActual: PNodoPila;
-  Fila: Integer;
-  AsuntoSeleccionado: string;
 begin
   Result := nil;
-  FilaSeleccionada := tablaInformacionCorreo.Row;
-
-  if (FilaSeleccionada <= 0) or PilaVacia(PilaPapeleraGlobal) then
-    Exit;
-
-  // Obtener el asunto del correo seleccionado (columna 0)
-  AsuntoSeleccionado := tablaInformacionCorreo.Cells[0, FilaSeleccionada];
-
-  // Buscar el correo en la pila por asunto (puede haber duplicados, tomamos el primero)
-  NodoActual := PilaPapeleraGlobal.Cima;
-  Fila := 1;
-
-  while NodoActual <> nil do
-  begin
-    if (NodoActual^.Correo <> nil) and (NodoActual^.Correo^.Asunto = AsuntoSeleccionado) then
-    begin
-      Result := NodoActual^.Correo;
-      Exit;
-    end;
-    NodoActual := NodoActual^.Siguiente;
-    Inc(Fila);
-  end;
+  if (ListView1.Selected <> nil) then
+    Result := PCorreo(ListView1.Selected.Data);
 end;
 
 procedure TForm11.btnBuscarPorAsuntoClick(Sender: TObject);
@@ -189,6 +178,9 @@ end;
 procedure TForm11.btnEliminarCorreoClick(Sender: TObject);
 var
   CorreoSeleccionado: PCorreo;
+  TempPila: TPila;
+  NodoActual: PNodoPila;
+  CorreoEncontrado: Boolean;
 begin
   CorreoSeleccionado := ObtenerCorreoSeleccionado;
 
@@ -198,17 +190,49 @@ begin
     Exit;
   end;
 
-  if MessageDlg('Confirmar Eliminación',
-                '¿Está seguro de que desea eliminar permanentemente este correo?' + sLineBreak +
+  if MessageDlg('Confirmar Eliminación Permanente',
+                '¿Está seguro de que desea eliminar PERMANENTEMENTE este correo?' + sLineBreak +
                 'Asunto: ' + CorreoSeleccionado^.Asunto + sLineBreak +
-                'Esta acción no se puede deshacer.',
-                mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+                'Remitente: ' + CorreoSeleccionado^.Remitente + sLineBreak +
+                'Esta acción NO se puede deshacer.',
+                mtWarning, [mbYes, mbNo], 0) = mrYes then
   begin
-    // Aquí iría la lógica para eliminar permanentemente el correo
-    // Por ahora, simplemente mostramos un mensaje
-    ShowMessage('Funcionalidad de eliminación permanente en desarrollo');
-    // En una implementación real, aquí se liberaría la memoria del correo
-    // y se removería de la pila
+    // INICIALIZAR TempPila explícitamente
+    InicializarPila(TempPila);
+    CorreoEncontrado := False;
+
+    NodoActual := PilaPapeleraGlobal.Cima;
+
+    while NodoActual <> nil do
+    begin
+      // Solo apilar los correos que NO son el seleccionado
+      if NodoActual^.Correo <> CorreoSeleccionado then
+      begin
+        Apilar(TempPila, NodoActual^.Correo);
+      end
+      else
+      begin
+        CorreoEncontrado := True;
+        // Liberar la memoria del correo eliminado
+        Dispose(NodoActual^.Correo);
+      end;
+      NodoActual := NodoActual^.Siguiente;
+    end;
+
+    if CorreoEncontrado then
+    begin
+      // Liberar la pila original y asignar la temporal
+      LiberarPila(PilaPapeleraGlobal); // Solo libera nodos, no correos
+      PilaPapeleraGlobal := TempPila;
+
+      ShowMessage('Correo eliminado permanentemente');
+      ActualizarListView;
+    end
+    else
+    begin
+      ShowMessage('Error: No se pudo encontrar el correo para eliminar');
+      LiberarPila(TempPila); // Liberar la pila temporal si no se usó
+    end;
   end;
 end;
 
@@ -221,13 +245,7 @@ begin
   // Evento vacío pero necesario
 end;
 
-procedure TForm11.tablaInformacionCorreoClick(Sender: TObject);
-begin
-  // Evento vacío pero necesario
-  // Podría usarse para habilitar/deshabilitar botones según selección
-end;
-
-procedure TForm11.tablaInformacionCorreoEditingDone(Sender: TObject);
+procedure TForm11.ListView1Click(Sender: TObject);
 begin
   // Evento vacío pero necesario
 end;

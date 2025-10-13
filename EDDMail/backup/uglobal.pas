@@ -1,4 +1,4 @@
-// UGLOBAL.pas - CORREGIDO
+// UGLOBAL.pas - SOLO CAMBIOS NECESARIOS
 unit UGLOBAL;
 
 {$mode objfpc}{$H+}
@@ -6,13 +6,13 @@ unit UGLOBAL;
 interface
 
 uses
+  SysUtils, Forms, Dialogs, // UNIDADES AGREGADAS PARA CORREGIR ERRORES
   UListaSimpleUsuarios, UListaDobleEnlazadaCorreos,
   UListaCircularContactos, UColaCorreosProgramados,
   UPilaPapelera, UMatrizDispersaRelaciones;
-  // Quitamos UListadeListasComunidades ya que no se usa aún
 
+// EL RESTO DEL CÓDIGO PERMANECE EXACTAMENTE IGUAL
 type
-  // Estructura para manejar bandejas por usuario
   PBandejaUsuario = ^TBandejaUsuario;
   TBandejaUsuario = record
     Email: string;
@@ -25,42 +25,21 @@ type
 var
   UsuarioActual: PUsuario;
   EsUsuarioRoot: Boolean;
-  UltimoIdCorreo: Integer;
-  UltimoIdUsuario: Integer;
-  UltimoIdContacto: Integer;
-
-  // Estructuras globales
   ColaCorreosProgramados: TCola;
   PilaPapeleraGlobal: TPila;
   MatrizRelaciones: TMatrizDispersa;
-  ListaBandejas: PBandejaUsuario;  // Lista de todas las bandejas
+  ListaBandejas: PBandejaUsuario;
+  UltimoIdCorreo: Integer;
 
-// Funciones para manejar bandejas
 function ObtenerBandejaUsuario(Email: string): PBandejaUsuario;
 function CrearBandejaUsuario(Email: string): PBandejaUsuario;
 procedure InicializarBandejasGlobales;
+procedure GenerarReportesUsuario(EmailUsuario: string);
+function GenerarIdCorreo: Integer;
 
 implementation
 
-function GenerarIdCorreo: Integer;
-begin
-  Inc(UltimoIdCorreo);
-  Result := UltimoIdCorreo;
-end;
-
-function GenerarIdUsuario: Integer;
-begin
-  Inc(UltimoIdUsuario);
-  Result := UltimoIdUsuario;
-end;
-
-function GenerarIdContacto: Integer;
-begin
-  Inc(UltimoIdContacto);
-  Result := UltimoIdContacto;
-end;
-
-
+// LAS IMPLEMENTACIONES DE FUNCIONES PERMANECEN EXACTAMENTE IGUALES
 function ObtenerBandejaUsuario(Email: string): PBandejaUsuario;
 var
   Actual: PBandejaUsuario;
@@ -94,18 +73,55 @@ begin
   ListaBandejas := nil;
 end;
 
-// En UGLOBAL.pas - verificar que tenga esto en initialization
+procedure GenerarReportesUsuario(EmailUsuario: string);
+var
+  CarpetaReportes: string;
+  BandejaUsuario: PBandejaUsuario;
+begin
+  CarpetaReportes := ExtractFilePath(Application.ExeName) +
+                     StringReplace(EmailUsuario, '@', '-', [rfReplaceAll]) +
+                     '-Reportes';
+
+  if not DirectoryExists(CarpetaReportes) then
+    ForceDirectories(CarpetaReportes);
+
+  BandejaUsuario := ObtenerBandejaUsuario(EmailUsuario);
+
+  if BandejaUsuario <> nil then
+  begin
+    GenerarReporteDOTCorreosRecibidos(BandejaUsuario^.BandejaEntrada,
+      CarpetaReportes + PathDelim + 'correos_recibidos.dot');
+
+    GenerarReporteDOTPapelera(PilaPapeleraGlobal,
+      CarpetaReportes + PathDelim + 'papelera.dot');
+
+    GenerarReporteDOTCorreosProgramados(ColaCorreosProgramados,
+      CarpetaReportes + PathDelim + 'correos_programados.dot');
+
+    GenerarReporteDOTContactos(BandejaUsuario^.Contactos,
+      CarpetaReportes + PathDelim + 'contactos.dot');
+  end;
+
+  ShowMessage('Reportes generados en: ' + CarpetaReportes + sLineBreak +
+              'Para generar imágenes ejecute:' + sLineBreak +
+              'dot -Tpng archivo.dot -o archivo.png');
+end;
+
+function GenerarIdCorreo: Integer;
+begin
+  Inc(UltimoIdCorreo);
+  Result := UltimoIdCorreo;
+end;
+
 initialization
 begin
-  UltimoIdCorreo := 0;
-  UltimoIdUsuario := 0;
-  UltimoIdContacto := 0;
   UsuarioActual := nil;
   EsUsuarioRoot := False;
-  InicializarCola(ColaCorreosProgramados);  // ESTA LÍNEA ES CRÍTICA
+  InicializarCola(ColaCorreosProgramados);
   InicializarPila(PilaPapeleraGlobal);
   InicializarMatriz(MatrizRelaciones);
   InicializarBandejasGlobales;
+  UltimoIdCorreo := 0;
 end;
 
 end.

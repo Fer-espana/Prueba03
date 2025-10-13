@@ -1,13 +1,14 @@
 object Form11: TForm11
   Left = 613
-  Height = 384
+  Height = 400
   Top = 335
-  Width = 471
+  Width = 600
   Caption = 'Papelera'
-  ClientHeight = 384
-  ClientWidth = 471
+  ClientHeight = 400
+  ClientWidth = 600
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnShow = FormShow
   LCLVersion = '2.2.6.0'
   object btnBuscarPorAsunto: TButton
     Left = 192
@@ -19,34 +20,39 @@ object Form11: TForm11
     TabOrder = 0
   end
   object btnEliminarCorreo: TButton
-    Left = 352
+    Left = 344
     Height = 25
     Top = 38
-    Width = 75
-    Caption = 'Eliminar'
+    Width = 200
+    Caption = 'Eliminar Permanentemente'
     OnClick = btnEliminarCorreoClick
     TabOrder = 1
   end
-  object tablaInformacionCorreo: TStringGrid
-    Left = 32
-    Height = 208
-    Top = 104
-    Width = 395
+  object ListView1: TListView
+    Left = 24
+    Height = 250
+    Top = 80
+    Width = 552
+    Columns = <    
+      item
+        Caption = 'Asunto'
+        Width = 150
+      end    
+      item
+        Caption = 'Remitente'
+        Width = 120
+      end    
+      item
+        Caption = 'Fecha'
+        Width = 100
+      end    
+      item
+        Caption = 'Preview Mensaje'
+        Width = 167
+      end>
     TabOrder = 2
-    OnClick = tablaInformacionCorreoClick
-    OnEditingDone = tablaInformacionCorreoEditingDone
-    Cells = (
-      3
-      0
-      0
-      'Asunto'
-      1
-      0
-      'Remitente'
-      2
-      0
-      'Mensaje'
-    )
+    ViewStyle = vsReport
+    OnClick = ListView1Click
   end
   object editBuscarCorreoPorAsunto: TEdit
     Left = 24

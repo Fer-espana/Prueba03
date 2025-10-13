@@ -3,7 +3,6 @@ unit UListaCircularContactos;
 {$mode objfpc}{$H+}
 
 interface
- function BuscarContactoPorEmail(Lista: TListaContactos; Email: string): PContacto;
 
 uses
   Classes, SysUtils;
@@ -27,11 +26,12 @@ type
 procedure InicializarListaContactos(var Lista: TListaContactos);
 procedure InsertarContacto(var Lista: TListaContactos; Id: Integer;
   Nombre, Email, Telefono: string);
-function BuscarContactoPorEmail(Lista: TListaContactos; Email: string): PContacto;
+function BuscarContactoPorEmail(Lista: TListaContactos; Email: string): PContacto; // MOVIDO DESPUÉS DE LOS TIPOS
 procedure EliminarContacto(var Lista: TListaContactos; Email: string);
 procedure MostrarContactos(Lista: TListaContactos);
 procedure LiberarListaContactos(var Lista: TListaContactos);
 function ObtenerSiguienteContacto(Lista: TListaContactos; Actual: PContacto): PContacto;
+procedure GenerarReporteDOTContactos(Lista: TListaContactos; NombreArchivo: string);
 
 implementation
 

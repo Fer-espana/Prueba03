@@ -1,0 +1,22 @@
+digraph Comunidades {
+  rankdir=TB;
+  node [shape=box, style=filled, fillcolor=lightblue];
+  edge [color=darkgreen];
+
+  "hellow" [shape=ellipse, fillcolor=orange];
+  "fes@edd.com" [label="fes\nfes@edd.com"];
+  "hellow" -> "fes@edd.com";
+  "fes2@edd.com" [label="fes2\nfes2@edd.com"];
+  "hellow" -> "fes2@edd.com";
+  "fes1@edd.com" [label="fes1\nfes1@edd.com"];
+  "hellow" -> "fes1@edd.com";
+
+  "holamundo" [shape=ellipse, fillcolor=orange];
+  "fes1@edd.com" [label="fes1\nfes1@edd.com"];
+  "holamundo" -> "fes1@edd.com";
+  "fes2@edd.com" [label="fes2\nfes2@edd.com"];
+  "holamundo" -> "fes2@edd.com";
+  "fes@edd.com" [label="fes\nfes@edd.com"];
+  "holamundo" -> "fes@edd.com";
+
+}
