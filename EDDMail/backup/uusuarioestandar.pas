@@ -138,8 +138,14 @@ end;
 
 procedure TForm3.btnGenerarReportesClick(Sender: TObject);
 begin
-  ShowMessage('Generando reportes...');
-  // Aquí irá la lógica para generar reportes
+  if UsuarioActual <> nil then
+  begin
+    GenerarReportesUsuario(UsuarioActual^.Email);
+  end
+  else
+  begin
+    ShowMessage('Error: No hay usuario actual para generar reportes');
+  end;
 end;
 
 procedure TForm3.btnRegresarLoginClick(Sender: TObject);

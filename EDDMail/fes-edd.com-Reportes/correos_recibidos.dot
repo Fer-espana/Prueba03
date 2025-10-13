@@ -3,28 +3,6 @@ digraph CorreosRecibidos {
   node [shape=record, style=filled, fillcolor=lightblue];
   edge [color=darkblue];
 
-  correo0 [label="
-ID: 35406\\n
-Remitente: fes1@edd.com\\n
-Asunto: casaaaaaaaaaaaaaa\\n
-Fecha: 2025-10-13 10:07:29\\n
-Estado: NO LEIDO"];
-  correo0 -> correo1;
-  correo1 [label="
-ID: 14216\\n
-Remitente: fes1@edd.com\\n
-Asunto: asdñokn\\n
-Fecha: 2025-10-13 10:07:48\\n
-Estado: NO LEIDO"];
-  correo1 -> correo2;
-  correo1 -> correo0 [color=red, style=dashed];
-  correo2 [label="
-ID: 43611\\n
-Remitente: fes2@edd.com\\n
-Asunto: vavava\\n
-Fecha: 2025-10-13 10:08:27\\n
-Estado: NO LEIDO"];
-  correo2 -> correo1 [color=red, style=dashed];
 
   // Leyenda
   subgraph cluster_leyenda {

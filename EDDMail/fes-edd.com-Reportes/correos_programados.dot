@@ -5,26 +5,7 @@ digraph CorreosProgramados {
 
   frente [label="FRENTE", shape=ellipse, fillcolor=orange];
   final [label="FINAL", shape=ellipse, fillcolor=lightgreen];
-  programado0 [label="
-ID: 78873\\n
-Remitente: fes@edd.com\\n
-Destinatario: fes1@edd.com\\n
-Asunto: adios\\n
-Fecha Prog.: 2025-10-14 09:00:00"];
-  frente -> programado0;
-  programado1 [label="
-ID: 78874\\n
-Remitente: fes@edd.com\\n
-Destinatario: fes1@edd.com\\n
-Asunto: vaca\\n
-Fecha Prog.: 2025-10-14 09:00:00"];
-  programado0 -> programado1;
-  programado2 [label="
-ID: 78875\\n
-Remitente: fes@edd.com\\n
-Destinatario: fes2@edd.com\\n
-Asunto: asldkjas\\n
-Fecha Prog.: 2025-10-14 09:00:00"];
-  programado1 -> programado2;
-  programado2 -> final;
+  vacio [label="COLA VACÍA", shape=plaintext];
+  frente -> vacio;
+  vacio -> final;
 }

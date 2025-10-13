@@ -43,10 +43,11 @@
         <UnitName Value="UROOT"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="16"/>
-        <TopLine Value="216"/>
-        <CursorPos X="5" Y="238"/>
+        <TopLine Value="259"/>
+        <CursorPos X="5" Y="281"/>
         <UsageCount Value="71"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="uusuarioestandar.pas"/>
@@ -56,10 +57,11 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UUsuarioEstandar"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="132"/>
+        <TopLine Value="131"/>
         <CursorPos X="5" Y="149"/>
         <UsageCount Value="71"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="ulistadobleenlazadacorreos.pas"/>
@@ -252,8 +254,6 @@
         <Filename Value="uglobal.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UGLOBAL"/>
-        <TopLine Value="105"/>
-        <CursorPos X="5" Y="127"/>
         <UsageCount Value="58"/>
         <Loaded Value="True"/>
       </Unit>
@@ -285,46 +285,6 @@
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="EDDMail.lpr"/>
-        <Caret Line="31"/>
-      </Position>
-      <Position>
-        <Filename Value="EDDMail.lpr"/>
-        <Caret Line="21" Column="19" TopLine="9"/>
-      </Position>
-      <Position>
-        <Filename Value="EDDMail.lpr"/>
-        <Caret Line="31" Column="5" TopLine="9"/>
-      </Position>
-      <Position>
-        <Filename Value="upapelera.pas"/>
-        <Caret Line="202" Column="46" TopLine="190"/>
-      </Position>
-      <Position>
-        <Filename Value="upapelera.pas"/>
-        <Caret Line="253" Column="5" TopLine="231"/>
-      </Position>
-      <Position>
-        <Filename Value="upapelera.pas"/>
-        <Caret Line="237" Column="5" TopLine="216"/>
-      </Position>
-      <Position>
-        <Filename Value="EDDMail.lpr"/>
-        <Caret Line="22" Column="17" TopLine="9"/>
-      </Position>
-      <Position>
-        <Filename Value="upapelera.pas"/>
-        <Caret Line="237" Column="5" TopLine="216"/>
-      </Position>
-      <Position>
-        <Filename Value="upapelera.pas"/>
-        <Caret Line="201" Column="29" TopLine="191"/>
-      </Position>
-      <Position>
-        <Filename Value="upapelera.pas"/>
-        <Caret Line="206" Column="71" TopLine="190"/>
-      </Position>
       <Position>
         <Filename Value="upapelera.pas"/>
         <Caret Line="253" Column="5" TopLine="231"/>
@@ -403,6 +363,45 @@
       <Position>
         <Filename Value="uroot.pas"/>
         <Caret Line="205" Column="39" TopLine="196"/>
+      </Position>
+      <Position>
+        <Filename Value="uusuarioestandar.pas"/>
+        <Caret Line="149" Column="5" TopLine="131"/>
+      </Position>
+      <Position>
+        <Filename Value="uglobal.pas"/>
+        <Caret Line="143" Column="5" TopLine="76"/>
+      </Position>
+      <Position>
+        <Filename Value="uglobal.pas"/>
+        <Caret Line="101" Column="51" TopLine="92"/>
+      </Position>
+      <Position>
+        <Filename Value="uglobal.pas"/>
+        <Caret Line="159" Column="27" TopLine="140"/>
+      </Position>
+      <Position>
+        <Filename Value="uglobal.pas"/>
+        <Caret Line="162" Column="5" TopLine="140"/>
+      </Position>
+      <Position>
+        <Filename Value="uglobal.pas"/>
+        <Caret Line="103" Column="7" TopLine="93"/>
+      </Position>
+      <Position>
+        <Filename Value="uglobal.pas"/>
+        <Caret Line="96" Column="29" TopLine="92"/>
+      </Position>
+      <Position>
+        <Filename Value="uglobal.pas"/>
+        <Caret Line="153" Column="46" TopLine="140"/>
+      </Position>
+      <Position>
+        <Filename Value="uglobal.pas"/>
+      </Position>
+      <Position>
+        <Filename Value="uroot.pas"/>
+        <Caret Line="203" Column="49" TopLine="193"/>
       </Position>
     </JumpHistory>
     <RunParams>

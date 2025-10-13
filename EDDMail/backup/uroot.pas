@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, UGLOBAL,
   UListaSimpleUsuarios, fpjson, jsonparser, UMatrizDispersaRelaciones,
-  UGestionComunidades; // AGREGAR ESTA UNIDAD
+  UGestionComunidades, process;
 
 type
 
@@ -177,27 +177,67 @@ begin
               'Total: ' + IntToStr(ListaUsuariosGlobal.Count) + ' usuarios');
 end;
 
+// =======================================================
+// REPORTE DE USUARIOS (LISTA SIMPLE ENLAZADA) - IMPLEMENTACIÓN DOT
+// =======================================================
 procedure TForm2.btnReporteUsuariosClick(Sender: TObject);
-begin
-  // Guardar usuarios actuales en JSON
-  GuardarUsuariosEnJSON;
-  ShowMessage('Reporte de usuarios generado en: Data/usuarios.json');
-end;
-
-procedure TForm2.btnReporteRelacionesClick(Sender: TObject);
 var
-  RutaCarpeta, RutaArchivo: string;
+  RutaCarpeta, NombreDOT, NombrePNG, RutaDOT, RutaPNG: string;
 begin
   RutaCarpeta := ExtractFilePath(Application.ExeName) + 'Root-Reportes';
-  RutaArchivo := RutaCarpeta + PathDelim + 'reporte_relaciones.txt';
+  NombreDOT := 'reporte_usuarios.dot';
+  NombrePNG := 'reporte_usuarios.png';
+  RutaDOT := RutaCarpeta + PathDelim + NombreDOT;
+  RutaPNG := RutaCarpeta + PathDelim + NombrePNG;
 
-  // Crear carpeta si no existe
+  // 1. Crear la carpeta si no existe
   if not DirectoryExists(RutaCarpeta) then
     ForceDirectories(RutaCarpeta);
 
-  // Generar reporte de relaciones
-  GenerarReporteRelaciones(MatrizRelaciones, RutaArchivo);
-  ShowMessage('Reporte de relaciones generado en: ' + RutaArchivo);
+  // 2. Generar el archivo DOT
+  GenerarReporteDOTUsuarios(ListaUsuariosGlobal, RutaDOT);
+
+  // 3. EJECUTAR GRAPHVIZ (Generación automática de PNG)
+  if FileExists(RutaDOT) then
+  begin
+    // Comando: dot -Tpng <archivo.dot> -o <archivo.png>
+    ExecuteProcess('dot', ['-Tpng', RutaDOT, '-o', RutaPNG], [], [poWaitOnExit]);
+  end;
+
+  ShowMessage('Reporte de Usuarios (Lista Simple) generado en: ' + RutaDOT + sLineBreak +
+              'Imagen PNG generada automáticamente en: ' + RutaPNG);
+end;
+
+
+// =======================================================
+// REPORTE DE RELACIONES (MATRIZ DISPERSA) - IMPLEMENTACIÓN DOT
+// =======================================================
+procedure TForm2.btnReporteRelacionesClick(Sender: TObject);
+var
+  RutaCarpeta, NombreDOT, NombrePNG, RutaDOT, RutaPNG: string;
+begin
+  RutaCarpeta := ExtractFilePath(Application.ExeName) + 'Root-Reportes';
+  NombreDOT := 'reporte_relaciones.dot';
+  NombrePNG := 'reporte_relaciones.png';
+  RutaDOT := RutaCarpeta + PathDelim + NombreDOT;
+  RutaPNG := RutaCarpeta + PathDelim + NombrePNG;
+
+  // 1. Crear carpeta si no existe
+  if not DirectoryExists(RutaCarpeta) then
+    ForceDirectories(RutaCarpeta);
+
+  // 2. Generar reporte de relaciones (Matriz Dispersa a DOT)
+  GenerarReporteRelaciones(MatrizRelaciones, RutaDOT);
+
+  // 3. EJECUTAR GRAPHVIZ (Generación automática de PNG)
+  if FileExists(RutaDOT) then
+  begin
+    // Comando: dot -Tpng <archivo.dot> -o <archivo.png>
+    ExecuteProcess('dot', ['-Tpng', RutaDOT, '-o', RutaPNG], [], [poWaitOnExit]);
+  end;
+
+  ShowMessage('Reporte de Relaciones (Matriz Dispersa) generado en: ' + RutaDOT + sLineBreak +
+              'Imagen PNG generada automáticamente en: ' + RutaPNG);
 end;
 
 procedure TForm2.btnGestionComunidadesClick(Sender: TObject);
