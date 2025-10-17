@@ -1,10 +1,10 @@
 object Form3: TForm3
   Left = 752
-  Height = 500
+  Height = 518
   Top = 272
   Width = 354
   Caption = 'Usuario Estandar'
-  ClientHeight = 500
+  ClientHeight = 518
   ClientWidth = 354
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -107,5 +107,14 @@ object Form3: TForm3
     Caption = 'Ver Borradores'
     OnClick = btnVerBorradoresDeMensajesClick
     TabOrder = 10
+  end
+  object btnFavoritos: TButton
+    Left = 72
+    Height = 24
+    Top = 472
+    Width = 216
+    Caption = 'Ver Favoritos'
+    OnClick = btnFavoritosClick
+    TabOrder = 11
   end
 end

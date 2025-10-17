@@ -6,7 +6,10 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  UListaDobleEnlazadaCorreos, UGLOBAL, UPilaPapelera;
+    UListaDobleEnlazadaCorreos, UGLOBAL, UPilaPapelera, UArbolB;
+
+
+
 
 type
 
@@ -14,6 +17,7 @@ type
 
   TForm10 = class(TForm)
     btnEliminarCorreo: TButton;
+    btnFavorito: TButton;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
@@ -25,6 +29,7 @@ type
     lblEstado: TLabel;
     MemoMensaje: TMemo;
     procedure btnEliminarCorreoClick(Sender: TObject);
+    procedure btnFavoritoClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
@@ -136,6 +141,39 @@ begin
       end;
     end;
   end;
+end;
+
+procedure TForm10.btnFavoritoClick(Sender: TObject);
+var
+  BandejaPropia: PBandejaUsuario;
+  CorreoCopia: TCorreo;
+begin
+  if (CorreoActual = nil) then Exit;
+
+  BandejaPropia := ObtenerBandejaUsuario(UsuarioActual^.Email);
+  if BandejaPropia = nil then
+  begin
+    BandejaPropia := CrearBandejaUsuario(UsuarioActual^.Email);
+  end;
+
+  // 1. Verificar si ya está en favoritos
+  if BuscarEnArbolB(BandejaPropia^.Favoritos, CorreoActual^.Id) <> nil then
+  begin
+    ShowMessage('Este correo ya está marcado como Favorito.');
+    Exit;
+  end;
+
+  // 2. Crear una copia por valor del correo para el nodo del Árbol B
+  CorreoCopia := CorreoActual^;
+
+  // 3. Insertar en el Árbol B de Favoritos
+  // Se asume que InsertarEnArbolB toma la clave (ID) y el registro TCorreo (copia)
+  InsertarEnArbolB(BandejaPropia^.Favoritos, CorreoCopia.Id, CorreoCopia);
+
+  ShowMessage('Correo marcado como favorito (Árbol B) con ID: ' + IntToStr(CorreoCopia.Id));
+
+  // Opcional: Deshabilitar el botón para no duplicar
+  (Sender as TButton).Enabled := False;
 end;
 
 procedure TForm10.FormDestroy(Sender: TObject);

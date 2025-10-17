@@ -6,7 +6,10 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  UListaDobleEnlazadaCorreos, UGLOBAL, UPilaPapelera;
+    UListaDobleEnlazadaCorreos, UGLOBAL, UPilaPapelera, UArbolB;
+
+
+
 
 type
 
@@ -91,6 +94,8 @@ begin
 end;
 
 procedure TForm10.btnEliminarCorreoClick(Sender: TObject);
+var
+  CorreoCopia: PCorreo;
 begin
   if (CorreoActual = nil) or (BandejaActual = nil) then
   begin
@@ -104,17 +109,34 @@ begin
                 mtConfirmation, [mbYes, mbNo], 0) = mrYes then
   begin
     try
-      // Cambiar estado a eliminado
-      CorreoActual^.Estado := 'E';
+      // Crear una COPIA del correo para la papelera
+      New(CorreoCopia);
+      CorreoCopia^.Id := CorreoActual^.Id;
+      CorreoCopia^.Remitente := CorreoActual^.Remitente;
+      CorreoCopia^.Destinatario := CorreoActual^.Destinatario;
+      CorreoCopia^.Estado := 'E'; // Eliminado
+      CorreoCopia^.Programado := CorreoActual^.Programado;
+      CorreoCopia^.Asunto := CorreoActual^.Asunto;
+      CorreoCopia^.Fecha := CorreoActual^.Fecha;
+      CorreoCopia^.Mensaje := CorreoActual^.Mensaje;
+      CorreoCopia^.Anterior := nil;
+      CorreoCopia^.Siguiente := nil;
 
-      // Opcional: Mover a la papelera global
-      Apilar(PilaPapeleraGlobal, CorreoActual);
+      // Mover a la papelera global
+      Apilar(PilaPapeleraGlobal, CorreoCopia);
 
-      ShowMessage('Correo eliminado correctamente');
+      // Eliminar el correo original de la bandeja de entrada
+      EliminarCorreo(BandejaActual^.BandejaEntrada, CorreoActual^.Id);
+
+      ShowMessage('Correo eliminado correctamente y movido a la papelera');
       Close; // Cerrar el formulario de vista
     except
       on E: Exception do
+      begin
         ShowMessage('Error al eliminar el correo: ' + E.Message);
+        if CorreoCopia <> nil then
+          Dispose(CorreoCopia);
+      end;
     end;
   end;
 end;

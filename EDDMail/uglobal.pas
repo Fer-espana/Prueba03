@@ -8,7 +8,7 @@ uses
   SysUtils, Forms, Dialogs, Process, // AGREGADA LA UNIDAD "Process" PARA poWaitOnExit
   UListaSimpleUsuarios, UListaDobleEnlazadaCorreos,
   UListaCircularContactos, UColaCorreosProgramados,
-  UPilaPapelera, UMatrizDispersaRelaciones;
+  UPilaPapelera, UMatrizDispersaRelaciones, UAVLTreeBorradores, UArbolB;
 
 // EL RESTO DEL CÓDIGO PERMANECE EXACTAMENTE IGUAL
 type
@@ -18,6 +18,10 @@ type
     BandejaEntrada: TListaCorreos;
     Contactos: TListaContactos;
     Papelera: TPila;
+    // --- ESTRUCTURAS DE LA FASE 2 ---
+    Borradores: TAVLTree; // <--- ÁRBOL AVL
+    Favoritos: TArbolB;   // <--- ÁRBOL B
+    // ---------------------------------
     Siguiente: PBandejaUsuario;
   end;
 
@@ -62,6 +66,12 @@ begin
   InicializarListaCorreos(Nueva^.BandejaEntrada);
   InicializarListaContactos(Nueva^.Contactos);
   InicializarPila(Nueva^.Papelera);
+
+  // --- AÑADIR INICIALIZACIÓN DE FASE 2 ---
+  InicializarAVL(Nueva^.Borradores);   // Se asume InicializarAVL está en UAVLTreeBorradores.pas
+  InicializarArbolB(Nueva^.Favoritos); // Se asume InicializarArbolB está en UArbolB.pas
+  // ---------------------------------------
+
   Nueva^.Siguiente := ListaBandejas;
   ListaBandejas := Nueva;
   Result := Nueva;

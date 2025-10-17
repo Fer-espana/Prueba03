@@ -5,7 +5,7 @@ unit UListaSimpleUsuarios;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils, UAVLTreeBorradores, UArbolB;
 
 type
   PUsuario = ^TUsuario;
@@ -141,7 +141,7 @@ begin
 end;
 
 // =======================================================
-// IMPLEMENTACIONES DE FUNCIONES DE REPORTE/BUSQUEDA (MOVIDAS ANTES DE initialization)
+// IMPLEMENTACIONES DE FUNCIONES DE REPORTE/BUSQUEDA
 // =======================================================
 
 function ObtenerIDyEmailPorID(Lista: TListaUsuarios; IDUsuario: Integer): string;

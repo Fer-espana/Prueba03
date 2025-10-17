@@ -21,12 +21,14 @@ type
     Label2: TLabel;
     Label3: TLabel;
     MemoMensaje: TMemo;
+    btnGuardarBorrador: TButton;
     procedure btnEnviarClick(Sender: TObject);
     procedure editAsuntoChange(Sender: TObject);
     procedure editDestinatarioChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure MemoMensajeChange(Sender: TObject);
+    procedure btnGuardarBorradorClick(Sender: TObject);
   private
     BandejaActual: PBandejaUsuario;
     function GenerarIdCorreo: Integer;
@@ -58,8 +60,12 @@ begin
 end;
 
 function TForm4.GenerarIdCorreo: Integer;
+var
+  CorreoId: Integer;
 begin
-  Result := UGLOBAL.GenerarIdCorreo; // Usar función centralizada
+  Randomize;
+  CorreoId := Random(100000) + 1;
+  Result := CorreoId;
 end;
 
 function TForm4.BuscarIndiceUsuario(Email: string): Integer;
@@ -155,6 +161,56 @@ begin
               sLineBreak + 'ID: ' + IntToStr(NuevoId));
 
   // Limpiar campos
+  editDestinatario.Text := '';
+  editAsunto.Text := '';
+  MemoMensaje.Text := '';
+end;
+
+procedure TForm4.btnGuardarBorradorClick(Sender: TObject);
+var
+  Destinatario, Asunto, Mensaje, FechaActual: string;
+  BandejaPropia: PBandejaUsuario;
+  NuevoId: Integer;
+  CorreoBorrador: TCorreo;
+begin
+  Destinatario := Trim(editDestinatario.Text);
+  Asunto := Trim(editAsunto.Text);
+  Mensaje := Trim(MemoMensaje.Text);
+
+  if (Destinatario = '') or (Asunto = '') or (Mensaje = '') then
+  begin
+    ShowMessage('Por favor complete todos los campos.');
+    Exit;
+  end;
+
+  BandejaPropia := ObtenerBandejaUsuario(UsuarioActual^.Email);
+  if BandejaPropia = nil then
+  begin
+    BandejaPropia := CrearBandejaUsuario(UsuarioActual^.Email);
+  end;
+
+  // 1. Generar ID y fecha
+  NuevoId := GenerarIdCorreo;
+  FechaActual := FormatDateTime('yyyy-mm-dd hh:nn:ss', Now);
+
+  // 2. Llenar el registro TCorreo (por valor)
+  CorreoBorrador.Id := NuevoId;
+  CorreoBorrador.Remitente := UsuarioActual^.Email;
+  CorreoBorrador.Destinatario := Destinatario;
+  CorreoBorrador.Asunto := Asunto;
+  CorreoBorrador.Mensaje := Mensaje;
+  CorreoBorrador.Fecha := FechaActual;
+  CorreoBorrador.Estado := 'B'; // 'B' para Borrador (opcional, si se necesita un estado)
+  CorreoBorrador.Programado := False;
+  CorreoBorrador.Anterior := nil;
+  CorreoBorrador.Siguiente := nil;
+
+  // 3. Insertar en el Árbol AVL
+  InsertarEnAVL(BandejaPropia^.Borradores, NuevoId, CorreoBorrador);
+
+  ShowMessage('Borrador guardado exitosamente con ID: ' + IntToStr(NuevoId));
+
+  // 4. Limpiar campos
   editDestinatario.Text := '';
   editAsunto.Text := '';
   MemoMensaje.Text := '';

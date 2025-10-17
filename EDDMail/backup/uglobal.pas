@@ -8,7 +8,7 @@ uses
   SysUtils, Forms, Dialogs, Process, // AGREGADA LA UNIDAD "Process" PARA poWaitOnExit
   UListaSimpleUsuarios, UListaDobleEnlazadaCorreos,
   UListaCircularContactos, UColaCorreosProgramados,
-  UPilaPapelera, UMatrizDispersaRelaciones;
+  UPilaPapelera, UMatrizDispersaRelaciones, UAVLTreeBorradores, UArbolB;
 
 // EL RESTO DEL CÓDIGO PERMANECE EXACTAMENTE IGUAL
 type
@@ -18,6 +18,10 @@ type
     BandejaEntrada: TListaCorreos;
     Contactos: TListaContactos;
     Papelera: TPila;
+    // --- ESTRUCTURAS DE LA FASE 2 ---
+    Borradores: TAVLTree; // <--- ÁRBOL AVL
+    Favoritos: TArbolB;   // <--- ÁRBOL B
+    // ---------------------------------
     Siguiente: PBandejaUsuario;
   end;
 
@@ -77,6 +81,7 @@ var
   CarpetaReportes: string;
   BandejaUsuario: PBandejaUsuario;
   NombreArchivoDOT, NombreArchivoPNG, RutaDOT, RutaPNG: string;
+  Proc: TProcess;
 begin
   // 1. Definir la carpeta de reportes (ej: fes-edd.com-Reportes)
   CarpetaReportes := ExtractFilePath(Application.ExeName) +
@@ -97,10 +102,22 @@ begin
     RutaPNG := CarpetaReportes + PathDelim + NombreArchivoPNG;
 
     GenerarReporteDOTCorreosRecibidos(BandejaUsuario^.BandejaEntrada, RutaDOT);
-    // Ejecutar Graphviz - CORREGIDO: parámetros correctos
+    // Ejecutar Graphviz - CORREGIDO: Usando TProcess
     if FileExists(RutaDOT) then
-      ExecuteProcess('dot', ['-Tpng', RutaDOT, '-o', RutaPNG], [poWaitOnExit]);
-
+    begin
+      Proc := TProcess.Create(nil);
+      try
+        Proc.Executable := 'dot';
+        Proc.Parameters.Add('-Tpng');
+        Proc.Parameters.Add(RutaDOT);
+        Proc.Parameters.Add('-o');
+        Proc.Parameters.Add(RutaPNG);
+        Proc.Options := [poWaitOnExit];
+        Proc.Execute;
+      finally
+        Proc.Free;
+      end;
+    end;
 
     // --- 2. REPORTE DE PAPELERA (Pila) ---
     NombreArchivoDOT := 'papelera.dot';
@@ -109,10 +126,22 @@ begin
     RutaPNG := CarpetaReportes + PathDelim + NombreArchivoPNG;
 
     GenerarReporteDOTPapelera(PilaPapeleraGlobal, RutaDOT);
-    // Ejecutar Graphviz - CORREGIDO: parámetros correctos
+    // Ejecutar Graphviz - CORREGIDO: Usando TProcess
     if FileExists(RutaDOT) then
-      ExecuteProcess('dot', ['-Tpng', RutaDOT, '-o', RutaPNG], [poWaitOnExit]);
-
+    begin
+      Proc := TProcess.Create(nil);
+      try
+        Proc.Executable := 'dot';
+        Proc.Parameters.Add('-Tpng');
+        Proc.Parameters.Add(RutaDOT);
+        Proc.Parameters.Add('-o');
+        Proc.Parameters.Add(RutaPNG);
+        Proc.Options := [poWaitOnExit];
+        Proc.Execute;
+      finally
+        Proc.Free;
+      end;
+    end;
 
     // --- 3. REPORTE DE CORREOS PROGRAMADOS (Cola) ---
     NombreArchivoDOT := 'correos_programados.dot';
@@ -121,10 +150,22 @@ begin
     RutaPNG := CarpetaReportes + PathDelim + NombreArchivoPNG;
 
     GenerarReporteDOTCorreosProgramados(ColaCorreosProgramados, RutaDOT);
-    // Ejecutar Graphviz - CORREGIDO: parámetros correctos
+    // Ejecutar Graphviz - CORREGIDO: Usando TProcess
     if FileExists(RutaDOT) then
-      ExecuteProcess('dot', ['-Tpng', RutaDOT, '-o', RutaPNG], [poWaitOnExit]);
-
+    begin
+      Proc := TProcess.Create(nil);
+      try
+        Proc.Executable := 'dot';
+        Proc.Parameters.Add('-Tpng');
+        Proc.Parameters.Add(RutaDOT);
+        Proc.Parameters.Add('-o');
+        Proc.Parameters.Add(RutaPNG);
+        Proc.Options := [poWaitOnExit];
+        Proc.Execute;
+      finally
+        Proc.Free;
+      end;
+    end;
 
     // --- 4. REPORTE DE CONTACTOS (Lista Circular) ---
     NombreArchivoDOT := 'contactos.dot';
@@ -133,9 +174,22 @@ begin
     RutaPNG := CarpetaReportes + PathDelim + NombreArchivoPNG;
 
     GenerarReporteDOTContactos(BandejaUsuario^.Contactos, RutaDOT);
-    // Ejecutar Graphviz - CORREGIDO: parámetros correctos
+    // Ejecutar Graphviz - CORREGIDO: Usando TProcess
     if FileExists(RutaDOT) then
-      ExecuteProcess('dot', ['-Tpng', RutaDOT, '-o', RutaPNG], [poWaitOnExit]);
+    begin
+      Proc := TProcess.Create(nil);
+      try
+        Proc.Executable := 'dot';
+        Proc.Parameters.Add('-Tpng');
+        Proc.Parameters.Add(RutaDOT);
+        Proc.Parameters.Add('-o');
+        Proc.Parameters.Add(RutaPNG);
+        Proc.Options := [poWaitOnExit];
+        Proc.Execute;
+      finally
+        Proc.Free;
+      end;
+    end;
   end;
 
   ShowMessage('Reportes DOT y sus imágenes PNG generadas exitosamente en: ' + CarpetaReportes);

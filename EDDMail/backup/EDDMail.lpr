@@ -16,7 +16,7 @@ uses
   UVentanaContactos, UListaSimpleUsuarios, UListaDobleEnlazadaCorreos,
   UListaCircularContactos, UColaCorreosProgramados, UPilaPapelera,
   UMatrizDispersaRelaciones, UListadeListasComunidades, UGLOBAL, UNAVEGACION,
-  UGestionComunidades;
+  UGestionComunidades, UAVLTreeBorradores, UArbolB, UCorregirBorrador, UVerBorradores;
 
 {$R *.res}
 

@@ -5,7 +5,7 @@ unit UListaSimpleUsuarios;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils, UAVLTreeBorradores, UArbolB;
 
 type
   PUsuario = ^TUsuario;
@@ -29,12 +29,13 @@ var
 
 // Procedimientos básicos
 procedure InicializarListaUsuarios(var Lista: TListaUsuarios);
-// CORREGIR: Agregar el parámetro Password en la declaración
 procedure InsertarUsuario(var Lista: TListaUsuarios; Id: Integer;
   Nombre, Usuario, Email, Telefono, Password: string);
 function BuscarUsuarioPorEmail(Lista: TListaUsuarios; Email: string): PUsuario;
 procedure MostrarUsuarios(Lista: TListaUsuarios);
 procedure LiberarListaUsuarios(var Lista: TListaUsuarios);
+
+// NUEVAS DECLARACIONES
 procedure GenerarReporteDOTUsuarios(Lista: TListaUsuarios; NombreArchivo: string);
 function ObtenerIDyEmailPorID(Lista: TListaUsuarios; IDUsuario: Integer): string;
 
@@ -66,7 +67,6 @@ begin
   Result := -1; // No encontrado
 end;
 
-// ESTA IMPLEMENTACIÓN YA ESTÁ CORRECTA CON 7 PARÁMETROS
 procedure InsertarUsuario(var Lista: TListaUsuarios; Id: Integer;
   Nombre, Usuario, Email, Telefono, Password: string);
 var
@@ -140,6 +140,10 @@ begin
   Lista.Count := 0;
 end;
 
+// =======================================================
+// IMPLEMENTACIONES DE FUNCIONES DE REPORTE/BUSQUEDA (MOVIDAS ANTES DE initialization)
+// =======================================================
+
 function ObtenerIDyEmailPorID(Lista: TListaUsuarios; IDUsuario: Integer): string;
 var
   Actual: PUsuario;
@@ -154,17 +158,11 @@ begin
     if Actual^.Id = IDUsuario then
     begin
       // Retorna el Email y el ID formateados para el reporte
-      // Esto hace que la etiqueta del nodo sea legible (Email)
       Result := Actual^.Email + ' (ID: ' + IntToStr(Actual^.Id) + ')';
       Exit;
     end;
     Actual := Actual^.Siguiente;
   end;
-end;
-
-initialization
-begin
-  InicializarListaUsuarios(ListaUsuariosGlobal);
 end;
 
 procedure GenerarReporteDOTUsuarios(Lista: TListaUsuarios; NombreArchivo: string);
@@ -218,6 +216,12 @@ begin
   finally
     CloseFile(Archivo);
   end;
+end;
+
+
+initialization
+begin
+  InicializarListaUsuarios(ListaUsuariosGlobal);
 end;
 
 end.
