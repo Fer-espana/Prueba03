@@ -274,6 +274,94 @@ begin
   FormGestion.Show;
 end;
 
+procedure TForm2.CargarCorreosDesdeJSON;
+var
+  Archivo: TextFile;
+  Linea, JSONContent: string;
+  JSONData: TJSONData;
+  CorreosArray: TJSONArray;
+  i: Integer;
+  CorreoObj: TJSONObject;
+  RutaArchivo: string;
+  BandejaDestino: PBandejaUsuario;
+  EstadoCorreo: Char;
+begin
+  RutaArchivo := ExtractFilePath(Application.ExeName) + 'Data' + PathDelim + 'correos.json';
+
+  if not FileExists(RutaArchivo) then
+  begin
+    ShowMessage('Advertencia: Archivo Data/correos.json no encontrado.');
+    Exit;
+  end;
+
+  try
+    AssignFile(Archivo, RutaArchivo);
+    Reset(Archivo);
+    JSONContent := '';
+    while not EOF(Archivo) do
+    begin
+      ReadLn(Archivo, Linea);
+      JSONContent := JSONContent + Linea;
+    end;
+    CloseFile(Archivo);
+
+    JSONData := GetJSON(JSONContent);
+    try
+      if (JSONData <> nil) and (JSONData.FindPath('correos') <> nil) then
+      begin
+        CorreosArray := TJSONArray(JSONData.FindPath('correos'));
+        for i := 0 to CorreosArray.Count - 1 do
+        begin
+          CorreoObj := TJSONObject(CorreosArray.Items[i]);
+
+          // Mapear estado
+          if SameText(CorreoObj.Get('estado', ''), 'NL') then
+            EstadoCorreo := 'N'
+          else if SameText(CorreoObj.Get('estado', ''), 'LEÍDO') then
+            EstadoCorreo := 'L'
+          else if SameText(CorreoObj.Get('estado', ''), 'ELIMINADO') then
+            EstadoCorreo := 'E'
+          else
+            EstadoCorreo := 'N'; // Valor por defecto
+
+          // Obtener o crear bandeja del destinatario
+          BandejaDestino := ObtenerBandejaUsuario(CorreoObj.Get('destinatario', ''));
+          if BandejaDestino = nil then
+            BandejaDestino := CrearBandejaUsuario(CorreoObj.Get('destinatario', ''));
+
+          // Insertar correo
+          InsertarCorreo(BandejaDestino^.BandejaEntrada,
+            CorreoObj.Get('id', 0),
+            CorreoObj.Get('remitente', ''),
+            CorreoObj.Get('destinatario', ''),
+            EstadoCorreo,
+            False, // No son programados en esta carga
+            CorreoObj.Get('asunto', ''),
+            FormatDateTime('yyyy-mm-dd hh:nn:ss', Now), // Usar fecha actual para la carga
+            CorreoObj.Get('mensaje', ''));
+
+          // Actualizar Matriz de Relaciones (solo si remitente/destinatario son usuarios válidos)
+          if (BuscarUsuarioPorEmail(ListaUsuariosGlobal, CorreoObj.Get('remitente', '')) <> nil) and
+             (BuscarUsuarioPorEmail(ListaUsuariosGlobal, CorreoObj.Get('destinatario', '')) <> nil) then
+          begin
+             // Asumiendo que BuscarIndiceUsuario devuelve el ID
+             InsertarValor(MatrizRelaciones,
+                           BuscarUsuarioPorEmail(ListaUsuariosGlobal, CorreoObj.Get('remitente', ''))^.Id,
+                           BuscarUsuarioPorEmail(ListaUsuariosGlobal, CorreoObj.Get('destinatario', ''))^.Id,
+                           1);
+          end;
+        end;
+        ShowMessage(IntToStr(CorreosArray.Count) + ' correos cargados exitosamente.');
+      end;
+    finally
+      JSONData.Free;
+    end;
+  except
+    on E: Exception do
+      ShowMessage('Error al cargar correos: ' + E.Message);
+  end;
+end;
+
 procedure TForm2.FormDestroy(Sender: TObject);
 begin
   // Limpiar estado global

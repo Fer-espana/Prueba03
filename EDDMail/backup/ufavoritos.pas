@@ -92,7 +92,8 @@ begin
     tablaInformacion.Cells[0, Fila] := IntToStr(Nodo^.Claves[i].ID);
     tablaInformacion.Cells[1, Fila] := Nodo^.Claves[i].Correo.Asunto;
     tablaInformacion.Cells[2, Fila] := Nodo^.Claves[i].Correo.Remitente;
-    tablaInformacion.Objects[0, Fila] := TObject(Nodo^.Claves[i].ID); // Guardar ID
+    // CORRECCIÓN (Línea 95): Uso de Pointer para convertir Integer a TObject
+    tablaInformacion.Objects[0, Fila] := TObject(Pointer(Nodo^.Claves[i].ID)); // Guardar ID
     Inc(Fila);
   end;
 
@@ -129,7 +130,8 @@ begin
   FilaSeleccionada := tablaInformacion.Row;
 
   if (FilaSeleccionada > 0) and (FilaSeleccionada < tablaInformacion.RowCount) then
-    Result := Integer(tablaInformacion.Objects[0, FilaSeleccionada]);
+    // CORRECCIÓN (Línea 132): Uso de Pointer para convertir TObject a Integer
+    Result := Integer(Pointer(tablaInformacion.Objects[0, FilaSeleccionada]));
 end;
 
 procedure TForm17.tablaInformacionDblClick(Sender: TObject);
@@ -207,6 +209,7 @@ begin
   begin
     if Screen.Forms[i] is TForm11 then
     begin
+      // Asume que TForm11 tiene el método RefrescarPapelera
       (Screen.Forms[i] as TForm11).RefrescarPapelera;
     end;
   end;

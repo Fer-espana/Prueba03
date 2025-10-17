@@ -28,6 +28,8 @@ type
   private
     procedure CargarUsuariosDesdeJSON;
     procedure GuardarUsuariosEnJSON;
+    // CORRECCIÓN 1: Se declara el método en la interface (section private)
+    procedure CargarCorreosDesdeJSON;
   public
 
   end;
@@ -274,6 +276,7 @@ begin
   FormGestion.Show;
 end;
 
+// CORRECCIÓN 2: Se añade el identificador de la clase (TForm2.) para vincular el método.
 procedure TForm2.CargarCorreosDesdeJSON;
 var
   Archivo: TextFile;
@@ -344,11 +347,11 @@ begin
           if (BuscarUsuarioPorEmail(ListaUsuariosGlobal, CorreoObj.Get('remitente', '')) <> nil) and
              (BuscarUsuarioPorEmail(ListaUsuariosGlobal, CorreoObj.Get('destinatario', '')) <> nil) then
           begin
-             // Asumiendo que BuscarIndiceUsuario devuelve el ID
-             InsertarValor(MatrizRelaciones,
-                           BuscarUsuarioPorEmail(ListaUsuariosGlobal, CorreoObj.Get('remitente', ''))^.Id,
-                           BuscarUsuarioPorEmail(ListaUsuariosGlobal, CorreoObj.Get('destinatario', ''))^.Id,
-                           1);
+            // Asumiendo que BuscarIndiceUsuario devuelve el ID
+            InsertarValor(MatrizRelaciones,
+                          BuscarUsuarioPorEmail(ListaUsuariosGlobal, CorreoObj.Get('remitente', ''))^.Id,
+                          BuscarUsuarioPorEmail(ListaUsuariosGlobal, CorreoObj.Get('destinatario', ''))^.Id,
+                          1);
           end;
         end;
         ShowMessage(IntToStr(CorreosArray.Count) + ' correos cargados exitosamente.');

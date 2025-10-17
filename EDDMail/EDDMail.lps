@@ -43,8 +43,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UROOT"/>
         <EditorIndex Value="18"/>
-        <TopLine Value="342"/>
-        <CursorPos X="5" Y="363"/>
+        <TopLine Value="348"/>
+        <CursorPos X="91" Y="367"/>
         <UsageCount Value="80"/>
         <Loaded Value="True"/>
       </Unit>
@@ -285,6 +285,7 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UCorregirBorrador"/>
         <EditorIndex Value="20"/>
+        <TopLine Value="182"/>
         <CursorPos X="5" Y="204"/>
         <UsageCount Value="29"/>
         <Loaded Value="True"/>
@@ -309,8 +310,8 @@
         <UnitName Value="UFavoritos"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="27"/>
-        <TopLine Value="185"/>
-        <CursorPos X="90" Y="209"/>
+        <TopLine Value="206"/>
+        <CursorPos X="5" Y="230"/>
         <UsageCount Value="27"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -323,7 +324,7 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UVistadeFavorito"/>
         <EditorIndex Value="28"/>
-        <TopLine Value="7"/>
+        <TopLine Value="110"/>
         <CursorPos X="5" Y="132"/>
         <UsageCount Value="27"/>
         <Loaded Value="True"/>
@@ -333,8 +334,8 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="UAVLTreeBorradores"/>
         <EditorIndex Value="11"/>
-        <TopLine Value="118"/>
-        <CursorPos X="5" Y="140"/>
+        <TopLine Value="119"/>
+        <CursorPos X="5" Y="141"/>
         <UsageCount Value="26"/>
         <Loaded Value="True"/>
       </Unit>
@@ -356,70 +357,6 @@
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="uverborradores.pas"/>
-        <Caret Line="179" Column="93" TopLine="168"/>
-      </Position>
-      <Position>
-        <Filename Value="ubandejaentrada.pas"/>
-        <Caret Line="16" Column="33"/>
-      </Position>
-      <Position>
-        <Filename Value="uusuarioestandar.pas"/>
-        <Caret Line="167" Column="66" TopLine="161"/>
-      </Position>
-      <Position>
-        <Filename Value="uavltreeborradores.pas"/>
-        <Caret Line="67" Column="72" TopLine="60"/>
-      </Position>
-      <Position>
-        <Filename Value="uavltreeborradores.pas"/>
-        <Caret Line="138" Column="5" TopLine="122"/>
-      </Position>
-      <Position>
-        <Filename Value="uavltreeborradores.pas"/>
-        <Caret Line="19" Column="60"/>
-      </Position>
-      <Position>
-        <Filename Value="uverborradores.pas"/>
-        <Caret Line="190" Column="5"/>
-      </Position>
-      <Position>
-        <Filename Value="uverborradores.pas"/>
-        <Caret Line="222" Column="5"/>
-      </Position>
-      <Position>
-        <Filename Value="uavltreeborradores.pas"/>
-        <Caret Line="36" Column="53" TopLine="24"/>
-      </Position>
-      <Position>
-        <Filename Value="uavltreeborradores.pas"/>
-        <Caret Line="119" Column="81" TopLine="104"/>
-      </Position>
-      <Position>
-        <Filename Value="uavltreeborradores.pas"/>
-        <Caret Line="128" Column="5" TopLine="106"/>
-      </Position>
-      <Position>
-        <Filename Value="uverborradores.pas"/>
-        <Caret Line="102" Column="39" TopLine="92"/>
-      </Position>
-      <Position>
-        <Filename Value="ucorregirborrador.pas"/>
-        <Caret Line="150" Column="3" TopLine="139"/>
-      </Position>
-      <Position>
-        <Filename Value="ubandejaentrada.pas"/>
-        <Caret Line="9" Column="65"/>
-      </Position>
-      <Position>
-        <Filename Value="uavltreeborradores.pas"/>
-        <Caret Line="30" Column="30" TopLine="19"/>
-      </Position>
-      <Position>
-        <Filename Value="ucorregirborrador.pas"/>
-        <Caret Line="63" Column="37" TopLine="49"/>
-      </Position>
       <Position>
         <Filename Value="ucorregirborrador.pas"/>
         <Caret Line="214" Column="5" TopLine="192"/>
@@ -475,6 +412,70 @@
       <Position>
         <Filename Value="uvistadefavorito.pas"/>
         <Caret Line="111" Column="38" TopLine="92"/>
+      </Position>
+      <Position>
+        <Filename Value="ufavoritos.pas"/>
+        <Caret Line="209" Column="90" TopLine="185"/>
+      </Position>
+      <Position>
+        <Filename Value="uavltreeborradores.pas"/>
+        <Caret Line="54" Column="15" TopLine="43"/>
+      </Position>
+      <Position>
+        <Filename Value="uavltreeborradores.pas"/>
+        <Caret Line="53" Column="43" TopLine="43"/>
+      </Position>
+      <Position>
+        <Filename Value="uavltreeborradores.pas"/>
+        <Caret Line="141" Column="5" TopLine="119"/>
+      </Position>
+      <Position>
+        <Filename Value="ufavoritos.pas"/>
+        <Caret Line="95" Column="42" TopLine="85"/>
+      </Position>
+      <Position>
+        <Filename Value="ufavoritos.pas"/>
+        <Caret Line="221" Column="5" TopLine="199"/>
+      </Position>
+      <Position>
+        <Filename Value="ufavoritos.pas"/>
+        <Caret Line="135" Column="38" TopLine="121"/>
+      </Position>
+      <Position>
+        <Filename Value="uavltreeborradores.pas"/>
+        <Caret Line="141" Column="5" TopLine="119"/>
+      </Position>
+      <Position>
+        <Filename Value="ufavoritos.pas"/>
+        <Caret Line="132" Column="15" TopLine="121"/>
+      </Position>
+      <Position>
+        <Filename Value="ufavoritos.pas"/>
+        <Caret Line="224" Column="5" TopLine="202"/>
+      </Position>
+      <Position>
+        <Filename Value="uroot.pas"/>
+        <Caret Line="178" Column="3" TopLine="161"/>
+      </Position>
+      <Position>
+        <Filename Value="uroot.pas"/>
+        <Caret Line="284" Column="17" TopLine="266"/>
+      </Position>
+      <Position>
+        <Filename Value="uroot.pas"/>
+        <Caret Line="371" Column="65" TopLine="350"/>
+      </Position>
+      <Position>
+        <Filename Value="ufavoritos.pas"/>
+        <Caret Line="208" Column="72" TopLine="202"/>
+      </Position>
+      <Position>
+        <Filename Value="uvistadefavorito.pas"/>
+        <Caret Line="118" Column="81" TopLine="110"/>
+      </Position>
+      <Position>
+        <Filename Value="ufavoritos.pas"/>
+        <Caret Line="213" Column="60" TopLine="202"/>
       </Position>
     </JumpHistory>
     <RunParams>
