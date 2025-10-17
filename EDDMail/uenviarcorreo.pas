@@ -34,6 +34,7 @@ type
     function GenerarIdCorreo: Integer;
     function ValidarDestinatario(Destinatario: string): Boolean;
     function BuscarIndiceUsuario(Email: string): Integer;
+    procedure GuardarCorreoEnJSON(Id: Integer; Remitente, Destinatario, Asunto, Mensaje, Fecha: string); // <--- NUEVA DECLARACIÓN
   public
     procedure SetBandejaActual(Email: string);
   end;
@@ -148,6 +149,9 @@ begin
   InsertarCorreo(BandejaDestino^.BandejaEntrada, NuevoId,
     UsuarioActual^.Email, Destinatario, 'N', False, Asunto, FechaActual, Mensaje);
 
+  // NUEVA LÍNEA: GUARDAR EN LOG JSON
+  GuardarCorreoEnJSON(NuevoId, UsuarioActual^.Email, Destinatario, Asunto, Mensaje, FechaActual);
+
   // Actualizar matriz de relaciones
   IndiceRemitente := BuscarIndiceUsuario(UsuarioActual^.Email);
   IndiceDestinatario := BuscarIndiceUsuario(Destinatario);
@@ -210,6 +214,39 @@ begin
   editDestinatario.Text := '';
   editAsunto.Text := '';
   MemoMensaje.Text := '';
+end;
+
+procedure TForm4.GuardarCorreoEnJSON(Id: Integer; Remitente, Destinatario, Asunto, Mensaje, Fecha: string);
+var
+  Archivo: TextFile;
+  RutaArchivo, RutaCarpeta: string;
+begin
+  RutaCarpeta := ExtractFilePath(Application.ExeName) + 'Data';
+  RutaArchivo := RutaCarpeta + PathDelim + 'correos_enviados_log.json'; // Usar un nombre de log distinto
+
+  if not DirectoryExists(RutaCarpeta) then
+    ForceDirectories(RutaCarpeta);
+
+  AssignFile(Archivo, RutaArchivo);
+  try
+    // La forma más simple de evitar errores de formato en JSON es añadir cada objeto en una nueva línea
+    // y envolver el contenido completo en un array al leer.
+    if FileExists(RutaArchivo) then
+      Append(Archivo) // Abrir para añadir al final
+    else
+      Rewrite(Archivo);
+
+    WriteLn(Archivo, '{');
+    WriteLn(Archivo, '  "id": ', Id, ',');
+    WriteLn(Archivo, '  "remitente": "', Remitente, '",');
+    WriteLn(Archivo, '  "destinatario": "', Destinatario, '",');
+    WriteLn(Archivo, '  "asunto": "', Asunto, '",');
+    WriteLn(Archivo, '  "mensaje": "', StringReplace(Mensaje, sLineBreak, '\n', [rfReplaceAll]), '",');
+    WriteLn(Archivo, '  "fecha": "', Fecha, '"');
+    WriteLn(Archivo, '}');
+  finally
+    CloseFile(Archivo);
+  end;
 end;
 
 // =============================================================================

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Grids,
-  UListaDobleEnlazadaCorreos, UGLOBAL, UVistadeCorreo;
+  UListaDobleEnlazadaCorreos, UGLOBAL, UVistadeCorreo, UPapelera, UAVLTreeBorradores, Process;
 
 type
 
@@ -16,7 +16,10 @@ type
     btnOrdenAlfabetico: TButton;
     editNumeroNoLeidos: TEdit;
     tablaInformacion: TStringGrid;
+    procedure bntInOrdenClick(Sender: TObject);
     procedure btnOrdenAlfabeticoClick(Sender: TObject);
+    procedure btnPostOrdenClick(Sender: TObject);
+    procedure btnPreOrdenClick(Sender: TObject);
     procedure editNumeroNoLeidosChange(Sender: TObject);
     procedure editNumeroNoLeidosClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -29,6 +32,8 @@ type
     procedure ActualizarTabla;
     procedure OrdenarPorAsunto;
     function ContarCorreosNoLeidos: Integer;
+    procedure NotificarPapeleraSiEstaAbierta;
+    procedure GenerarReporteArbol(TipoOrden: string);
   public
     procedure SetBandejaActual(Email: string);
   end;
@@ -158,9 +163,100 @@ begin
   ShowMessage('Correos ordenados por asunto (A-Z)');
 end;
 
+// AGREGAR ESTE MÉTODO NUEVO
+procedure TForm9.NotificarPapeleraSiEstaAbierta;
+var
+  i: Integer;
+begin
+  // Buscar si el formulario de papelera está abierto y actualizarlo
+  for i := 0 to Screen.FormCount - 1 do
+  begin
+    if Screen.Forms[i] is TForm11 then  // TForm11 es el formulario de la papelera
+    begin
+      (Screen.Forms[i] as TForm11).RefrescarPapelera;
+    end;
+  end;
+end;
+
 procedure TForm9.btnOrdenAlfabeticoClick(Sender: TObject);
 begin
   OrdenarPorAsunto;
+end;
+
+procedure TForm9.btnPreOrdenClick(Sender: TObject);
+begin
+  GenerarReporteArbol('Pre-Orden');
+end;
+
+procedure TForm9.bntInOrdenClick(Sender: TObject);
+begin
+  GenerarReporteArbol('In-Orden');
+end;
+
+procedure TForm9.btnPostOrdenClick(Sender: TObject);
+begin
+  GenerarReporteArbol('Post-Orden');
+end;
+
+procedure TForm9.GenerarReporteArbol(TipoOrden: string);
+var
+  ArbolTemporal: TAVLTree;
+  ActualCorreo: PCorreo;
+  i: Integer;
+  RutaCarpeta: string;
+  RutaDOT, RutaPNG: string;
+  Proc: TProcess;
+begin
+  if (BandejaActual = nil) or (BandejaActual^.BandejaEntrada.Count = 0) then
+  begin
+    ShowMessage('La bandeja de entrada está vacía. No se puede generar el árbol.');
+    Exit;
+  end;
+
+  // 1. Inicializar e insertar todos los correos en un Árbol AVL temporal
+  InicializarAVL(ArbolTemporal);
+
+  for i := 0 to BandejaActual^.BandejaEntrada.Count - 1 do
+  begin
+    ActualCorreo := ObtenerCorreoPorPosicion(BandejaActual^.BandejaEntrada, i);
+    if ActualCorreo <> nil then
+      // Usar ID como clave para el ordenamiento del árbol
+      InsertarEnAVL(ArbolTemporal, ActualCorreo^.Id, ActualCorreo^);
+  end;
+
+  // 2. Definir rutas
+  RutaCarpeta := ExtractFilePath(Application.ExeName) +
+                 StringReplace(UsuarioActual^.Email, '@', '-', [rfReplaceAll]) +
+                 '-Reportes';
+
+  ForceDirectories(RutaCarpeta);
+  RutaDOT := RutaCarpeta + PathDelim + 'bandeja_ordenada_' + LowerCase(TipoOrden) + '.dot';
+  RutaPNG := RutaCarpeta + PathDelim + 'bandeja_ordenada_' + LowerCase(TipoOrden) + '.png';
+
+  // 3. Generar archivo DOT (usando la función de AVL)
+  GenerarReporteDOTAVL(ArbolTemporal, RutaDOT);
+
+  // 4. Ejecutar Graphviz
+  if FileExists(RutaDOT) then
+  begin
+    Proc := TProcess.Create(nil);
+    try
+      Proc.Executable := 'dot';
+      Proc.Parameters.Add('-Tpng');
+      Proc.Parameters.Add(RutaDOT);
+      Proc.Parameters.Add('-o');
+      Proc.Parameters.Add(RutaPNG);
+      Proc.Options := [poWaitOnExit];
+      Proc.Execute;
+    finally
+      Proc.Free;
+    end;
+  end;
+
+  ShowMessage('Reporte DOT y PNG (' + TipoOrden + ') generado. Abra ' + RutaPNG + ' para ver el árbol.');
+
+  // 5. Liberar la memoria del árbol temporal
+  LiberarAVL(ArbolTemporal);
 end;
 
 procedure TForm9.tablaInformacionDblClick(Sender: TObject);
@@ -196,22 +292,7 @@ begin
       ActualizarTabla;
 
       // Notificar a la papelera para que se actualice si está abierta
-      NotificarPapeleraSiEstaAbierta;
-    end;
-  end;
-end;
-
-// Agregar este procedimiento en la sección private de UBandejaEntrada.pas
-procedure TForm9.NotificarPapeleraSiEstaAbierta;
-var
-  i: Integer;
-begin
-  // Buscar si el formulario de papelera está abierto y actualizarlo
-  for i := 0 to Screen.FormCount - 1 do
-  begin
-    if Screen.Forms[i] is TForm11 then
-    begin
-      (Screen.Forms[i] as TForm11).RefrescarPapelera;
+      NotificarPapeleraSiEstaAbierta;  // LLAMAR AL MÉTODO NUEVO
     end;
   end;
 end;

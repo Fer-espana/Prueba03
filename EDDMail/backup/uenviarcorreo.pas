@@ -185,32 +185,28 @@ begin
 
   BandejaPropia := ObtenerBandejaUsuario(UsuarioActual^.Email);
   if BandejaPropia = nil then
-  begin
     BandejaPropia := CrearBandejaUsuario(UsuarioActual^.Email);
-  end;
 
-  // 1. Generar ID y fecha
   NuevoId := GenerarIdCorreo;
   FechaActual := FormatDateTime('yyyy-mm-dd hh:nn:ss', Now);
 
-  // 2. Llenar el registro TCorreo (por valor)
+  // Llenar el registro TCorreo (por valor)
   CorreoBorrador.Id := NuevoId;
   CorreoBorrador.Remitente := UsuarioActual^.Email;
   CorreoBorrador.Destinatario := Destinatario;
   CorreoBorrador.Asunto := Asunto;
   CorreoBorrador.Mensaje := Mensaje;
   CorreoBorrador.Fecha := FechaActual;
-  CorreoBorrador.Estado := 'B'; // 'B' para Borrador (opcional, si se necesita un estado)
+  CorreoBorrador.Estado := 'B';
   CorreoBorrador.Programado := False;
   CorreoBorrador.Anterior := nil;
   CorreoBorrador.Siguiente := nil;
 
-  // 3. Insertar en el Árbol AVL
+  // Insertar en el Árbol AVL
   InsertarEnAVL(BandejaPropia^.Borradores, NuevoId, CorreoBorrador);
 
   ShowMessage('Borrador guardado exitosamente con ID: ' + IntToStr(NuevoId));
 
-  // 4. Limpiar campos
   editDestinatario.Text := '';
   editAsunto.Text := '';
   MemoMensaje.Text := '';

@@ -11,9 +11,9 @@ object Form9: TForm9
   LCLVersion = '2.2.6.0'
   object btnOrdenAlfabetico: TButton
     Left = 24
-    Height = 49
-    Top = 80
-    Width = 64
+    Height = 33
+    Top = 16
+    Width = 40
     Caption = 'Az'
     OnClick = btnOrdenAlfabeticoClick
     TabOrder = 0
@@ -39,5 +39,32 @@ object Form9: TForm9
     ParentFont = False
     TabOrder = 2
     Text = '0'
+  end
+  object btnPreOrden: TButton
+    Left = 24
+    Height = 25
+    Top = 106
+    Width = 75
+    Caption = 'Pre Orden'
+    OnClick = btnPreOrdenClick
+    TabOrder = 3
+  end
+  object bntInOrden: TButton
+    Left = 128
+    Height = 25
+    Top = 106
+    Width = 75
+    Caption = 'In Orden'
+    OnClick = bntInOrdenClick
+    TabOrder = 4
+  end
+  object btnPostOrden: TButton
+    Left = 224
+    Height = 25
+    Top = 106
+    Width = 75
+    Caption = 'Post Orden'
+    OnClick = btnPostOrdenClick
+    TabOrder = 5
   end
 end

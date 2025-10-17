@@ -222,6 +222,16 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UVistadeFavorito"/>
       </Unit>
+      <Unit>
+        <Filename Value="uavltreeborradores.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UAVLTreeBorradores"/>
+      </Unit>
+      <Unit>
+        <Filename Value="uarbolb.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UArbolB"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

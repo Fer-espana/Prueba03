@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Grids,
-  UListaDobleEnlazadaCorreos, UGLOBAL, UVistadeCorreo, UPapelera; // AGREGAR UPapelera
+  UListaDobleEnlazadaCorreos, UGLOBAL, UVistadeCorreo, UPapelera, UAVLTreeBorradores, Process;
 
 type
 
@@ -29,7 +29,8 @@ type
     procedure ActualizarTabla;
     procedure OrdenarPorAsunto;
     function ContarCorreosNoLeidos: Integer;
-    procedure NotificarPapeleraSiEstaAbierta; // AGREGAR ESTA DECLARACIÓN
+    procedure NotificarPapeleraSiEstaAbierta;
+
   public
     procedure SetBandejaActual(Email: string);
   end;

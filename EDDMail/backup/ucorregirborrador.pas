@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
   UGLOBAL, UAVLTreeBorradores, UListaSimpleUsuarios, UListaDobleEnlazadaCorreos,
-  UListaCircularContactos, UEnviarCorreo; // Incluir UEnviarCorreo para reutilizar la lógica de envío
+  UListaCircularContactos, UEnviarCorreo, UMatrizDispersaRelaciones;
 
 type
 

@@ -147,17 +147,17 @@ end;
 
 procedure TForm16.btnPreOrdenClick(Sender: TObject);
 begin
-  GenerarReporteArbol('Pre-Orden');
+  MostrarRecorrido('Pre-Orden');
 end;
 
 procedure TForm16.btnInOrdenClick(Sender: TObject);
 begin
-  GenerarReporteArbol('In-Orden');
+  MostrarRecorrido('In-Orden');
 end;
 
 procedure TForm16.btnPostOrdenClick(Sender: TObject);
 begin
-  GenerarReporteArbol('Post-Orden');
+  MostrarRecorrido('Post-Orden');
 end;
 
 procedure TForm16.tablaBorradoresDblClick(Sender: TObject);
@@ -175,7 +175,6 @@ begin
   if IDSeleccionado <> -1 then
   begin
     FormCorregir := TForm15.Create(Application);
-    // Asumimos que TForm15 está correctamente enlazado en uses
     FormCorregir.SetBorrador(IDSeleccionado, BandejaActual);
     FormCorregir.ShowModal;
     FormCorregir.Free;
@@ -187,53 +186,6 @@ begin
   begin
     ShowMessage('Seleccione un borrador válido.');
   end;
-end;
-
-procedure TForm16.GenerarReporteArbol(TipoOrden: string);
-var
-  RutaCarpeta: string;
-  RutaDOT, RutaPNG: string;
-  Proc: TProcess;
-begin
-  if (BandejaActual = nil) or (BandejaActual^.Borradores.Root = nil) then
-  begin
-    ShowMessage('No hay borradores para generar el árbol.');
-    Exit;
-  end;
-
-  // 1. Definir rutas
-  RutaCarpeta := ExtractFilePath(Application.ExeName) +
-                 StringReplace(UsuarioActual^.Email, '@', '-', [rfReplaceAll]) +
-                 '-Reportes';
-
-  ForceDirectories(RutaCarpeta);
-  RutaDOT := RutaCarpeta + PathDelim + 'borradores_' + LowerCase(TipoOrden) + '.dot';
-  RutaPNG := RutaCarpeta + PathDelim + 'borradores_' + LowerCase(TipoOrden) + '.png';
-
-  // 2. Generar archivo DOT (usando la función de AVL de UAVLTreeBorradores)
-  GenerarReporteDOTAVL(BandejaActual^.Borradores, RutaDOT);
-
-  // 3. Generar el recorrido en el Memo (Para visualización en el form)
-  MostrarRecorrido(TipoOrden);
-
-  // 4. Ejecutar Graphviz para PNG
-  if FileExists(RutaDOT) then
-  begin
-    Proc := TProcess.Create(nil);
-    try
-      Proc.Executable := 'dot';
-      Proc.Parameters.Add('-Tpng');
-      Proc.Parameters.Add(RutaDOT);
-      Proc.Parameters.Add('-o');
-      Proc.Parameters.Add(RutaPNG);
-      Proc.Options := [poWaitOnExit];
-      Proc.Execute;
-    finally
-      Proc.Free;
-    end;
-  end;
-
-  ShowMessage('Reporte DOT y PNG (' + TipoOrden + ') generado. Abra ' + RutaPNG + ' para ver el árbol.');
 end;
 
 end.

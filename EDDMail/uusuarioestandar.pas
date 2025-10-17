@@ -196,12 +196,12 @@ end;
 
 procedure TForm3.btnFavoritosClick(Sender: TObject);
 var
-  FormFavoritos: TForm17; // <--- TFORM17
+  FormFavoritos: TForm17;
 begin
   if UsuarioActual = nil then Exit;
 
   FormFavoritos := TForm17.Create(Application);
-  FormFavoritos.RefrescarDatos;
+  FormFavoritos.RefrescarDatos; // Llama a la carga del Árbol B
   FormFavoritos.Show;
 end;
 

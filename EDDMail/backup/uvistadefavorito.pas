@@ -29,7 +29,7 @@ type
     procedure FormDestroy(Sender: TObject);
   private
     CorreoActual: PCorreo;
-    BandejaActual: PBandejaUsuario; // Necesario para la eliminación
+    BandejaActual: PBandejaUsuario;
     procedure NotificarFormularioPrincipal;
   public
     procedure SetCorreoActual(Correo: PCorreo; Bandeja: PBandejaUsuario);
@@ -48,7 +48,6 @@ procedure TForm18.FormCreate(Sender: TObject);
 begin
   Caption := 'Vista de Correo Favorito';
 
-  // Configurar etiquetas
   Label1.Caption := 'Remitente:';
   Label2.Caption := 'Asunto:';
   Label3.Caption := 'Fecha:';
@@ -83,7 +82,7 @@ begin
       'L': EstadoStr := 'LEIDO';
       'E': EstadoStr := 'ELIMINADO';
       'P': EstadoStr := 'PROGRAMADO';
-      else EstadoStr := 'FAVORITO';
+      else EstadoStr := 'FAVORITO'; // Estado por defecto para el Árbol B
     end;
     lblEstado.Caption := EstadoStr;
 

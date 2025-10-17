@@ -1,36 +1,36 @@
 object Form9: TForm9
   Left = 529
-  Height = 370
+  Height = 326
   Top = 261
   Width = 415
   Caption = 'Bandeja de Entrada'
-  ClientHeight = 370
+  ClientHeight = 326
   ClientWidth = 415
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   LCLVersion = '2.2.6.0'
   object btnOrdenAlfabetico: TButton
-    Left = 24
-    Height = 49
-    Top = 80
-    Width = 64
+    Left = 32
+    Height = 33
+    Top = 32
+    Width = 72
     Caption = 'Az'
     OnClick = btnOrdenAlfabeticoClick
     TabOrder = 0
   end
   object tablaInformacion: TStringGrid
-    Left = 24
+    Left = 32
     Height = 176
-    Top = 144
+    Top = 83
     Width = 352
     TabOrder = 1
     OnClick = tablaInformacionClick
     OnDblClick = tablaInformacionDblClick
   end
   object editNumeroNoLeidos: TEdit
-    Left = 328
+    Left = 336
     Height = 38
-    Top = 93
+    Top = 32
     Width = 48
     Font.Height = -17
     Font.Name = 'Sans'

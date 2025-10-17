@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, UGLOBAL,
   UListaSimpleUsuarios, fpjson, jsonparser, UMatrizDispersaRelaciones,
-  UGestionComunidades, process;
+  UGestionComunidades, Process, UListaDobleEnlazadaCorreos;
 
 type
 
@@ -55,7 +55,7 @@ begin
     Application.MainForm.Show;
 end;
 
-// EN UROOT.pas - MODIFICAR CargarUsuariosDesdeJSON
+
 procedure TForm2.CargarUsuariosDesdeJSON;
 var
   Archivo: TextFile;
@@ -171,10 +171,13 @@ end;
 
 procedure TForm2.btnCargaMasivaClick(Sender: TObject);
 begin
-  // Recargar usuarios desde JSON
+  // Recargar solo usuarios (función existente)
   CargarUsuariosDesdeJSON;
-  ShowMessage('Usuarios cargados exitosamente desde Data/usuarios.json' + sLineBreak +
-              'Total: ' + IntToStr(ListaUsuariosGlobal.Count) + ' usuarios');
+
+  // NUEVA FUNCIÓN DE CARGA DE CORREOS
+  CargarCorreosDesdeJSON; // <--- LLAMAR A LA FUNCIÓN DE CARGA DE CORREOS
+
+  ShowMessage('Carga Masiva de Usuarios y Correos completada.');
 end;
 
 // =======================================================
@@ -183,6 +186,7 @@ end;
 procedure TForm2.btnReporteUsuariosClick(Sender: TObject);
 var
   RutaCarpeta, NombreDOT, NombrePNG, RutaDOT, RutaPNG: string;
+  Proc: TProcess; // VARIABLE PARA TProcess
 begin
   RutaCarpeta := ExtractFilePath(Application.ExeName) + 'Root-Reportes';
   NombreDOT := 'reporte_usuarios.dot';
@@ -197,17 +201,27 @@ begin
   // 2. Generar el archivo DOT
   GenerarReporteDOTUsuarios(ListaUsuariosGlobal, RutaDOT);
 
-  // 3. EJECUTAR GRAPHVIZ (Generación automática de PNG)
+  // 3. EJECUTAR GRAPHVIZ (Generación automática de PNG) - CORREGIDO
   if FileExists(RutaDOT) then
   begin
     // Comando: dot -Tpng <archivo.dot> -o <archivo.png>
-    ExecuteProcess('dot', ['-Tpng', RutaDOT, '-o', RutaPNG], [], [poWaitOnExit]);
+    Proc := TProcess.Create(nil);
+    try
+      Proc.Executable := 'dot';
+      Proc.Parameters.Add('-Tpng');
+      Proc.Parameters.Add(RutaDOT);
+      Proc.Parameters.Add('-o');
+      Proc.Parameters.Add(RutaPNG);
+      Proc.Options := [poWaitOnExit];
+      Proc.Execute;
+    finally
+      Proc.Free;
+    end;
   end;
 
   ShowMessage('Reporte de Usuarios (Lista Simple) generado en: ' + RutaDOT + sLineBreak +
               'Imagen PNG generada automáticamente en: ' + RutaPNG);
 end;
-
 
 // =======================================================
 // REPORTE DE RELACIONES (MATRIZ DISPERSA) - IMPLEMENTACIÓN DOT
@@ -215,6 +229,7 @@ end;
 procedure TForm2.btnReporteRelacionesClick(Sender: TObject);
 var
   RutaCarpeta, NombreDOT, NombrePNG, RutaDOT, RutaPNG: string;
+  Proc: TProcess; // VARIABLE PARA TProcess
 begin
   RutaCarpeta := ExtractFilePath(Application.ExeName) + 'Root-Reportes';
   NombreDOT := 'reporte_relaciones.dot';
@@ -229,11 +244,22 @@ begin
   // 2. Generar reporte de relaciones (Matriz Dispersa a DOT)
   GenerarReporteRelaciones(MatrizRelaciones, RutaDOT);
 
-  // 3. EJECUTAR GRAPHVIZ (Generación automática de PNG)
+  // 3. EJECUTAR GRAPHVIZ (Generación automática de PNG) - CORREGIDO
   if FileExists(RutaDOT) then
   begin
     // Comando: dot -Tpng <archivo.dot> -o <archivo.png>
-    ExecuteProcess('dot', ['-Tpng', RutaDOT, '-o', RutaPNG], [], [poWaitOnExit]);
+    Proc := TProcess.Create(nil);
+    try
+      Proc.Executable := 'dot';
+      Proc.Parameters.Add('-Tpng');
+      Proc.Parameters.Add(RutaDOT);
+      Proc.Parameters.Add('-o');
+      Proc.Parameters.Add(RutaPNG);
+      Proc.Options := [poWaitOnExit];
+      Proc.Execute;
+    finally
+      Proc.Free;
+    end;
   end;
 
   ShowMessage('Reporte de Relaciones (Matriz Dispersa) generado en: ' + RutaDOT + sLineBreak +

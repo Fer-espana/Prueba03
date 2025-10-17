@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, UListaSimpleUsuarios,
   UBandejaEntrada, UEnviarCorreo, UPapelera, UProgramarCorreo, UCorreosProgramados,
-  UAgregarContacto, UVentanaContactos, UActualizarPerfil, UGLOBAL, process, UVerBorradores;
+  UAgregarContacto, UVentanaContactos, UActualizarPerfil, UGLOBAL, process, UVerBorradores, UFavoritos;
 
 type
 
@@ -25,6 +25,7 @@ type
     btnGenerarReportes: TButton;
     btnRegresarLogin: TButton;
     btnVerBorradoresDeMensajes: TButton;
+    btnFavoritos: TButton;
     procedure btnBandejaEntradaClick(Sender: TObject);
     procedure bntEnviarCorreoClick(Sender: TObject);
     procedure btnPapeleraClick(Sender: TObject);
@@ -36,6 +37,7 @@ type
     procedure btnGenerarReportesClick(Sender: TObject);
     procedure btnRegresarLoginClick(Sender: TObject);
     procedure btnVerBorradoresDeMensajesClick(Sender: TObject);
+    procedure btnFavoritosClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -190,6 +192,17 @@ begin
   UsuarioActual := Usuario;
   if UsuarioActual <> nil then
     Caption := 'EDDMail - ' + UsuarioActual^.Nombre;
+end;
+
+procedure TForm3.btnFavoritosClick(Sender: TObject);
+var
+  FormFavoritos: TForm17; // <--- TFORM17
+begin
+  if UsuarioActual = nil then Exit;
+
+  FormFavoritos := TForm17.Create(Application);
+  FormFavoritos.RefrescarDatos;
+  FormFavoritos.Show;
 end;
 
 procedure TForm3.FormClose(Sender: TObject; var CloseAction: TCloseAction);

@@ -6,8 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Grids,
-  UListaDobleEnlazadaCorreos, UGLOBAL, UVistadeFavorito, UPapelera, UArbolB,
-  Process;
+  UListaDobleEnlazadaCorreos, UGLOBAL, UPapelera, UArbolB,
+  UVistadeFavorito, Process; // UVistadeFavorito es TForm18
 
 type
 
@@ -31,7 +31,7 @@ type
     procedure GenerarReporteFavoritos;
     function ObtenerIDSeleccionado: Integer;
     procedure RecorrerArbolBParaTabla(Nodo: PNodoB; var Fila: Integer);
-    procedure NotificarPapeleraSiEstaAbierta;
+    procedure NotificarPapeleraSiEstaAbierta; // Reutilizado de BandejaEntrada
   public
     procedure RefrescarDatos;
   end;
@@ -74,13 +74,14 @@ begin
   ActualizarTabla;
 end;
 
+// Recorrido In-Orden para listar los correos del Árbol B por ID
 procedure TForm17.RecorrerArbolBParaTabla(Nodo: PNodoB; var Fila: Integer);
 var
   i: Integer;
 begin
   if Nodo = nil then Exit;
 
-  // Recorrido In-Orden para listar por ID
+  // Recorrido In-Orden
   for i := 0 to Nodo^.ContadorClaves - 1 do
   begin
     if not Nodo^.EsHoja then
@@ -147,7 +148,7 @@ begin
     if Correo <> nil then
     begin
       FormVista := TForm18.Create(Application);
-      // Nota: Pasamos el puntero a la estructura TCorreo *dentro* del Árbol B.
+      // Pasamos la referencia del TCorreo dentro del Árbol B.
       FormVista.SetCorreoActual(Correo, BandejaActual);
       FormVista.ShowModal;
       FormVista.Free;
@@ -198,30 +199,6 @@ begin
   GenerarReporteFavoritos;
 end;
 
-// =============================================================================
-// EVENTOS VACÍOS PERO NECESARIOS
-// =============================================================================
-
-procedure TForm17.editNumeroFavoritosChange(Sender: TObject);
-begin
-  // Evento vacío
-end;
-
-procedure TForm17.tablaInformacionClick(Sender: TObject);
-begin
-  // Evento vacío
-end;
-
-procedure TForm17.FormClose(Sender: TObject; var CloseAction: TCloseAction);
-begin
-  CloseAction := caFree;
-end;
-
-procedure TForm17.FormDestroy(Sender: TObject);
-begin
-  // No liberar BandejaActual
-end;
-
 procedure TForm17.NotificarPapeleraSiEstaAbierta;
 var
   i: Integer;
@@ -234,5 +211,11 @@ begin
     end;
   end;
 end;
+
+// Eventos vacíos
+procedure TForm17.editNumeroFavoritosChange(Sender: TObject); begin end;
+procedure TForm17.tablaInformacionClick(Sender: TObject); begin end;
+procedure TForm17.FormClose(Sender: TObject; var CloseAction: TCloseAction); begin CloseAction := caFree; end;
+procedure TForm17.FormDestroy(Sender: TObject); begin end;
 
 end.
