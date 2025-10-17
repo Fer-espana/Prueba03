@@ -16,7 +16,8 @@ uses
   UVentanaContactos, UListaSimpleUsuarios, UListaDobleEnlazadaCorreos,
   UListaCircularContactos, UColaCorreosProgramados, UPilaPapelera,
   UMatrizDispersaRelaciones, UListadeListasComunidades, UGLOBAL, UNAVEGACION,
-  UGestionComunidades, UAVLTreeBorradores, UArbolB, UCorregirBorrador, UVerBorradores;
+  UGestionComunidades, UAVLTreeBorradores, UArbolB, UCorregirBorrador,
+  UVerBorradores, unit1, unit2;
 
 {$R *.res}
 
@@ -25,6 +26,8 @@ begin
   Application.Scaled:=True;
   Application.Initialize;
   Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TForm14, Form14);
+  Application.CreateForm(TForm16, Form16);
   // SOLO creamos Form1 (login), los demás se crean dinámicamente
   Application.Run;
 end.

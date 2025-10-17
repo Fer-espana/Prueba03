@@ -17,7 +17,7 @@ uses
   UListaCircularContactos, UColaCorreosProgramados, UPilaPapelera,
   UMatrizDispersaRelaciones, UListadeListasComunidades, UGLOBAL, UNAVEGACION,
   UGestionComunidades, UAVLTreeBorradores, UArbolB, UCorregirBorrador,
-  UVerBorradores, unit1, unit2;
+  UVerBorradores;
 
 {$R *.res}
 

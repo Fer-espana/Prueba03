@@ -187,7 +187,9 @@
       <Unit>
         <Filename Value="ugestioncomunidades.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form14"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
         <UnitName Value="UGestionComunidades"/>
       </Unit>
       <Unit>
@@ -207,14 +209,16 @@
       <Unit>
         <Filename Value="ufavoritos.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="Form14"/>
+        <ComponentName Value="Form17"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UFavoritos"/>
       </Unit>
       <Unit>
         <Filename Value="uvistadefavorito.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="Form16"/>
+        <ComponentName Value="Form18"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UVistadeFavorito"/>
       </Unit>
