@@ -12,7 +12,7 @@ type
   PNodeAVL = ^TNodeAVL;
   TNodeAVL = record
     Key: Integer;
-    Correo: TCorreo;
+    Correo: TCorreo; // El valor asociado a la clave es una copia del TCorreo
     Height: Integer;
     Left: PNodeAVL;
     Right: PNodeAVL;
@@ -34,16 +34,23 @@ procedure LiberarAVL(var Tree: TAVLTree);
 
 implementation
 
-// DECLARACIÓN FORWARD (CORRECCIÓN: MOVIDA AQUÍ)
+// DECLARACIÓN FORWARD (SOLUCIÓN AL ERROR DE COMPILACIÓN)
 procedure GenerarNodoDOT(Nodo: PNodeAVL; var Archivo: TextFile; var Contador: Integer); forward;
 
-// STUBS (Lógica pendiente)
-procedure InicializarAVL(var Tree: TAVLTree); begin Tree.Root := nil; end;
+// FUNCIONES BÁSICAS DE ARBOL AVL (Implementación mínima/stub para la compilación)
+// *****************************************************************************
+
+procedure InicializarAVL(var Tree: TAVLTree);
+begin
+  Tree.Root := nil;
+end;
+
+// STUBS (Lógica pendiente de implementación completa)
 procedure InsertarEnAVL(var Tree: TAVLTree; Key: Integer; Correo: TCorreo); begin end;
 function BuscarEnAVL(Tree: TAVLTree; Key: Integer): PCorreo; begin Result := nil; end;
 function EliminarDeAVL(var Tree: TAVLTree; Key: Integer): Boolean; begin Result := False; end;
 
-// IMPLEMENTACIÓN DE RECORRIDO
+// IMPLEMENTACIÓN DE RECORRIDO (Para TForm16)
 function RecorridoRecursivo(Nodo: PNodeAVL; Tipo: string): string;
 var
   LeftStr, RightStr: string;
@@ -51,7 +58,7 @@ begin
   if Nodo = nil then Exit('');
 
   LeftStr := RecorridoRecursivo(Nodo^.Left, Tipo);
-  RightStr := RecorrivoRecursivo(Nodo^.Right, Tipo);
+  RightStr := RecorridoRecursivo(Nodo^.Right, Tipo);
 
   case UpperCase(Tipo) of
     'PRE-ORDEN': Result := IntToStr(Nodo^.Key) + ' ' + LeftStr + RightStr;

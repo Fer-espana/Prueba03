@@ -175,13 +175,14 @@ begin
   // Cerrar este formulario
   Close;
 end;
-procedure TForm3.btnVerBorradoresDeMensajesClick(Sender: TObject); // Asume este nombre de evento
+
+procedure TForm3.btnVerBorradoresDeMensajesClick(Sender: TObject);
 var
   FormBorradores: TForm16;
 begin
   if UsuarioActual = nil then Exit;
 
-  FormBorradores := TForm16.Create(Application); // Usamos TForm16
+  FormBorradores := TForm16.Create(Application); // <--- Abre el TForm16 de Borradores
   FormBorradores.RefrescarDatos;
   FormBorradores.Show;
 end;
@@ -196,12 +197,12 @@ end;
 
 procedure TForm3.btnFavoritosClick(Sender: TObject);
 var
-  FormFavoritos: TForm17; // <--- TFORM17
+  FormFavoritos: TForm17;
 begin
   if UsuarioActual = nil then Exit;
 
   FormFavoritos := TForm17.Create(Application);
-  FormFavoritos.RefrescarDatos;
+  FormFavoritos.RefrescarDatos; // Llama a la carga del Árbol B
   FormFavoritos.Show;
 end;
 

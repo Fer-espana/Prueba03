@@ -7,11 +7,11 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
   UGLOBAL, UAVLTreeBorradores, UListaSimpleUsuarios, UListaDobleEnlazadaCorreos,
-  UListaCircularContactos, UEnviarCorreo, UMatrizDispersaRelaciones;
+  UListaCircularContactos, UMatrizDispersaRelaciones;
 
 type
 
-  { TForm15 } // <--- NUEVO NÚMERO DE FORMULARIO: 15
+  { TForm15 } // <--- TForm15
 
   TForm15 = class(TForm)
     editDestinatario: TEdit;
@@ -56,8 +56,6 @@ begin
 end;
 
 procedure TForm15.SetBorrador(AID: Integer; ABandeja: PBandejaUsuario);
-var
-  CorreoBorrador: PCorreo;
 begin
   BorradorID := AID;
   BandejaActual := ABandeja;
@@ -80,7 +78,6 @@ begin
       editDestinatario.Text := CorreoBorrador^.Destinatario;
       editAsunto.Text := CorreoBorrador^.Asunto;
       MemoMensaje.Text := CorreoBorrador^.Mensaje;
-      // editDestinatario.ReadOnly := True; // Podría ser editable, depende de la especificación
     end
     else
     begin
@@ -92,24 +89,20 @@ end;
 
 function TForm15.GenerarNuevoId: Integer;
 begin
-  // Utilizar la función global para asegurar un ID único en todo el sistema
   Result := GenerarIdCorreo;
 end;
 
 function TForm15.BuscarIndiceUsuario(Email: string): Integer;
 var
   Actual: PUsuario;
-  Index: Integer;
 begin
   Actual := ListaUsuariosGlobal.Cabeza;
-  Index := 0;
 
   while Actual <> nil do
   begin
     if Actual^.Email = Email then
-      Exit(Index);
+      Exit(Actual^.Id); // Devolvemos el ID
     Actual := Actual^.Siguiente;
-    Inc(Index);
   end;
 
   Result := -1; // No encontrado
@@ -119,12 +112,12 @@ function TForm15.ValidarDestinatario(Destinatario: string): Boolean;
 var
   Contacto: PContacto;
 begin
-  // Reutilizar la lógica de UEnviarCorreo (copiada aquí para evitar dependencia circular de forms)
+  Result := False;
   // 1. Verificar si el destinatario existe en el sistema
   if BuscarUsuarioPorEmail(ListaUsuariosGlobal, Destinatario) = nil then
   begin
     ShowMessage('Error: El destinatario no existe en el sistema');
-    Exit(False);
+    Exit;
   end;
 
   // 2. Verificar si está en los contactos del usuario actual
@@ -134,7 +127,7 @@ begin
     if Contacto = nil then
     begin
       ShowMessage('Error: El destinatario no está en sus contactos');
-      Exit(False);
+      Exit;
     end;
   end;
 
@@ -147,14 +140,12 @@ var
   BandejaDestino: PBandejaUsuario;
   NuevoId: Integer;
   FechaActual: string;
-  CorreoEnviado: PCorreo;
   IndiceRemitente, IndiceDestinatario: Integer;
 begin
   Destinatario := Trim(editDestinatario.Text);
   Asunto := Trim(editAsunto.Text);
   Mensaje := Trim(MemoMensaje.Text);
 
-  // Validaciones
   if not ValidarDestinatario(Destinatario) then
     Exit;
 
@@ -162,7 +153,6 @@ begin
   if BandejaDestino = nil then
     BandejaDestino := CrearBandejaUsuario(Destinatario);
 
-  // Generar nuevo ID y fecha
   NuevoId := GenerarNuevoId;
   FechaActual := FormatDateTime('yyyy-mm-dd hh:nn:ss', Now);
 
@@ -176,13 +166,13 @@ begin
     ShowMessage('Borrador enviado exitosamente y eliminado de la lista.');
 
     // 3. Actualizar matriz de relaciones
-    IndiceRemitente := BuscarIndiceUsuario(UsuarioActual^.Email); // Asume que devuelve el ID para la Matriz
-    IndiceDestinatario := BuscarIndiceUsuario(Destinatario);      // Asume que devuelve el ID para la Matriz
+    IndiceRemitente := BuscarIndiceUsuario(UsuarioActual^.Email);
+    IndiceDestinatario := BuscarIndiceUsuario(Destinatario);
 
     if (IndiceRemitente <> -1) and (IndiceDestinatario <> -1) then
-      InsertarValor(MatrizRelaciones, IndiceRemitente, IndiceDestinatario, 1); // <-- CORRECCIÓN
+      InsertarValor(MatrizRelaciones, IndiceRemitente, IndiceDestinatario, 1);
 
-    Close; // Cierra al finalizar
+    Close;
   end
   else
   begin

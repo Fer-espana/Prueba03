@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Grids, ComCtrls,
-  UGLOBAL, UAVLTreeBorradores, UListaDobleEnlazadaCorreos, UCorregirBorrador, Process; // <-- Añadir Process
+  UGLOBAL, UAVLTreeBorradores, UListaDobleEnlazadaCorreos, UCorregirBorrador, Process;
 
 type
 
@@ -18,7 +18,9 @@ type
     btnPostOrden: TButton;
     MemoRecorrido: TMemo;
     tablaBorradores: TStringGrid;
-    Label1: TLabel;
+    Label1: TLabel; // Para Recorrido
+    Label2: TLabel; // Para Borradores:
+    editNumeroBorradores: TEdit; // Contador de borradores
     btnModificarEnviar: TButton;
     procedure btnPreOrdenClick(Sender: TObject);
     procedure btnInOrdenClick(Sender: TObject);
@@ -27,6 +29,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure tablaBorradoresDblClick(Sender: TObject);
     procedure btnModificarEnviarClick(Sender: TObject);
+    procedure editNumeroBorradoresChange(Sender: TObject);
   private
     BandejaActual: PBandejaUsuario;
     procedure CargarTablaDesdeAVL;
@@ -51,6 +54,7 @@ procedure TForm16.FormCreate(Sender: TObject);
 begin
   Caption := 'Borradores de Mensajes (Árbol AVL)';
 
+  // Configuración de la tabla similar a Bandeja de Entrada
   tablaBorradores.ColCount := 4;
   tablaBorradores.RowCount := 1;
   tablaBorradores.Cells[0, 0] := 'ID';
@@ -76,18 +80,13 @@ procedure TForm16.RefrescarDatos;
 begin
   BandejaActual := ObtenerBandejaUsuario(UsuarioActual^.Email);
   if BandejaActual = nil then
-  begin
-    BandejaActual := CrearBandejaUsuario(UsuarioActual^.Email); // Crear si no existe
-  end;
+    BandejaActual := CrearBandejaUsuario(UsuarioActual^.Email);
 
   CargarTablaDesdeAVL;
   MemoRecorrido.Lines.Clear;
-
-  // Mostrar el recorrido In-Orden por defecto
-  MostrarRecorrido('In-Orden');
+  MostrarRecorrido('In-Orden'); // Mostrar In-Orden por defecto
 end;
 
-// Recorrido In-Orden para la tabla de visualización
 procedure TForm16.RecorrerInOrdenParaTabla(Nodo: PNodeAVL; var Fila: Integer);
 begin
   if Nodo = nil then Exit;
@@ -100,9 +99,7 @@ begin
   tablaBorradores.Cells[2, Fila] := Nodo^.Correo.Destinatario;
   tablaBorradores.Cells[3, Fila] := Nodo^.Correo.Fecha;
 
-  // Guardar la clave (ID) en la columna 0, fila Fila para el doble clic
-  tablaBorradores.Objects[0, Fila] := TObject(Nodo^.Key);
-
+  tablaBorradores.Objects[0, Fila] := TObject(Nodo^.Key); // Guardar ID
   Inc(Fila);
 
   RecorrerInOrdenParaTabla(Nodo^.Right, Fila);
@@ -115,10 +112,11 @@ var
 begin
   tablaBorradores.RowCount := 1;
   Fila := 1;
+
   RecorrerInOrdenParaTabla(BandejaActual^.Borradores.Root, Fila);
 
-  if tablaBorradores.RowCount = 1 then
-    tablaBorradores.RowCount := 2; // Asegurar al menos una fila visible si está vacía
+  // Actualizar contador
+  editNumeroBorradores.Text := IntToStr(Fila - 1);
 end;
 
 function TForm16.ObtenerIDSeleccionado: Integer;
@@ -129,36 +127,68 @@ begin
   FilaSeleccionada := tablaBorradores.Row;
 
   if (FilaSeleccionada > 0) and (FilaSeleccionada < tablaBorradores.RowCount) then
-  begin
     Result := Integer(tablaBorradores.Objects[0, FilaSeleccionada]);
-  end;
 end;
 
-// Implementación de recorrido (usa la función en UAVLTreeBorradores.pas)
 procedure TForm16.MostrarRecorrido(TipoRecorrido: string);
 var
   RecorridoStr: string;
 begin
   RecorridoStr := ObtenerRecorridoAVL(BandejaActual^.Borradores, TipoRecorrido);
   MemoRecorrido.Lines.Clear;
-  MemoRecorrido.Lines.Add('Recorrido ' + TipoRecorrido + ':');
+  MemoRecorrido.Lines.Add('Recorrido ' + TipoRecorrido + ' (ID):');
   MemoRecorrido.Lines.Add(RecorridoStr);
 end;
 
-procedure TForm16.btnPreOrdenClick(Sender: TObject);
+procedure TForm16.GenerarReporteArbol(TipoOrden: string);
+var
+  RutaCarpeta: string;
+  RutaDOT, RutaPNG: string;
+  Proc: TProcess;
 begin
-  MostrarRecorrido('Pre-Orden');
+  if (BandejaActual = nil) or (BandejaActual^.Borradores.Root = nil) then
+  begin
+    ShowMessage('No hay borradores para generar el árbol.');
+    Exit;
+  end;
+
+  RutaCarpeta := ExtractFilePath(Application.ExeName) +
+                 StringReplace(UsuarioActual^.Email, '@', '-', [rfReplaceAll]) +
+                 '-Reportes';
+
+  ForceDirectories(RutaCarpeta);
+  RutaDOT := RutaCarpeta + PathDelim + 'borradores_avl_' + LowerCase(TipoOrden) + '.dot';
+  RutaPNG := RutaCarpeta + PathDelim + 'borradores_avl_' + LowerCase(TipoOrden) + '.png';
+
+  // 2. Generar archivo DOT
+  GenerarReporteDOTAVL(BandejaActual^.Borradores, RutaDOT);
+
+  // 3. Generar el recorrido en el Memo y en la imagen PNG
+  MostrarRecorrido(TipoOrden);
+
+  if FileExists(RutaDOT) then
+  begin
+    Proc := TProcess.Create(nil);
+    try
+      Proc.Executable := 'dot';
+      Proc.Parameters.Add('-Tpng');
+      Proc.Parameters.Add(RutaDOT);
+      Proc.Parameters.Add('-o');
+      Proc.Parameters.Add(RutaPNG);
+      Proc.Options := [poWaitOnExit];
+      Proc.Execute;
+    finally
+      Proc.Free;
+    end;
+  end;
+
+  ShowMessage('Reporte DOT y PNG (' + TipoOrden + ') generado. Abra ' + RutaPNG + ' para ver el Árbol AVL.');
 end;
 
-procedure TForm16.btnInOrdenClick(Sender: TObject);
-begin
-  MostrarRecorrido('In-Orden');
-end;
 
-procedure TForm16.btnPostOrdenClick(Sender: TObject);
-begin
-  MostrarRecorrido('Post-Orden');
-end;
+procedure TForm16.btnPreOrdenClick(Sender: TObject); begin GenerarReporteArbol('Pre-Orden'); end;
+procedure TForm16.btnInOrdenClick(Sender: TObject); begin GenerarReporteArbol('In-Orden'); end;
+procedure TForm16.btnPostOrdenClick(Sender: TObject); begin GenerarReporteArbol('Post-Orden'); end;
 
 procedure TForm16.tablaBorradoresDblClick(Sender: TObject);
 begin
@@ -168,7 +198,7 @@ end;
 procedure TForm16.btnModificarEnviarClick(Sender: TObject);
 var
   IDSeleccionado: Integer;
-  FormCorregir: TForm15; // Usamos el TForm15
+  FormCorregir: TForm15;
 begin
   IDSeleccionado := ObtenerIDSeleccionado;
 
@@ -179,7 +209,6 @@ begin
     FormCorregir.ShowModal;
     FormCorregir.Free;
 
-    // Refrescar la tabla después de modificar/enviar/eliminar
     RefrescarDatos;
   end
   else
@@ -187,5 +216,7 @@ begin
     ShowMessage('Seleccione un borrador válido.');
   end;
 end;
+
+procedure TForm16.editNumeroBorradoresChange(Sender: TObject); begin end;
 
 end.

@@ -158,7 +158,6 @@ begin
   if not ValidarDestinatario(Destinatario) then
     Exit;
 
-  // Lógica de Envío (similar a UEnviarCorreo.pas)
   BandejaDestino := ObtenerBandejaUsuario(Destinatario);
   if BandejaDestino = nil then
     BandejaDestino := CrearBandejaUsuario(Destinatario);
@@ -177,11 +176,11 @@ begin
     ShowMessage('Borrador enviado exitosamente y eliminado de la lista.');
 
     // 3. Actualizar matriz de relaciones
-    IndiceRemitente := BuscarIndiceUsuario(UsuarioActual^.Email);
-    IndiceDestinatario := BuscarIndiceUsuario(Destinatario);
+    IndiceRemitente := BuscarIndiceUsuario(UsuarioActual^.Email); // Asume que devuelve el ID para la Matriz
+    IndiceDestinatario := BuscarIndiceUsuario(Destinatario);      // Asume que devuelve el ID para la Matriz
 
     if (IndiceRemitente <> -1) and (IndiceDestinatario <> -1) then
-      InsertarValor(MatrizRelaciones, IndiceRemitente, IndiceDestinatario, 1);
+      InsertarValor(MatrizRelaciones, IndiceRemitente, IndiceDestinatario, 1); // <-- CORRECCIÓN
 
     Close; // Cierra al finalizar
   end

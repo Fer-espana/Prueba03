@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Grids,
-  UListaDobleEnlazadaCorreos, UGLOBAL, UVistadeCorreo, UPapelera, UAVLTreeBorradores, Process;
+  UListaDobleEnlazadaCorreos, UGLOBAL, UVistadeCorreo, UPapelera, Process;
 
 type
 
