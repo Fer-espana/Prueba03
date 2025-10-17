@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, UListaSimpleUsuarios,
   UBandejaEntrada, UEnviarCorreo, UPapelera, UProgramarCorreo, UCorreosProgramados,
-  UAgregarContacto, UVentanaContactos, UActualizarPerfil, UGLOBAL, process;
+  UAgregarContacto, UVentanaContactos, UActualizarPerfil, UGLOBAL, process, UVerBorradores;
 
 type
 
@@ -24,6 +24,7 @@ type
     btnActualizarPerfil: TButton;
     btnGenerarReportes: TButton;
     btnRegresarLogin: TButton;
+    btnVerBorradoresDeMensajes: TButton;
     procedure btnBandejaEntradaClick(Sender: TObject);
     procedure bntEnviarCorreoClick(Sender: TObject);
     procedure btnPapeleraClick(Sender: TObject);
@@ -34,6 +35,7 @@ type
     procedure btnActualizarPerfilClick(Sender: TObject);
     procedure btnGenerarReportesClick(Sender: TObject);
     procedure btnRegresarLoginClick(Sender: TObject);
+    procedure btnVerBorradoresDeMensajesClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -170,6 +172,16 @@ begin
 
   // Cerrar este formulario
   Close;
+end;
+procedure TForm3.btnVerBorradoresDeMensajesClick(Sender: TObject); // Asume este nombre de evento
+var
+  FormBorradores: TForm16;
+begin
+  if UsuarioActual = nil then Exit;
+
+  FormBorradores := TForm16.Create(Application); // Usamos TForm16
+  FormBorradores.RefrescarDatos;
+  FormBorradores.Show;
 end;
 
 

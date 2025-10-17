@@ -1,11 +1,11 @@
 object Form3: TForm3
   Left = 752
-  Height = 453
+  Height = 500
   Top = 272
-  Width = 349
+  Width = 354
   Caption = 'Usuario Estandar'
-  ClientHeight = 453
-  ClientWidth = 349
+  ClientHeight = 500
+  ClientWidth = 354
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   LCLVersion = '2.2.6.0'
@@ -98,5 +98,14 @@ object Form3: TForm3
     Caption = 'Regresar a Login'
     OnClick = btnRegresarLoginClick
     TabOrder = 9
+  end
+  object btnVerBorradoresDeMensajes: TButton
+    Left = 72
+    Height = 25
+    Top = 432
+    Width = 216
+    Caption = 'Ver Borradores'
+    OnClick = btnVerBorradoresDeMensajesClick
+    TabOrder = 10
   end
 end

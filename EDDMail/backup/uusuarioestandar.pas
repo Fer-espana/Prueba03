@@ -7,8 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, UListaSimpleUsuarios,
   UBandejaEntrada, UEnviarCorreo, UPapelera, UProgramarCorreo, UCorreosProgramados,
-  UAgregarContacto, UVentanaContactos, UActualizarPerfil, UGLOBAL;
-  // Removemos UPrincipal para evitar referencia circular
+  UAgregarContacto, UVentanaContactos, UActualizarPerfil, UGLOBAL, process;
 
 type
 

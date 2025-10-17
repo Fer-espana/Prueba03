@@ -190,6 +190,18 @@
         <HasResources Value="True"/>
         <UnitName Value="UGestionComunidades"/>
       </Unit>
+      <Unit>
+        <Filename Value="ucorregirborrador.pas"/>
+        <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
+        <UnitName Value="UCorregirBorrador"/>
+      </Unit>
+      <Unit>
+        <Filename Value="uverborradores.pas"/>
+        <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
+        <UnitName Value="UVerBorradores"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
