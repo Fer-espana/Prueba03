@@ -66,6 +66,12 @@ begin
   InicializarListaCorreos(Nueva^.BandejaEntrada);
   InicializarListaContactos(Nueva^.Contactos);
   InicializarPila(Nueva^.Papelera);
+
+  // --- AÑADIR INICIALIZACIÓN DE FASE 2 ---
+  InicializarAVL(Nueva^.Borradores);   // Se asume InicializarAVL está en UAVLTreeBorradores.pas
+  InicializarArbolB(Nueva^.Favoritos); // Se asume InicializarArbolB está en UArbolB.pas
+  // ---------------------------------------
+
   Nueva^.Siguiente := ListaBandejas;
   ListaBandejas := Nueva;
   Result := Nueva;

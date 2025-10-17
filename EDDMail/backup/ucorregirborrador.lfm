@@ -12,19 +12,19 @@ object Form15: TForm15
     Left = 40
     Height = 19
     Top = 32
-    Width = 80
+    Width = 87
     Caption = 'ID Borrador:'
     ParentColor = False
   end
   object lblID: TLabel
-    Left = 128
+    Left = 140
     Height = 19
     Top = 32
-    Width = 9
+    Width = 10
     Caption = '0'
     Font.Style = [fsBold]
-    ParentColor = False
     ParentFont = False
+    ParentColor = False
   end
   object Label1: TLabel
     Left = 40

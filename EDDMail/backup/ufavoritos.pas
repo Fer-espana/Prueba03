@@ -7,16 +7,17 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Grids,
   UListaDobleEnlazadaCorreos, UGLOBAL, UVistadeFavorito, UPapelera, UArbolB,
-  Process; // Incluir Process para los reportes
+  Process;
 
 type
 
-  { TForm17 } // <--- NUEVO FORMULARIO: 17
+  { TForm17 } // <--- TForm17
 
   TForm17 = class(TForm)
     btnGenerarReporte: TButton;
-    editNumeroFavoritos: TEdit; // Similar a No Leídos, para el conteo total
+    editNumeroFavoritos: TEdit;
     tablaInformacion: TStringGrid;
+    Label1: TLabel; // Para 'Total Favoritos:'
     procedure btnGenerarReporteClick(Sender: TObject);
     procedure editNumeroFavoritosChange(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -30,7 +31,7 @@ type
     procedure GenerarReporteFavoritos;
     function ObtenerIDSeleccionado: Integer;
     procedure RecorrerArbolBParaTabla(Nodo: PNodoB; var Fila: Integer);
-    procedure NotificarPapeleraSiEstaAbierta; // Ya existe en BandejaEntrada
+    procedure NotificarPapeleraSiEstaAbierta;
   public
     procedure RefrescarDatos;
   end;
@@ -48,7 +49,7 @@ procedure TForm17.FormCreate(Sender: TObject);
 begin
   Caption := 'Correos Favoritos (Árbol B)';
 
-  // Configurar tabla (igual que BandejaEntrada pero sin columna de estado)
+  // Configurar tabla
   tablaInformacion.ColCount := 3;
   tablaInformacion.RowCount := 1;
   tablaInformacion.Cells[0, 0] := 'ID';
@@ -58,10 +59,10 @@ begin
   tablaInformacion.ColWidths[1] := 250;
   tablaInformacion.ColWidths[2] := 150;
 
-  // Hacer la tabla de solo lectura
   tablaInformacion.Options := tablaInformacion.Options - [goEditing];
 
   btnGenerarReporte.Caption := 'Generar Reporte (Árbol B)';
+  Label1.Caption := 'Total Favoritos:';
 end;
 
 procedure TForm17.RefrescarDatos;
@@ -73,20 +74,19 @@ begin
   ActualizarTabla;
 end;
 
-// Implementación adaptada para Árbol B
 procedure TForm17.RecorrerArbolBParaTabla(Nodo: PNodoB; var Fila: Integer);
 var
   i: Integer;
 begin
   if Nodo = nil then Exit;
 
-  // Recorrido In-Orden: Hijo[i] -> Clave[i] -> Hijo[i+1]
+  // Recorrido In-Orden para listar por ID
   for i := 0 to Nodo^.ContadorClaves - 1 do
   begin
     if not Nodo^.EsHoja then
       RecorrerArbolBParaTabla(Nodo^.Hijos[i], Fila);
 
-    // Procesar la clave (el correo es TCorreo por valor en la estructura TClaveB)
+    // Procesar la clave (TCorreo)
     tablaInformacion.RowCount := tablaInformacion.RowCount + 1;
     tablaInformacion.Cells[0, Fila] := IntToStr(Nodo^.Claves[i].ID);
     tablaInformacion.Cells[1, Fila] := Nodo^.Claves[i].Correo.Asunto;
@@ -105,7 +105,6 @@ procedure TForm17.ActualizarTabla;
 var
   Fila: Integer;
 begin
-  // Limpiar tabla (excepto encabezados)
   tablaInformacion.RowCount := 1;
   Fila := 1;
 
@@ -115,11 +114,10 @@ begin
     Exit;
   end;
 
-  // Llenar tabla con correos del Árbol B
   RecorrerArbolBParaTabla(BandejaActual^.Favoritos.Raiz, Fila);
 
   // Actualizar contador
-  editNumeroFavoritos.Text := IntToStr(Fila - 1); // Fila-1 es el número de correos
+  editNumeroFavoritos.Text := IntToStr(Fila - 1);
 end;
 
 function TForm17.ObtenerIDSeleccionado: Integer;
@@ -130,17 +128,14 @@ begin
   FilaSeleccionada := tablaInformacion.Row;
 
   if (FilaSeleccionada > 0) and (FilaSeleccionada < tablaInformacion.RowCount) then
-  begin
     Result := Integer(tablaInformacion.Objects[0, FilaSeleccionada]);
-  end;
 end;
-
 
 procedure TForm17.tablaInformacionDblClick(Sender: TObject);
 var
   IDSeleccionado: Integer;
   Correo: PCorreo;
-  FormVista: TForm18; // <--- Usamos TForm18
+  FormVista: TForm18; // <--- TForm18
 begin
   IDSeleccionado := ObtenerIDSeleccionado;
 
@@ -151,16 +146,13 @@ begin
 
     if Correo <> nil then
     begin
-      // Abrir formulario de vista de correo (TForm18)
       FormVista := TForm18.Create(Application);
+      // Nota: Pasamos el puntero a la estructura TCorreo *dentro* del Árbol B.
       FormVista.SetCorreoActual(Correo, BandejaActual);
       FormVista.ShowModal;
       FormVista.Free;
 
-      // Actualizar la tabla después de cerrar la vista (por si se eliminó)
       ActualizarTabla;
-
-      // Notificar a la papelera (para actualizar su vista si se eliminó)
       NotificarPapeleraSiEstaAbierta;
     end;
   end;
@@ -180,10 +172,8 @@ begin
   RutaArchivoDOT := RutaCarpeta + PathDelim + 'favoritos.dot';
   RutaArchivoPNG := RutaCarpeta + PathDelim + 'favoritos.png';
 
-  // Generar el reporte DOT (debe estar implementado en UArbolB.pas)
   GenerarReporteDOTArbolB(BandejaActual^.Favoritos, RutaArchivoDOT);
 
-  // Ejecutar Graphviz
   if FileExists(RutaArchivoDOT) then
   begin
     Proc := TProcess.Create(nil);
@@ -236,7 +226,6 @@ procedure TForm17.NotificarPapeleraSiEstaAbierta;
 var
   i: Integer;
 begin
-  // Reutilizamos la lógica de BandejaEntrada.pas
   for i := 0 to Screen.FormCount - 1 do
   begin
     if Screen.Forms[i] is TForm11 then

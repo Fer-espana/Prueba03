@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
   UListaCircularContactos, UListaDobleEnlazadaCorreos, UGLOBAL,
-  UListaSimpleUsuarios, UMatrizDispersaRelaciones;
+  UListaSimpleUsuarios, UMatrizDispersaRelaciones, UAVLTreeBorradores;
 
 type
 

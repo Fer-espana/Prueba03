@@ -75,6 +75,7 @@ object Form4: TForm4
     Top = 296
     Width = 176
     Caption = 'Guardar Borrador'
+    OnClick = btnGuardarBorradorClick
     TabOrder = 4
   end
 end
