@@ -33,7 +33,7 @@ type
 
   public
     procedure SetBandejaActual(Email: string);
-    procedure RefrescarDatos; // <--- CORRECCIÓN CLAVE: Método hecho público
+    procedure RefrescarDatos;
   end;
 
 var
@@ -63,11 +63,10 @@ begin
   tablaInformacion.Options := tablaInformacion.Options - [goEditing];
 end;
 
-// IMPLEMENTACIÓN AÑADIDA: Lógica de RefrescarDatos
+
 procedure TForm9.RefrescarDatos;
 begin
-  // La lógica de refresco simplemente llama a la función de llenado de tabla
-  ActualizarTabla;
+  ActualizarTabla; // Llama a la lógica de llenado de tabla
 end;
 
 procedure TForm9.SetBandejaActual(Email: string);
@@ -78,6 +77,7 @@ begin
 
   ActualizarTabla;
 end;
+// <--- LA IMPLEMENTACIÓN DUPLICADA FUE ELIMINADA DE ESTA POSICIÓN
 
 procedure TForm9.ActualizarTabla;
 var

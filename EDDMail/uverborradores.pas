@@ -5,8 +5,8 @@ unit UVerBorradores;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Grids, ComCtrls,
-  UGLOBAL, UAVLTreeBorradores, UListaDobleEnlazadaCorreos, UCorregirBorrador, Process;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls,
+  UGLOBAL, UAVLTreeBorradores, UListaDobleEnlazadaCorreos, UCorregirBorrador, Process; // Grids ELIMINADO
 
 type
 
@@ -17,7 +17,7 @@ type
     btnInOrden: TButton;
     btnPostOrden: TButton;
     MemoRecorrido: TMemo;
-    tablaBorradores: TStringGrid;
+    listViewBorradores: TListView; // <--- AÑADIDO
     Label1: TLabel;
     Label2: TLabel;
     editNumeroBorradores: TEdit;
@@ -27,12 +27,13 @@ type
     procedure btnPostOrdenClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure tablaBorradoresDblClick(Sender: TObject);
+    procedure tablaBorradoresDblClick(Sender: TObject); // Se mantiene por compatibilidad con LFM
     procedure btnModificarEnviarClick(Sender: TObject);
     procedure editNumeroBorradoresChange(Sender: TObject);
   private
     BandejaActual: PBandejaUsuario;
     procedure CargarTablaDesdeAVL;
+    procedure ConfigurarListView;
     function ObtenerIDSeleccionado: Integer;
     procedure RecorrerInOrdenParaTabla(Nodo: PNodeAVL; var Fila: Integer);
     procedure MostrarRecorrido(TipoRecorrido: string);
@@ -50,22 +51,33 @@ implementation
 
 { TForm16 }
 
+procedure TForm16.ConfigurarListView;
+begin
+  with listViewBorradores do
+  begin
+    ViewStyle := vsReport;
+    ReadOnly := True;
+    RowSelect := True;
+    Columns.Clear;
+
+    // Configurar columnas
+    Columns.Add.Caption := 'ID';
+    Columns.Add.Caption := 'Asunto';
+    Columns.Add.Caption := 'Destinatario';
+    Columns.Add.Caption := 'Fecha';
+
+    Columns[0].Width := 50;
+    Columns[1].Width := 150;
+    Columns[2].Width := 150;
+    Columns[3].Width := 120;
+  end;
+end;
+
 procedure TForm16.FormCreate(Sender: TObject);
 begin
   Caption := 'Borradores de Mensajes (Árbol AVL)';
 
-  // Configuración de la tabla similar a Bandeja de Entrada
-  tablaBorradores.ColCount := 4;
-  tablaBorradores.RowCount := 1;
-  tablaBorradores.Cells[0, 0] := 'ID';
-  tablaBorradores.Cells[1, 0] := 'Asunto';
-  tablaBorradores.Cells[2, 0] := 'Destinatario';
-  tablaBorradores.Cells[3, 0] := 'Fecha';
-  tablaBorradores.ColWidths[0] := 50;
-  tablaBorradores.ColWidths[1] := 150;
-  tablaBorradores.ColWidths[2] := 150;
-  tablaBorradores.ColWidths[3] := 120;
-  tablaBorradores.Options := tablaBorradores.Options - [goEditing];
+  ConfigurarListView;
 
   Label1.Caption := 'Recorrido del Árbol AVL:';
   btnModificarEnviar.Caption := 'Modificar/Enviar Borrador';
@@ -89,19 +101,22 @@ begin
 end;
 
 procedure TForm16.RecorrerInOrdenParaTabla(Nodo: PNodeAVL; var Fila: Integer);
+var
+  Item: TListItem;
 begin
   if Nodo = nil then Exit;
 
   RecorrerInOrdenParaTabla(Nodo^.Left, Fila);
 
-  tablaBorradores.RowCount := tablaBorradores.RowCount + 1;
-  tablaBorradores.Cells[0, Fila] := IntToStr(Nodo^.Key);
-  tablaBorradores.Cells[1, Fila] := Nodo^.Correo.Asunto;
-  tablaBorradores.Cells[2, Fila] := Nodo^.Correo.Destinatario;
-  tablaBorradores.Cells[3, Fila] := Nodo^.Correo.Fecha;
+  // Procesar el nodo
+  Item := listViewBorradores.Items.Add;
+  Item.Caption := IntToStr(Nodo^.Key); // Columna 0 (ID)
+  Item.SubItems.Add(Nodo^.Correo.Asunto); // Columna 1
+  Item.SubItems.Add(Nodo^.Correo.Destinatario); // Columna 2
+  Item.SubItems.Add(Nodo^.Correo.Fecha); // Columna 3
 
-  // CORRECCIÓN: Usar PtrInt para almacenar el ID
-  tablaBorradores.Objects[0, Fila] := TObject(PtrInt(Nodo^.Key));
+  // Guardar el ID en el puntero de datos del TListView
+  Item.Data := Pointer(PtrInt(Nodo^.Key)); // Uso de PtrInt (solución para la portabilidad)
   Inc(Fila);
 
   RecorrerInOrdenParaTabla(Nodo^.Right, Fila);
@@ -112,25 +127,25 @@ procedure TForm16.CargarTablaDesdeAVL;
 var
   Fila: Integer;
 begin
-  tablaBorradores.RowCount := 1;
-  Fila := 1;
+  listViewBorradores.Items.Clear; // Limpiar TListView
+  Fila := 0;
 
   RecorrerInOrdenParaTabla(BandejaActual^.Borradores.Root, Fila);
 
   // Actualizar contador
-  editNumeroBorradores.Text := IntToStr(Fila - 1);
+  editNumeroBorradores.Text := IntToStr(listViewBorradores.Items.Count);
 end;
 
 function TForm16.ObtenerIDSeleccionado: Integer;
 var
-  FilaSeleccionada: Integer;
+  Item: TListItem;
 begin
   Result := -1;
-  FilaSeleccionada := tablaBorradores.Row;
+  Item := listViewBorradores.Selected; // Obtener el ítem seleccionado
 
-  if (FilaSeleccionada > 0) and (FilaSeleccionada < tablaBorradores.RowCount) then
-    // CORRECCIÓN: Usar PtrInt para recuperar el ID
-    Result := PtrInt(tablaBorradores.Objects[0, FilaSeleccionada]);
+  if Assigned(Item) then
+    // Recuperar el ID guardado en TListItem.Data
+    Result := PtrInt(Item.Data); // Uso de PtrInt (solución para la portabilidad)
 end;
 
 procedure TForm16.MostrarRecorrido(TipoRecorrido: string);

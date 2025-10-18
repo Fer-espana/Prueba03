@@ -5,7 +5,7 @@ unit UFavoritos;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Grids,
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls, // Grids ELIMINADO
   UListaDobleEnlazadaCorreos, UGLOBAL, UPapelera, UArbolB,
   UVistadeFavorito, Process; // UVistadeFavorito es TForm18
 
@@ -16,23 +16,24 @@ type
   TForm17 = class(TForm)
     btnGenerarReporte: TButton;
     editNumeroFavoritos: TEdit;
-    tablaInformacion: TStringGrid;
+    listViewFavoritos: TListView; // <--- AÑADIDO
     Label1: TLabel; // Para 'Total Favoritos:'
     procedure btnGenerarReporteClick(Sender: TObject);
     procedure editNumeroFavoritosChange(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure FormShow(Sender: TObject); // <--- CORRECCIÓN CLAVE: Declaración FormShow
+    procedure FormShow(Sender: TObject);
     procedure tablaInformacionClick(Sender: TObject);
     procedure tablaInformacionDblClick(Sender: TObject);
   private
     BandejaActual: PBandejaUsuario;
     procedure ActualizarTabla;
+    procedure ConfigurarListView;
     procedure GenerarReporteFavoritos;
     function ObtenerIDSeleccionado: Integer;
     procedure RecorrerArbolBParaTabla(Nodo: PNodoB; var Fila: Integer);
-    procedure NotificarPapeleraSiEstaAbierta; // Reutilizado de BandejaEntrada
+    procedure NotificarPapeleraSiEstaAbierta;
   public
     procedure RefrescarDatos;
   end;
@@ -46,30 +47,40 @@ implementation
 
 { TForm17 }
 
+procedure TForm17.ConfigurarListView;
+begin
+  with listViewFavoritos do
+  begin
+    ViewStyle := vsReport;
+    ReadOnly := True;
+    RowSelect := True;
+    Columns.Clear;
+
+    // Configurar columnas
+    Columns.Add.Caption := 'ID';
+    Columns.Add.Caption := 'Asunto';
+    Columns.Add.Caption := 'Remitente';
+
+    Columns[0].Width := 50;
+    Columns[1].Width := 250;
+    Columns[2].Width := 150;
+  end;
+end;
+
+
 procedure TForm17.FormCreate(Sender: TObject);
 begin
   Caption := 'Correos Favoritos (Árbol B)';
 
-  // Configurar tabla
-  tablaInformacion.ColCount := 3;
-  tablaInformacion.RowCount := 1;
-  tablaInformacion.Cells[0, 0] := 'ID';
-  tablaInformacion.Cells[1, 0] := 'Asunto';
-  tablaInformacion.Cells[2, 0] := 'Remitente';
-  tablaInformacion.ColWidths[0] := 50;
-  tablaInformacion.ColWidths[1] := 250;
-  tablaInformacion.ColWidths[2] := 150;
-
-  tablaInformacion.Options := tablaInformacion.Options - [goEditing];
+  // Configurar TListView (llamando al nuevo procedimiento)
+  ConfigurarListView;
 
   btnGenerarReporte.Caption := 'Generar Reporte (Árbol B)';
   Label1.Caption := 'Total Favoritos:';
 end;
 
-// <--- CORRECCIÓN CLAVE: Implementación FormShow
 procedure TForm17.FormShow(Sender: TObject);
 begin
-  // Esto asegura que la tabla se cargue correctamente cada vez que el formulario se muestre
   RefrescarDatos;
 end;
 
@@ -82,30 +93,32 @@ begin
   ActualizarTabla;
 end;
 
-// Recorrido In-Orden para listar los correos del Árbol B por ID
 procedure TForm17.RecorrerArbolBParaTabla(Nodo: PNodoB; var Fila: Integer);
 var
   i: Integer;
+  Item: TListItem; // Objeto para TListView
 begin
   if Nodo = nil then Exit;
 
-  // Recorrido In-Orden
+  // Recorrido In-Orden:
   for i := 0 to Nodo^.ContadorClaves - 1 do
   begin
+    // 1. Recorrer el hijo (solo si no es hoja)
     if not Nodo^.EsHoja then
       RecorrerArbolBParaTabla(Nodo^.Hijos[i], Fila);
 
-    // Procesar la clave (TCorreo)
-    tablaInformacion.RowCount := tablaInformacion.RowCount + 1;
-    tablaInformacion.Cells[0, Fila] := IntToStr(Nodo^.Claves[i].ID);
-    tablaInformacion.Cells[1, Fila] := Nodo^.Claves[i].Correo.Asunto;
-    tablaInformacion.Cells[2, Fila] := Nodo^.Claves[i].Correo.Remitente;
-    // CORRECCIÓN DE CASTING: Uso de Pointer para convertir Integer a TObject
-    tablaInformacion.Objects[0, Fila] := TObject(Pointer(Nodo^.Claves[i].ID)); // Guardar ID
+    // 2. Procesar la clave (TCorreo)
+    Item := listViewFavoritos.Items.Add;
+    Item.Caption := IntToStr(Nodo^.Claves[i].ID); // Columna 0
+    Item.SubItems.Add(Nodo^.Claves[i].Correo.Asunto); // Columna 1
+    Item.SubItems.Add(Nodo^.Claves[i].Correo.Remitente); // Columna 2
+
+    // Guardar el ID en TListItem.Data usando PtrInt (solución para la portabilidad)
+    Item.Data := Pointer(PtrInt(Nodo^.Claves[i].ID));
     Inc(Fila);
   end;
 
-  // Recorrer el último hijo
+  // 3. Recorrer el último hijo (solo si no es hoja)
   if not Nodo^.EsHoja then
     RecorrerArbolBParaTabla(Nodo^.Hijos[Nodo^.ContadorClaves], Fila);
 end;
@@ -115,8 +128,8 @@ procedure TForm17.ActualizarTabla;
 var
   Fila: Integer;
 begin
-  tablaInformacion.RowCount := 1;
-  Fila := 1;
+  listViewFavoritos.Items.Clear; // Limpiar TListView
+  Fila := 0; // Fila comienza en 0 para TListView.Items.Count
 
   if (BandejaActual = nil) or (BandejaActual^.Favoritos.Raiz = nil) then
   begin
@@ -127,19 +140,19 @@ begin
   RecorrerArbolBParaTabla(BandejaActual^.Favoritos.Raiz, Fila);
 
   // Actualizar contador
-  editNumeroFavoritos.Text := IntToStr(Fila - 1);
+  editNumeroFavoritos.Text := IntToStr(listViewFavoritos.Items.Count);
 end;
 
 function TForm17.ObtenerIDSeleccionado: Integer;
 var
-  FilaSeleccionada: Integer;
+  Item: TListItem;
 begin
   Result := -1;
-  FilaSeleccionada := tablaInformacion.Row;
+  Item := listViewFavoritos.Selected; // Obtener el ítem seleccionado
 
-  if (FilaSeleccionada > 0) and (FilaSeleccionada < tablaInformacion.RowCount) then
-    // CORRECCIÓN DE CASTING: Uso de Pointer para convertir TObject a Integer
-    Result := Integer(Pointer(tablaInformacion.Objects[0, FilaSeleccionada]));
+  if Assigned(Item) then
+    // Recuperar el ID guardado en TListItem.Data
+    Result := PtrInt(Item.Data);
 end;
 
 procedure TForm17.tablaInformacionDblClick(Sender: TObject);
@@ -217,6 +230,7 @@ begin
   begin
     if Screen.Forms[i] is TForm11 then
     begin
+      // Asume que TForm11 tiene el método RefrescarPapelera
       (Screen.Forms[i] as TForm11).RefrescarPapelera;
     end;
   end;

@@ -33,6 +33,7 @@ type
 
   public
     procedure SetBandejaActual(Email: string);
+    procedure RefrescarDatos;
   end;
 
 var
@@ -60,6 +61,21 @@ begin
 
   // Hacer la tabla de solo lectura
   tablaInformacion.Options := tablaInformacion.Options - [goEditing];
+end;
+
+
+procedure TForm9.RefrescarDatos;
+begin
+  ActualizarTabla; // Llama a la lógica de llenado de tabla
+end;
+
+procedure TForm9.SetBandejaActual(Email: string);
+begin
+  BandejaActual := ObtenerBandejaUsuario(Email);
+  if BandejaActual = nil then
+    BandejaActual := CrearBandejaUsuario(Email);
+
+  ActualizarTabla;
 end;
 
 procedure TForm9.SetBandejaActual(Email: string);
@@ -213,7 +229,7 @@ begin
       ActualizarTabla;
 
       // Notificar a la papelera para que se actualice si está abierta
-      NotificarPapeleraSiEstaAbierta;  // LLAMAR AL MÉTODO NUEVO
+      NotificarPapeleraSiEstaAbierta;
     end;
   end;
 end;

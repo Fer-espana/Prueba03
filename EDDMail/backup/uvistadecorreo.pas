@@ -113,8 +113,8 @@ begin
     if Screen.Forms[i] is TForm3 then
     begin
       FormUsuario := (Screen.Forms[i] as TForm3);
-      // La llamada falla si RefrescarDatos no es public en TForm3
-      FormUsuario.RefrescarDatos; // Llama al método RefrescarDatos de TForm3
+      // Llama al método RefrescarDatos, que ahora es public en TForm3
+      FormUsuario.RefrescarDatos;
       Break; // Salir después de encontrar el formulario
     end;
   end;
@@ -198,7 +198,6 @@ begin
   CorreoCopia := CorreoActual^;
 
   // 3. Insertar en el Árbol B de Favoritos
-  // CORRECCIÓN 2: Se usa el nombre calificado para evitar el error 'untyped'
   if UArbolB.InsertarEnArbolB(BandejaPropia^.Favoritos, CorreoCopia.Id, CorreoCopia) then
   begin
     ShowMessage('Correo marcado como favorito (Árbol B) con ID: ' + IntToStr(CorreoCopia.Id));

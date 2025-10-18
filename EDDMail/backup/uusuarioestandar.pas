@@ -45,7 +45,7 @@ type
     UsuarioActual: PUsuario;
   public
     procedure SetUsuarioActual(Usuario: PUsuario);
-    procedure RefrescarDatos; // Método hecho público para ser llamado desde UVistadeCorreo.pas
+    procedure RefrescarDatos; // Método público para la notificación global
   end;
 
 var
@@ -53,7 +53,7 @@ var
 
 implementation
 
-// CORRECCIÓN: Se elimina el uses duplicado. Las unidades ya están en la sección interface.
+// CORRECCIÓN: Se elimina el uses duplicado que causaba errores.
 // uses UBandejaEntrada, UVerBorradores, UFavoritos;
 
 {$R *.lfm}
@@ -71,11 +71,11 @@ begin
   // Limpiar recursos si es necesario
 end;
 
-// LÓGICA DE REFRESCADO GLOBAL (Llamada a refrescar formularios secundarios)
+// LÓGICA DE REFRESCADO GLOBAL
 procedure TForm3.RefrescarDatos;
 begin
   // Buscamos las instancias globales de los formularios y llamamos a su método RefrescarDatos,
-  // siempre que estén asignados (Assigned) y visibles.
+  // si están asignados y visibles.
 
   // 1. Refrescar Bandeja de Entrada (TForm9)
   if Assigned(Form9) and (Form9.Visible) then

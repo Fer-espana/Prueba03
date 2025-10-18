@@ -42,8 +42,8 @@ var
 
 implementation
 
-// Unidades movidas a la implementación para evitar referencias circulares
-uses UUsuarioEstandar, UFavoritos;
+// CORRECCIÓN: Se elimina UFavoritos, ya que solo se usa UUsuarioEstandar para TForm3
+uses UUsuarioEstandar;
 
 {$R *.lfm}
 
@@ -113,7 +113,7 @@ begin
     if Screen.Forms[i] is TForm3 then
     begin
       FormUsuario := (Screen.Forms[i] as TForm3);
-      // Llama al método RefrescarDatos, que ahora es public en TForm3
+      // Llama al método RefrescarDatos, que es público en TForm3
       FormUsuario.RefrescarDatos;
       Break; // Salir después de encontrar el formulario
     end;

@@ -13,20 +13,20 @@ object Form16: TForm16
     Left = 40
     Height = 19
     Top = 336
-    Width = 157
+    Width = 196
     Caption = 'Recorrido del Árbol AVL:'
     ParentColor = False
   end
-  object listViewBorradores: TListView
+  object listViewBorradores: TListView 
     Left = 40
     Height = 250
     Top = 72
     Width = 520
     Columns = <>
+    ViewStyle = vsReport
     ReadOnly = True
     RowSelect = True
     TabOrder = 0
-    ViewStyle = vsReport
     OnDblClick = tablaBorradoresDblClick
   end
   object btnPreOrden: TButton
@@ -89,7 +89,7 @@ object Form16: TForm16
     Left = 440
     Height = 19
     Top = 42
-    Width = 78
+    Width = 65
     Caption = 'Borradores:'
     ParentColor = False
   end

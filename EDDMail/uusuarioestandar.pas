@@ -45,16 +45,13 @@ type
     UsuarioActual: PUsuario;
   public
     procedure SetUsuarioActual(Usuario: PUsuario);
-    procedure RefrescarDatos; // Método público para la notificación global
+    procedure RefrescarDatos;
   end;
 
 var
   Form3: TForm3;
 
 implementation
-
-// CORRECCIÓN: Se elimina el uses duplicado que causaba errores.
-// uses UBandejaEntrada, UVerBorradores, UFavoritos;
 
 {$R *.lfm}
 
