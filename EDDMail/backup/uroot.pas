@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, UGLOBAL,
   UListaSimpleUsuarios, fpjson, jsonparser, UMatrizDispersaRelaciones,
-  UGestionComunidades, Process, UListaDobleEnlazadaCorreos;
+  UGestionComunidades, Process, UListaDobleEnlazadaCorreos, UPrincipal;
 
 type
 
@@ -15,6 +15,7 @@ type
 
   TForm2 = class(TForm)
     btnCargaMasiva: TButton;
+    btnCerrarSesion: TButton;
     btnGestionComunidades: TButton;
     btnReporteUsuarios: TButton;
     btnReporteRelaciones: TButton;
@@ -22,12 +23,15 @@ type
     procedure btnReporteUsuariosClick(Sender: TObject);
     procedure btnReporteRelacionesClick(Sender: TObject);
     procedure btnGestionComunidadesClick(Sender: TObject);
+    procedure btnCerrarSesionClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
     procedure CargarUsuariosDesdeJSON;
     procedure GuardarUsuariosEnJSON;
+    // CORRECCIÓN 1: Se declara el método en la interface (section private)
+    procedure CargarCorreosDesdeJSON;
   public
 
   end;
@@ -274,6 +278,21 @@ begin
   FormGestion.Show;
 end;
 
+procedure TForm2.btnCerrarSesionClick(Sender: TObject);
+var
+  Form1 : TForm1;
+begin
+  // 1. Limpiar el estado de la sesión Root (aunque FormDestroy lo hace, es explícito)
+  EsUsuarioRoot := False;
+  UsuarioActual := nil;
+
+  // 2. Mostrar el formulario de Login (TForm1 de UPrincipal)
+  Form1.Show;
+
+  // 3. Cerrar el formulario actual (Root)
+  Self.Close;
+end;
+
 procedure TForm2.CargarCorreosDesdeJSON;
 var
   Archivo: TextFile;
@@ -329,26 +348,29 @@ begin
           if BandejaDestino = nil then
             BandejaDestino := CrearBandejaUsuario(CorreoObj.Get('destinatario', ''));
 
-          // Insertar correo
-          InsertarCorreo(BandejaDestino^.BandejaEntrada,
-            CorreoObj.Get('id', 0),
-            CorreoObj.Get('remitente', ''),
-            CorreoObj.Get('destinatario', ''),
-            EstadoCorreo,
-            False, // No son programados en esta carga
-            CorreoObj.Get('asunto', ''),
-            FormatDateTime('yyyy-mm-dd hh:nn:ss', Now), // Usar fecha actual para la carga
-            CorreoObj.Get('mensaje', ''));
-
-          // Actualizar Matriz de Relaciones (solo si remitente/destinatario son usuarios válidos)
-          if (BuscarUsuarioPorEmail(ListaUsuariosGlobal, CorreoObj.Get('remitente', '')) <> nil) and
-             (BuscarUsuarioPorEmail(ListaUsuariosGlobal, CorreoObj.Get('destinatario', '')) <> nil) then
+          // Insertar correo: Seguridad contra punteros nulos
+          if BandejaDestino <> nil then // <--- COMPROBACIÓN AÑADIDA
           begin
-             // Asumiendo que BuscarIndiceUsuario devuelve el ID
-             InsertarValor(MatrizRelaciones,
-                           BuscarUsuarioPorEmail(ListaUsuariosGlobal, CorreoObj.Get('remitente', ''))^.Id,
-                           BuscarUsuarioPorEmail(ListaUsuariosGlobal, CorreoObj.Get('destinatario', ''))^.Id,
-                           1);
+            InsertarCorreo(BandejaDestino^.BandejaEntrada, // Aquí se inserta en la BandejaEntrada
+              CorreoObj.Get('id', 0),
+              CorreoObj.Get('remitente', ''),
+              CorreoObj.Get('destinatario', ''),
+              EstadoCorreo,
+              False, // No son programados en esta carga
+              CorreoObj.Get('asunto', ''),
+              FormatDateTime('yyyy-mm-dd hh:nn:ss', Now), // Usar fecha actual para la carga
+              CorreoObj.Get('mensaje', ''));
+
+            // Actualizar Matriz de Relaciones (solo si remitente/destinatario son usuarios válidos)
+            if (BuscarUsuarioPorEmail(ListaUsuariosGlobal, CorreoObj.Get('remitente', '')) <> nil) and
+               (BuscarUsuarioPorEmail(ListaUsuariosGlobal, CorreoObj.Get('destinatario', '')) <> nil) then
+            begin
+              // Asumiendo que BuscarIndiceUsuario devuelve el ID
+              InsertarValor(MatrizRelaciones,
+                            BuscarUsuarioPorEmail(ListaUsuariosGlobal, CorreoObj.Get('remitente', ''))^.Id,
+                            BuscarUsuarioPorEmail(ListaUsuariosGlobal, CorreoObj.Get('destinatario', ''))^.Id,
+                            1);
+            end;
           end;
         end;
         ShowMessage(IntToStr(CorreosArray.Count) + ' correos cargados exitosamente.');

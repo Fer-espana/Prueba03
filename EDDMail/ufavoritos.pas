@@ -23,7 +23,7 @@ type
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure FormShow(Sender: TObject); // <--- DECLARACIÓN AÑADIDA
+    procedure FormShow(Sender: TObject); // <--- CORRECCIÓN: Declaración FormShow con firma correcta
     procedure tablaInformacionClick(Sender: TObject);
     procedure tablaInformacionDblClick(Sender: TObject);
   private
@@ -66,13 +66,12 @@ begin
   Label1.Caption := 'Total Favoritos:';
 end;
 
-// <--- IMPLEMENTACIÓN AÑADIDA
+// <--- CORRECCIÓN: Implementación FormShow
 procedure TForm17.FormShow(Sender: TObject);
 begin
-  // Asegura que los datos se refresquen cada vez que el formulario se muestre
+  // Esto asegura que los datos se refresquen cada vez que el formulario se muestre
   RefrescarDatos;
 end;
-
 
 procedure TForm17.RefrescarDatos;
 begin
@@ -101,7 +100,8 @@ begin
     tablaInformacion.Cells[0, Fila] := IntToStr(Nodo^.Claves[i].ID);
     tablaInformacion.Cells[1, Fila] := Nodo^.Claves[i].Correo.Asunto;
     tablaInformacion.Cells[2, Fila] := Nodo^.Claves[i].Correo.Remitente;
-    tablaInformacion.Objects[0, Fila] := TObject(Pointer(Nodo^.Claves[i].ID)); // Guardar ID
+    // Uso de Pointer para convertir Integer a TObject y evitar Illegal Type Conversion
+    tablaInformacion.Objects[0, Fila] := TObject(Pointer(Nodo^.Claves[i].ID));
     Inc(Fila);
   end;
 
@@ -138,6 +138,7 @@ begin
   FilaSeleccionada := tablaInformacion.Row;
 
   if (FilaSeleccionada > 0) and (FilaSeleccionada < tablaInformacion.RowCount) then
+    // Uso de Pointer para convertir TObject a Integer y evitar Illegal Type Conversion
     Result := Integer(Pointer(tablaInformacion.Objects[0, FilaSeleccionada]));
 end;
 

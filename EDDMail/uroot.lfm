@@ -1,48 +1,57 @@
 object Form2: TForm2
   Left = 726
-  Height = 270
+  Height = 302
   Top = 318
-  Width = 326
+  Width = 264
   Caption = 'ROOT'
-  ClientHeight = 270
-  ClientWidth = 326
+  ClientHeight = 302
+  ClientWidth = 264
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   LCLVersion = '2.2.6.0'
   object btnCargaMasiva: TButton
-    Left = 88
+    Left = 56
     Height = 33
-    Top = 40
+    Top = 80
     Width = 155
     Caption = 'Carga Masiva'
     OnClick = btnCargaMasivaClick
     TabOrder = 0
   end
   object btnReporteUsuarios: TButton
-    Left = 88
+    Left = 56
     Height = 32
-    Top = 96
+    Top = 136
     Width = 155
     Caption = 'Reporte de Usuarios'
     OnClick = btnReporteUsuariosClick
     TabOrder = 1
   end
   object btnReporteRelaciones: TButton
-    Left = 88
+    Left = 56
     Height = 33
-    Top = 144
+    Top = 184
     Width = 155
     Caption = 'Reporte de Relaciones'
     OnClick = btnReporteRelacionesClick
     TabOrder = 2
   end
   object btnGestionComunidades: TButton
-    Left = 88
+    Left = 56
     Height = 29
-    Top = 195
+    Top = 235
     Width = 155
     Caption = 'Gestion Comunidades'
     OnClick = btnGestionComunidadesClick
     TabOrder = 3
+  end
+  object btnCerrarSesion: TButton
+    Left = 56
+    Height = 32
+    Top = 24
+    Width = 155
+    Caption = 'Cerrar Sesion'
+    OnClick = btnCerrarSesionClick
+    TabOrder = 4
   end
 end
