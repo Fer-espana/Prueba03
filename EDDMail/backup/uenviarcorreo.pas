@@ -11,7 +11,7 @@ uses
 
 type
 
-  { TForm4 }
+  { TForm4 } // <--- La clase correcta es TForm4
 
   TForm4 = class(TForm)
     btnEnviar: TButton;
@@ -170,36 +170,37 @@ begin
   MemoMensaje.Text := '';
 end;
 
-procedure TForm7.btnGuardarBorradorClick(Sender: TObject);
+// CORRECCIÓN CLAVE: Se corrige TForm7 a TForm4
+procedure TForm4.btnGuardarBorradorClick(Sender: TObject);
 var
   NuevoCorreo: TCorreo; // Usaremos la estructura TCorreo
   NuevoID: Integer;
 begin
-  if (BandejaActual = nil) or (edtAsunto.Text = '') or (MemoMensaje.Text = '') then
+  // CORRECCIÓN: Se corrigen los nombres de los componentes (editAsunto, editDestinatario)
+  if (BandejaActual = nil) or (editAsunto.Text = '') or (MemoMensaje.Text = '') then
   begin
     ShowMessage('Asunto y mensaje son obligatorios.');
     Exit;
   end;
 
-  // 1. Generar nuevo ID (Asumiendo que esta lógica existe en UGLOBAL)
-  NuevoID := ObtenerNuevoIDCorreo;
+  // 1. Generar nuevo ID (CORRECCIÓN: Se llama al método local GenerarIdCorreo)
+  NuevoID := GenerarIdCorreo;
 
   // 2. Crear un nuevo registro TCorreo con el estado 'Borrador' (o 'B')
   NuevoCorreo.Id := NuevoID;
   NuevoCorreo.Remitente := UsuarioActual^.Email;
-  NuevoCorreo.Destinatario := edtDestinatario.Text;
+  NuevoCorreo.Destinatario := editDestinatario.Text;
   NuevoCorreo.Estado := 'B'; // 'B' para Borrador (Asumiendo que usas 'B')
   NuevoCorreo.Programado := False;
-  NuevoCorreo.Asunto := edtAsunto.Text;
+  NuevoCorreo.Asunto := editAsunto.Text;
   NuevoCorreo.Fecha := FormatDateTime('yyyy-mm-dd hh:nn:ss', Now);
   NuevoCorreo.Mensaje := MemoMensaje.Text;
 
   // 3. Insertar en el Árbol AVL de borradores
-  // Nota: Debes implementar la lógica completa de InsertarEnAVL en uavltreeborradores.pas
   InsertarEnAVL(BandejaActual^.Borradores, NuevoID, NuevoCorreo);
 
   ShowMessage('Correo guardado como borrador (ID: ' + IntToStr(NuevoID) + ').');
-  Self.Close;
+  Self.Close; // Self.Close funciona correctamente dentro de TForm4
 end;
 
 procedure TForm4.GuardarCorreoEnJSON(Id: Integer; Remitente, Destinatario, Asunto, Mensaje, Fecha: string);
