@@ -6,10 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
-    UListaDobleEnlazadaCorreos, UGLOBAL, UPilaPapelera, UArbolB;
-
-
-
+  UListaDobleEnlazadaCorreos, UGLOBAL, UPilaPapelera, UArbolB;
 
 type
 
@@ -17,6 +14,7 @@ type
 
   TForm10 = class(TForm)
     btnEliminarCorreo: TButton;
+    btnFavorito: TButton;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
@@ -28,11 +26,13 @@ type
     lblEstado: TLabel;
     MemoMensaje: TMemo;
     procedure btnEliminarCorreoClick(Sender: TObject);
+    procedure btnFavoritoClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
     CorreoActual: PCorreo;
     BandejaActual: PBandejaUsuario;
+    procedure NotificarFormularioPrincipal;
   public
     procedure SetCorreoActual(Correo: PCorreo; Bandeja: PBandejaUsuario);
   end;
@@ -41,6 +41,9 @@ var
   Form10: TForm10;
 
 implementation
+
+// Unidades movidas a la implementación para evitar referencias circulares
+uses UUsuarioEstandar, UFavoritos;
 
 {$R *.lfm}
 
@@ -90,8 +93,33 @@ begin
 
     // Actualizar título de la ventana
     Caption := 'Correo: ' + CorreoActual^.Asunto;
+
+    // Opcional: Deshabilitar el botón si ya es favorito
+    if BuscarEnArbolB(BandejaActual^.Favoritos, CorreoActual^.Id) <> nil then
+      btnFavorito.Enabled := False
+    else
+      btnFavorito.Enabled := True;
   end;
 end;
+
+procedure TForm10.NotificarFormularioPrincipal;
+var
+  i: Integer;
+  FormUsuario: TForm3;
+begin
+  // Busca TForm3 (UUsuarioEstandar)
+  for i := 0 to Screen.FormCount - 1 do
+  begin
+    if Screen.Forms[i] is TForm3 then
+    begin
+      FormUsuario := (Screen.Forms[i] as TForm3);
+      // La llamada falla si RefrescarDatos no es public en TForm3
+      FormUsuario.RefrescarDatos; // Llama al método RefrescarDatos de TForm3
+      Break; // Salir después de encontrar el formulario
+    end;
+  end;
+end;
+
 
 procedure TForm10.btnEliminarCorreoClick(Sender: TObject);
 var
@@ -129,6 +157,10 @@ begin
       EliminarCorreo(BandejaActual^.BandejaEntrada, CorreoActual^.Id);
 
       ShowMessage('Correo eliminado correctamente y movido a la papelera');
+
+      // Notificar al formulario principal para refrescar la lista de correos
+      NotificarFormularioPrincipal;
+
       Close; // Cerrar el formulario de vista
     except
       on E: Exception do
@@ -139,6 +171,45 @@ begin
       end;
     end;
   end;
+end;
+
+procedure TForm10.btnFavoritoClick(Sender: TObject);
+var
+  BandejaPropia: PBandejaUsuario;
+  CorreoCopia: TCorreo;
+begin
+  if (CorreoActual = nil) then Exit;
+
+  BandejaPropia := ObtenerBandejaUsuario(UsuarioActual^.Email);
+  if BandejaPropia = nil then
+  begin
+    BandejaPropia := CrearBandejaUsuario(UsuarioActual^.Email);
+  end;
+
+  // 1. Verificar si ya está en favoritos
+  if BuscarEnArbolB(BandejaPropia^.Favoritos, CorreoActual^.Id) <> nil then
+  begin
+    ShowMessage('Este correo ya está marcado como Favorito.');
+    (Sender as TButton).Enabled := False;
+    Exit;
+  end;
+
+  // 2. Crear una copia por valor del correo para el nodo del Árbol B
+  CorreoCopia := CorreoActual^;
+
+  // 3. Insertar en el Árbol B de Favoritos
+  // CORRECCIÓN 2: Se usa el nombre calificado para evitar el error 'untyped'
+  if UArbolB.InsertarEnArbolB(BandejaPropia^.Favoritos, CorreoCopia.Id, CorreoCopia) then
+  begin
+    ShowMessage('Correo marcado como favorito (Árbol B) con ID: ' + IntToStr(CorreoCopia.Id));
+
+    // Notificar al formulario principal para refrescar (para que se actualice el contador de Favoritos)
+    NotificarFormularioPrincipal;
+
+    (Sender as TButton).Enabled := False;
+  end
+  else
+    ShowMessage('Error al insertar en Favoritos.');
 end;
 
 procedure TForm10.FormDestroy(Sender: TObject);

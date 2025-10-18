@@ -7,11 +7,11 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
   UGLOBAL, UAVLTreeBorradores, UListaSimpleUsuarios, UListaDobleEnlazadaCorreos,
-  UListaCircularContactos, UEnviarCorreo, UMatrizDispersaRelaciones;
+  UListaCircularContactos, UMatrizDispersaRelaciones, UPilaPapelera;
 
 type
 
-  { TForm15 } // <--- NUEVO NÚMERO DE FORMULARIO: 15
+  { TForm15 } // <--- TForm15
 
   TForm15 = class(TForm)
     editDestinatario: TEdit;
@@ -30,6 +30,7 @@ type
   private
     BandejaActual: PBandejaUsuario;
     BorradorID: Integer;
+    CorreoBorradorActual: PCorreo;
     procedure CargarBorrador;
     function ValidarDestinatario(Destinatario: string): Boolean;
     function GenerarNuevoId: Integer;
@@ -56,8 +57,6 @@ begin
 end;
 
 procedure TForm15.SetBorrador(AID: Integer; ABandeja: PBandejaUsuario);
-var
-  CorreoBorrador: PCorreo;
 begin
   BorradorID := AID;
   BandejaActual := ABandeja;
@@ -65,22 +64,19 @@ begin
 end;
 
 procedure TForm15.CargarBorrador;
-var
-  CorreoBorrador: PCorreo;
 begin
-  // Buscar el correo en el Árbol AVL
+  // Buscar el correo en el Árbol AVL y guardar la referencia
   if (BandejaActual <> nil) and (BorradorID > 0) then
   begin
-    CorreoBorrador := BuscarEnAVL(BandejaActual^.Borradores, BorradorID);
+    CorreoBorradorActual := BuscarEnAVL(BandejaActual^.Borradores, BorradorID);
 
-    if CorreoBorrador <> nil then
+    if CorreoBorradorActual <> nil then
     begin
       // Cargar campos:
       lblID.Caption := IntToStr(BorradorID);
-      editDestinatario.Text := CorreoBorrador^.Destinatario;
-      editAsunto.Text := CorreoBorrador^.Asunto;
-      MemoMensaje.Text := CorreoBorrador^.Mensaje;
-      // editDestinatario.ReadOnly := True; // Podría ser editable, depende de la especificación
+      editDestinatario.Text := CorreoBorradorActual^.Destinatario;
+      editAsunto.Text := CorreoBorradorActual^.Asunto;
+      MemoMensaje.Text := CorreoBorradorActual^.Mensaje;
     end
     else
     begin
@@ -90,26 +86,71 @@ begin
   end;
 end;
 
+procedure TForm15.btnEnviarClick(Sender: TObject);
+var
+  Destinatario, Asunto, Mensaje: string;
+  BandejaDestino: PBandejaUsuario;
+  NuevoId: Integer;
+  FechaActual: string;
+  IndiceRemitente, IndiceDestinatario: Integer;
+begin
+  Destinatario := Trim(editDestinatario.Text);
+  Asunto := Trim(editAsunto.Text);
+  Mensaje := Trim(MemoMensaje.Text);
+
+  if not ValidarDestinatario(Destinatario) then
+    Exit;
+
+  BandejaDestino := ObtenerBandejaUsuario(Destinatario);
+  if BandejaDestino = nil then
+    BandejaDestino := CrearBandejaUsuario(Destinatario);
+
+  // 1. Generar nuevo ID para el correo ENVIADO
+  NuevoId := GenerarIdCorreo;
+  FechaActual := FormatDateTime('yyyy-mm-dd hh:nn:ss', Now);
+
+  // 2. Insertar correo en la bandeja del destinatario con los datos MODIFICADOS
+  InsertarCorreo(BandejaDestino^.BandejaEntrada, NuevoId,
+    UsuarioActual^.Email, Destinatario, 'N', False, Asunto, FechaActual, Mensaje);
+
+  // 3. Eliminar de la lista de borradores (Árbol AVL)
+  if EliminarDeAVL(BandejaActual^.Borradores, BorradorID) then
+  begin
+    ShowMessage('Borrador enviado exitosamente y eliminado de la lista. Nuevo ID: ' + IntToStr(NuevoId));
+
+    // 4. Actualizar matriz de relaciones
+    IndiceRemitente := BuscarIndiceUsuario(UsuarioActual^.Email);
+    IndiceDestinatario := BuscarIndiceUsuario(Destinatario);
+
+    // Asumimos que BuscarIndiceUsuario devuelve el ID, por lo que usamos los IDs.
+    if (IndiceRemitente <> -1) and (IndiceDestinatario <> -1) then
+      InsertarValor(MatrizRelaciones, IndiceRemitente, IndiceDestinatario, 1);
+
+    Close;
+  end
+  else
+  begin
+    ShowMessage('Error: El correo fue enviado (ID: ' + IntToStr(NuevoId) + '), pero no se pudo eliminar el borrador del AVL.');
+    // Nota: El correo enviado ya tiene un nuevo ID, y no está vinculado al ID del borrador original.
+  end;
+end;
+
 function TForm15.GenerarNuevoId: Integer;
 begin
-  // Utilizar la función global para asegurar un ID único en todo el sistema
   Result := GenerarIdCorreo;
 end;
 
 function TForm15.BuscarIndiceUsuario(Email: string): Integer;
 var
   Actual: PUsuario;
-  Index: Integer;
 begin
   Actual := ListaUsuariosGlobal.Cabeza;
-  Index := 0;
 
   while Actual <> nil do
   begin
     if Actual^.Email = Email then
-      Exit(Index);
+      Exit(Actual^.Id); // Devolvemos el ID
     Actual := Actual^.Siguiente;
-    Inc(Index);
   end;
 
   Result := -1; // No encontrado
@@ -119,12 +160,12 @@ function TForm15.ValidarDestinatario(Destinatario: string): Boolean;
 var
   Contacto: PContacto;
 begin
-  // Reutilizar la lógica de UEnviarCorreo (copiada aquí para evitar dependencia circular de forms)
+  Result := False;
   // 1. Verificar si el destinatario existe en el sistema
   if BuscarUsuarioPorEmail(ListaUsuariosGlobal, Destinatario) = nil then
   begin
     ShowMessage('Error: El destinatario no existe en el sistema');
-    Exit(False);
+    Exit;
   end;
 
   // 2. Verificar si está en los contactos del usuario actual
@@ -134,7 +175,7 @@ begin
     if Contacto = nil then
     begin
       ShowMessage('Error: El destinatario no está en sus contactos');
-      Exit(False);
+      Exit;
     end;
   end;
 
@@ -147,14 +188,12 @@ var
   BandejaDestino: PBandejaUsuario;
   NuevoId: Integer;
   FechaActual: string;
-  CorreoEnviado: PCorreo;
   IndiceRemitente, IndiceDestinatario: Integer;
 begin
   Destinatario := Trim(editDestinatario.Text);
   Asunto := Trim(editAsunto.Text);
   Mensaje := Trim(MemoMensaje.Text);
 
-  // Validaciones
   if not ValidarDestinatario(Destinatario) then
     Exit;
 
@@ -162,7 +201,6 @@ begin
   if BandejaDestino = nil then
     BandejaDestino := CrearBandejaUsuario(Destinatario);
 
-  // Generar nuevo ID y fecha
   NuevoId := GenerarNuevoId;
   FechaActual := FormatDateTime('yyyy-mm-dd hh:nn:ss', Now);
 
@@ -176,13 +214,13 @@ begin
     ShowMessage('Borrador enviado exitosamente y eliminado de la lista.');
 
     // 3. Actualizar matriz de relaciones
-    IndiceRemitente := BuscarIndiceUsuario(UsuarioActual^.Email); // Asume que devuelve el ID para la Matriz
-    IndiceDestinatario := BuscarIndiceUsuario(Destinatario);      // Asume que devuelve el ID para la Matriz
+    IndiceRemitente := BuscarIndiceUsuario(UsuarioActual^.Email);
+    IndiceDestinatario := BuscarIndiceUsuario(Destinatario);
 
     if (IndiceRemitente <> -1) and (IndiceDestinatario <> -1) then
-      InsertarValor(MatrizRelaciones, IndiceRemitente, IndiceDestinatario, 1); // <-- CORRECCIÓN
+      InsertarValor(MatrizRelaciones, IndiceRemitente, IndiceDestinatario, 1);
 
-    Close; // Cierra al finalizar
+    Close;
   end
   else
   begin

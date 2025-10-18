@@ -37,7 +37,7 @@ type
 
 // Procedimientos y Funciones Mínimas
 procedure InicializarArbolB(var Arbol: TArbolB);
-procedure InsertarEnArbolB(var Arbol: TArbolB; Id: Integer; Correo: TCorreo);
+function InsertarEnArbolB(var Arbol: TArbolB; Id: Integer; Correo: TCorreo): Boolean; // <--- CORRECCIÓN 2: Declarado como FUNCTION: Boolean
 function BuscarEnArbolB(Arbol: TArbolB; Id: Integer): PCorreo;
 function EliminarDeArbolB(var Arbol: TArbolB; Id: Integer): Boolean;
 procedure GenerarReporteDOTArbolB(Arbol: TArbolB; NombreArchivo: string);
@@ -55,11 +55,12 @@ begin
 end;
 
 // La función InsertarEnArbolB debe existir para UVistadeCorreo.pas
-procedure InsertarEnArbolB(var Arbol: TArbolB; Id: Integer; Correo: TCorreo);
+function InsertarEnArbolB(var Arbol: TArbolB; Id: Integer; Correo: TCorreo): Boolean;
 begin
   // STUB: Lógica de inserción del Árbol B pendiente.
-  // Para fines de simulación, incrementar el contador.
+  // Para fines de simulación, incrementar el contador y devolver éxito.
   Inc(Arbol.ContadorTotal);
+  Result := True; // <--- CORRECCIÓN: Devolver True para simular éxito.
 end;
 
 // La función BuscarEnArbolB debe existir para UVistadeCorreo.pas y TForm17

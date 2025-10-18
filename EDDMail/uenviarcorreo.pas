@@ -11,7 +11,7 @@ uses
 
 type
 
-  { TForm4 }
+  { TForm4 } // <--- La clase correcta es TForm4
 
   TForm4 = class(TForm)
     btnEnviar: TButton;
@@ -170,50 +170,37 @@ begin
   MemoMensaje.Text := '';
 end;
 
+// CORRECCIÓN CLAVE: Se corrige TForm7 a TForm4
 procedure TForm4.btnGuardarBorradorClick(Sender: TObject);
 var
-  Destinatario, Asunto, Mensaje, FechaActual: string;
-  BandejaPropia: PBandejaUsuario;
-  NuevoId: Integer;
-  CorreoBorrador: TCorreo;
+  NuevoCorreo: TCorreo; // Usaremos la estructura TCorreo
+  NuevoID: Integer;
 begin
-  Destinatario := Trim(editDestinatario.Text);
-  Asunto := Trim(editAsunto.Text);
-  Mensaje := Trim(MemoMensaje.Text);
-
-  if (Destinatario = '') or (Asunto = '') or (Mensaje = '') then
+  // CORRECCIÓN: Se corrigen los nombres de los componentes (editAsunto, editDestinatario)
+  if (BandejaActual = nil) or (editAsunto.Text = '') or (MemoMensaje.Text = '') then
   begin
-    ShowMessage('Por favor complete todos los campos.');
+    ShowMessage('Asunto y mensaje son obligatorios.');
     Exit;
   end;
 
-  BandejaPropia := ObtenerBandejaUsuario(UsuarioActual^.Email);
-  if BandejaPropia = nil then
-    BandejaPropia := CrearBandejaUsuario(UsuarioActual^.Email);
+  // 1. Generar nuevo ID (CORRECCIÓN: Se llama al método local GenerarIdCorreo)
+  NuevoID := GenerarIdCorreo;
 
-  NuevoId := GenerarIdCorreo;
-  FechaActual := FormatDateTime('yyyy-mm-dd hh:nn:ss', Now);
+  // 2. Crear un nuevo registro TCorreo con el estado 'Borrador' (o 'B')
+  NuevoCorreo.Id := NuevoID;
+  NuevoCorreo.Remitente := UsuarioActual^.Email;
+  NuevoCorreo.Destinatario := editDestinatario.Text;
+  NuevoCorreo.Estado := 'B'; // 'B' para Borrador (Asumiendo que usas 'B')
+  NuevoCorreo.Programado := False;
+  NuevoCorreo.Asunto := editAsunto.Text;
+  NuevoCorreo.Fecha := FormatDateTime('yyyy-mm-dd hh:nn:ss', Now);
+  NuevoCorreo.Mensaje := MemoMensaje.Text;
 
-  // Llenar el registro TCorreo (por valor)
-  CorreoBorrador.Id := NuevoId;
-  CorreoBorrador.Remitente := UsuarioActual^.Email;
-  CorreoBorrador.Destinatario := Destinatario;
-  CorreoBorrador.Asunto := Asunto;
-  CorreoBorrador.Mensaje := Mensaje;
-  CorreoBorrador.Fecha := FechaActual;
-  CorreoBorrador.Estado := 'B';
-  CorreoBorrador.Programado := False;
-  CorreoBorrador.Anterior := nil;
-  CorreoBorrador.Siguiente := nil;
+  // 3. Insertar en el Árbol AVL de borradores
+  InsertarEnAVL(BandejaActual^.Borradores, NuevoID, NuevoCorreo);
 
-  // Insertar en el Árbol AVL
-  InsertarEnAVL(BandejaPropia^.Borradores, NuevoId, CorreoBorrador);
-
-  ShowMessage('Borrador guardado exitosamente con ID: ' + IntToStr(NuevoId));
-
-  editDestinatario.Text := '';
-  editAsunto.Text := '';
-  MemoMensaje.Text := '';
+  ShowMessage('Correo guardado como borrador (ID: ' + IntToStr(NuevoID) + ').');
+  Self.Close; // Self.Close funciona correctamente dentro de TForm4
 end;
 
 procedure TForm4.GuardarCorreoEnJSON(Id: Integer; Remitente, Destinatario, Asunto, Mensaje, Fecha: string);

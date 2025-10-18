@@ -33,6 +33,7 @@ type
 
   public
     procedure SetBandejaActual(Email: string);
+    procedure RefrescarDatos; // <--- CORRECCIÓN CLAVE: Método hecho público
   end;
 
 var
@@ -60,6 +61,13 @@ begin
 
   // Hacer la tabla de solo lectura
   tablaInformacion.Options := tablaInformacion.Options - [goEditing];
+end;
+
+// IMPLEMENTACIÓN AÑADIDA: Lógica de RefrescarDatos
+procedure TForm9.RefrescarDatos;
+begin
+  // La lógica de refresco simplemente llama a la función de llenado de tabla
+  ActualizarTabla;
 end;
 
 procedure TForm9.SetBandejaActual(Email: string);
@@ -213,7 +221,7 @@ begin
       ActualizarTabla;
 
       // Notificar a la papelera para que se actualice si está abierta
-      NotificarPapeleraSiEstaAbierta;  // LLAMAR AL MÉTODO NUEVO
+      NotificarPapeleraSiEstaAbierta;
     end;
   end;
 end;

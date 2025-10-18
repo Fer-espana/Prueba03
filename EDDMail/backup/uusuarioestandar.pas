@@ -45,12 +45,16 @@ type
     UsuarioActual: PUsuario;
   public
     procedure SetUsuarioActual(Usuario: PUsuario);
+    procedure RefrescarDatos; // Método hecho público para ser llamado desde UVistadeCorreo.pas
   end;
 
 var
   Form3: TForm3;
 
 implementation
+
+// CORRECCIÓN: Se elimina el uses duplicado. Las unidades ya están en la sección interface.
+// uses UBandejaEntrada, UVerBorradores, UFavoritos;
 
 {$R *.lfm}
 
@@ -66,6 +70,26 @@ procedure TForm3.FormDestroy(Sender: TObject);
 begin
   // Limpiar recursos si es necesario
 end;
+
+// LÓGICA DE REFRESCADO GLOBAL (Llamada a refrescar formularios secundarios)
+procedure TForm3.RefrescarDatos;
+begin
+  // Buscamos las instancias globales de los formularios y llamamos a su método RefrescarDatos,
+  // siempre que estén asignados (Assigned) y visibles.
+
+  // 1. Refrescar Bandeja de Entrada (TForm9)
+  if Assigned(Form9) and (Form9.Visible) then
+    Form9.RefrescarDatos;
+
+  // 2. Refrescar Borradores (TForm16)
+  if Assigned(Form16) and (Form16.Visible) then
+    Form16.RefrescarDatos;
+
+  // 3. Refrescar Favoritos (TForm17)
+  if Assigned(Form17) and (Form17.Visible) then
+    Form17.RefrescarDatos;
+end;
+
 
 procedure TForm3.btnBandejaEntradaClick(Sender: TObject);
 var
@@ -132,7 +156,7 @@ end;
 
 procedure TForm3.btnActualizarPerfilClick(Sender: TObject);
 var
-   FormActualizarPerfil: TForm7;
+    FormActualizarPerfil: TForm7;
 begin
   FormActualizarPerfil := TForm7.Create(Application);
   // FormActualizarPerfil NO tiene SetBandejaActual - ELIMINAR ESTA LÍNEA
@@ -142,13 +166,9 @@ end;
 procedure TForm3.btnGenerarReportesClick(Sender: TObject);
 begin
   if UsuarioActual <> nil then
-  begin
-    GenerarReportesUsuario(UsuarioActual^.Email);
-  end
+    GenerarReportesUsuario(UsuarioActual^.Email)
   else
-  begin
     ShowMessage('Error: No hay usuario actual para generar reportes');
-  end;
 end;
 
 procedure TForm3.btnRegresarLoginClick(Sender: TObject);
@@ -201,8 +221,8 @@ var
 begin
   if UsuarioActual = nil then Exit;
 
-  FormFavoritos := TForm17.Create(Application);
-  FormFavoritos.RefrescarDatos; // Llama a la carga del Árbol B
+  FormFavoritos := TForm17.Create(Application); // <--- Abre el TForm17 de Favoritos
+  FormFavoritos.RefrescarDatos;
   FormFavoritos.Show;
 end;
 

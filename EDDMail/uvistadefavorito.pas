@@ -108,23 +108,40 @@ begin
 end;
 
 procedure TForm18.btnEliminarClick(Sender: TObject);
+var
+  CorreoCopia: PCorreo;
 begin
   if (CorreoActual = nil) or (BandejaActual = nil) then Exit;
 
   if MessageDlg('Confirmar',
-                '¿Está seguro de que desea eliminar este correo de Favoritos?',
+                '¿Está seguro de que desea eliminar este correo de Favoritos y enviarlo a la Papelera?',
                 mtConfirmation, [mbYes, mbNo], 0) = mrYes then
   begin
-    // Llama a la función de eliminación del Árbol B
-    if EliminarDeArbolB(BandejaActual^.Favoritos, CorreoActual^.Id) then
-    begin
-      ShowMessage('Correo eliminado de Favoritos.');
-      NotificarFormularioPrincipal;
-      Close;
-    end
-    else
-    begin
-      ShowMessage('Error: No se pudo eliminar el correo del Árbol B.');
+    // 1. Crear una COPIA del correo para la papelera (la papelera se encarga de liberar la memoria)
+    try
+      New(CorreoCopia);
+      CorreoCopia^ := CorreoActual^; // Copiar todo el registro TCorreo (por valor)
+      CorreoCopia^.Estado := 'E'; // Marcar como Eliminado
+
+      // 2. Eliminar la entrada del Árbol B (la eliminación del nodo del árbol libera la memoria interna del registro TCorreo)
+      if EliminarDeArbolB(BandejaActual^.Favoritos, CorreoActual^.Id) then
+      begin
+        // 3. Mover la copia a la papelera global (Pila)
+        Apilar(PilaPapeleraGlobal, CorreoCopia);
+
+        ShowMessage('Correo eliminado de Favoritos y movido a la Papelera.');
+        NotificarFormularioPrincipal; // Refresca TForm17
+        Close;
+      end
+      else
+      begin
+        // Si falló la eliminación del Árbol B, liberamos la copia que creamos.
+        ShowMessage('Error: No se pudo eliminar el correo del Árbol B.');
+        Dispose(CorreoCopia);
+      end;
+    except
+      on E: Exception do
+        ShowMessage('Error al eliminar y mover a Papelera: ' + E.Message);
     end;
   end;
 end;

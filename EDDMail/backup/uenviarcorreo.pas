@@ -34,6 +34,7 @@ type
     function GenerarIdCorreo: Integer;
     function ValidarDestinatario(Destinatario: string): Boolean;
     function BuscarIndiceUsuario(Email: string): Integer;
+    procedure GuardarCorreoEnJSON(Id: Integer; Remitente, Destinatario, Asunto, Mensaje, Fecha: string); // <--- NUEVA DECLARACIÓN
   public
     procedure SetBandejaActual(Email: string);
   end;
@@ -148,6 +149,9 @@ begin
   InsertarCorreo(BandejaDestino^.BandejaEntrada, NuevoId,
     UsuarioActual^.Email, Destinatario, 'N', False, Asunto, FechaActual, Mensaje);
 
+  // NUEVA LÍNEA: GUARDAR EN LOG JSON
+  GuardarCorreoEnJSON(NuevoId, UsuarioActual^.Email, Destinatario, Asunto, Mensaje, FechaActual);
+
   // Actualizar matriz de relaciones
   IndiceRemitente := BuscarIndiceUsuario(UsuarioActual^.Email);
   IndiceDestinatario := BuscarIndiceUsuario(Destinatario);
@@ -166,50 +170,69 @@ begin
   MemoMensaje.Text := '';
 end;
 
-procedure TForm4.btnGuardarBorradorClick(Sender: TObject);
+procedure TForm7.btnGuardarBorradorClick(Sender: TObject);
 var
-  Destinatario, Asunto, Mensaje, FechaActual: string;
-  BandejaPropia: PBandejaUsuario;
-  NuevoId: Integer;
-  CorreoBorrador: TCorreo;
+  NuevoCorreo: TCorreo; // Usaremos la estructura TCorreo
+  NuevoID: Integer;
 begin
-  Destinatario := Trim(editDestinatario.Text);
-  Asunto := Trim(editAsunto.Text);
-  Mensaje := Trim(MemoMensaje.Text);
-
-  if (Destinatario = '') or (Asunto = '') or (Mensaje = '') then
+  if (BandejaActual = nil) or (edtAsunto.Text = '') or (MemoMensaje.Text = '') then
   begin
-    ShowMessage('Por favor complete todos los campos.');
+    ShowMessage('Asunto y mensaje son obligatorios.');
     Exit;
   end;
 
-  BandejaPropia := ObtenerBandejaUsuario(UsuarioActual^.Email);
-  if BandejaPropia = nil then
-    BandejaPropia := CrearBandejaUsuario(UsuarioActual^.Email);
+  // 1. Generar nuevo ID (Asumiendo que esta lógica existe en UGLOBAL)
+  NuevoID := ObtenerNuevoIDCorreo;
 
-  NuevoId := GenerarIdCorreo;
-  FechaActual := FormatDateTime('yyyy-mm-dd hh:nn:ss', Now);
+  // 2. Crear un nuevo registro TCorreo con el estado 'Borrador' (o 'B')
+  NuevoCorreo.Id := NuevoID;
+  NuevoCorreo.Remitente := UsuarioActual^.Email;
+  NuevoCorreo.Destinatario := edtDestinatario.Text;
+  NuevoCorreo.Estado := 'B'; // 'B' para Borrador (Asumiendo que usas 'B')
+  NuevoCorreo.Programado := False;
+  NuevoCorreo.Asunto := edtAsunto.Text;
+  NuevoCorreo.Fecha := FormatDateTime('yyyy-mm-dd hh:nn:ss', Now);
+  NuevoCorreo.Mensaje := MemoMensaje.Text;
 
-  // Llenar el registro TCorreo (por valor)
-  CorreoBorrador.Id := NuevoId;
-  CorreoBorrador.Remitente := UsuarioActual^.Email;
-  CorreoBorrador.Destinatario := Destinatario;
-  CorreoBorrador.Asunto := Asunto;
-  CorreoBorrador.Mensaje := Mensaje;
-  CorreoBorrador.Fecha := FechaActual;
-  CorreoBorrador.Estado := 'B';
-  CorreoBorrador.Programado := False;
-  CorreoBorrador.Anterior := nil;
-  CorreoBorrador.Siguiente := nil;
+  // 3. Insertar en el Árbol AVL de borradores
+  // Nota: Debes implementar la lógica completa de InsertarEnAVL en uavltreeborradores.pas
+  InsertarEnAVL(BandejaActual^.Borradores, NuevoID, NuevoCorreo);
 
-  // Insertar en el Árbol AVL
-  InsertarEnAVL(BandejaPropia^.Borradores, NuevoId, CorreoBorrador);
+  ShowMessage('Correo guardado como borrador (ID: ' + IntToStr(NuevoID) + ').');
+  Self.Close;
+end;
 
-  ShowMessage('Borrador guardado exitosamente con ID: ' + IntToStr(NuevoId));
+procedure TForm4.GuardarCorreoEnJSON(Id: Integer; Remitente, Destinatario, Asunto, Mensaje, Fecha: string);
+var
+  Archivo: TextFile;
+  RutaArchivo, RutaCarpeta: string;
+begin
+  RutaCarpeta := ExtractFilePath(Application.ExeName) + 'Data';
+  RutaArchivo := RutaCarpeta + PathDelim + 'correos_enviados_log.json'; // Usar un nombre de log distinto
 
-  editDestinatario.Text := '';
-  editAsunto.Text := '';
-  MemoMensaje.Text := '';
+  if not DirectoryExists(RutaCarpeta) then
+    ForceDirectories(RutaCarpeta);
+
+  AssignFile(Archivo, RutaArchivo);
+  try
+    // La forma más simple de evitar errores de formato en JSON es añadir cada objeto en una nueva línea
+    // y envolver el contenido completo en un array al leer.
+    if FileExists(RutaArchivo) then
+      Append(Archivo) // Abrir para añadir al final
+    else
+      Rewrite(Archivo);
+
+    WriteLn(Archivo, '{');
+    WriteLn(Archivo, '  "id": ', Id, ',');
+    WriteLn(Archivo, '  "remitente": "', Remitente, '",');
+    WriteLn(Archivo, '  "destinatario": "', Destinatario, '",');
+    WriteLn(Archivo, '  "asunto": "', Asunto, '",');
+    WriteLn(Archivo, '  "mensaje": "', StringReplace(Mensaje, sLineBreak, '\n', [rfReplaceAll]), '",');
+    WriteLn(Archivo, '  "fecha": "', Fecha, '"');
+    WriteLn(Archivo, '}');
+  finally
+    CloseFile(Archivo);
+  end;
 end;
 
 // =============================================================================

@@ -40,6 +40,8 @@ var
 
 implementation
 
+uses UFavoritos; // <--- CORRECCIÓN CLAVE: Agregada aquí para resolver la dependencia circular con TForm17
+
 {$R *.lfm}
 
 { TForm18 }
@@ -82,7 +84,7 @@ begin
       'L': EstadoStr := 'LEIDO';
       'E': EstadoStr := 'ELIMINADO';
       'P': EstadoStr := 'PROGRAMADO';
-      else EstadoStr := 'FAVORITO'; // Estado por defecto para el Árbol B
+      else EstadoStr := 'FAVORITO';
     end;
     lblEstado.Caption := EstadoStr;
 
@@ -95,7 +97,7 @@ procedure TForm18.NotificarFormularioPrincipal;
 var
   i: Integer;
 begin
-  // Busca TForm17 y lo refresca
+  // Busca TForm17 (UFavoritos) y lo refresca
   for i := 0 to Screen.FormCount - 1 do
   begin
     if Screen.Forms[i] is TForm17 then
@@ -113,7 +115,7 @@ begin
                 '¿Está seguro de que desea eliminar este correo de Favoritos?',
                 mtConfirmation, [mbYes, mbNo], 0) = mrYes then
   begin
-    // Llamar a la función de eliminación del Árbol B
+    // Llama a la función de eliminación del Árbol B
     if EliminarDeArbolB(BandejaActual^.Favoritos, CorreoActual^.Id) then
     begin
       ShowMessage('Correo eliminado de Favoritos.');
