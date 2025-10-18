@@ -127,10 +127,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UEnviarCorreo"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="26"/>
-        <TopLine Value="266"/>
-        <CursorPos X="5" Y="288"/>
+        <TopLine Value="267"/>
+        <CursorPos X="5" Y="289"/>
         <UsageCount Value="85"/>
         <Loaded Value="True"/>
       </Unit>
@@ -313,8 +312,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UFavoritos"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="27"/>
-        <CursorPos X="5" Y="245"/>
+        <TopLine Value="223"/>
+        <CursorPos X="5" Y="183"/>
         <UsageCount Value="33"/>
         <Loaded Value="True"/>
       </Unit>
@@ -326,7 +327,6 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UVistadeFavorito"/>
         <EditorIndex Value="28"/>
-        <TopLine Value="126"/>
         <CursorPos X="5" Y="147"/>
         <UsageCount Value="33"/>
         <Loaded Value="True"/>
@@ -359,18 +359,6 @@
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="ufavoritos.pas"/>
-        <Caret Line="216" Column="75"/>
-      </Position>
-      <Position>
-        <Filename Value="uverborradores.pas"/>
-        <Caret Line="142" Column="95" TopLine="133"/>
-      </Position>
-      <Position>
-        <Filename Value="ubandejaentrada.pas"/>
-        <Caret Line="81" Column="18" TopLine="70"/>
-      </Position>
       <Position>
         <Filename Value="ubandejaentrada.pas"/>
         <Caret Line="87" Column="29" TopLine="70"/>
@@ -478,6 +466,18 @@
       <Position>
         <Filename Value="uenviarcorreo.pas"/>
         <Caret Line="12" Column="82"/>
+      </Position>
+      <Position>
+        <Filename Value="uvistadecorreo.pas"/>
+        <Caret Line="241" Column="5" TopLine="219"/>
+      </Position>
+      <Position>
+        <Filename Value="uenviarcorreo.pas"/>
+        <Caret Line="21" Column="69"/>
+      </Position>
+      <Position>
+        <Filename Value="ufavoritos.pas"/>
+        <Caret Line="245" Column="5" TopLine="4"/>
       </Position>
     </JumpHistory>
     <RunParams>

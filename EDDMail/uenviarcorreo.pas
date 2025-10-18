@@ -35,7 +35,7 @@ type
     function ValidarDestinatario(Destinatario: string): Boolean;
     function BuscarIndiceUsuario(Email: string): Integer;
     procedure GuardarCorreoEnJSON(Id: Integer; Remitente, Destinatario, Asunto, Mensaje, Fecha: string); // <--- NUEVA DECLARACIÓN
-    procedure NotificarFormularioBorradores; // <-- NUEVA DECLARACIÓN
+    procedure NotificarFormularioBorradores; // <-- AGREGADO
   public
     procedure SetBandejaActual(Email: string);
   end;
@@ -45,7 +45,7 @@ var
 
 implementation
 
-uses UVerBorradores; // <-- AÑADIDO para notificar TForm16
+uses UVerBorradores; // <-- AGREGADO para notificar TForm16
 
 {$R *.lfm}
 
@@ -116,7 +116,7 @@ begin
   Result := True;
 end;
 
-procedure TForm4.NotificarFormularioBorradores; // <-- NUEVA IMPLEMENTACIÓN
+procedure TForm4.NotificarFormularioBorradores; // <-- IMPLEMENTACIÓN
 var
   i: Integer;
   FormBorradores: TForm16; // TForm16 es el formulario de borradores (UVerBorradores)
@@ -133,6 +133,7 @@ begin
     end;
   end;
 end;
+
 
 procedure TForm4.btnEnviarClick(Sender: TObject);
 var
@@ -222,7 +223,7 @@ begin
 
   ShowMessage('Correo guardado como borrador (ID: ' + IntToStr(NuevoID) + ').');
 
-  // <-- Llama al nuevo procedimiento de notificación para actualizar el TListView de TForm16
+  // Llama al nuevo procedimiento para actualizar TForm16
   NotificarFormularioBorradores;
 
   Self.Close; // Self.Close funciona correctamente dentro de TForm4

@@ -158,20 +158,20 @@ end;
 procedure TForm17.tablaInformacionDblClick(Sender: TObject);
 var
   IDSeleccionado: Integer;
-  Correo: PCorreo;
+  Correo: PCorreo; // PCorreo es el puntero a TCorreo que BuscarEnArbolB debe devolver
   FormVista: TForm18; // <--- TForm18
 begin
   IDSeleccionado := ObtenerIDSeleccionado;
 
   if IDSeleccionado <> -1 then
   begin
-    // Buscar la referencia al correo en el Árbol B
+    // Buscar la REFERENCIA (PCorreo) al TCorreo almacenado en el Árbol B
     Correo := BuscarEnArbolB(BandejaActual^.Favoritos, IDSeleccionado);
 
     if Correo <> nil then
     begin
       FormVista := TForm18.Create(Application);
-      // Pasamos la referencia del TCorreo dentro del Árbol B.
+      // Pasamos la referencia correcta (PCorreo)
       FormVista.SetCorreoActual(Correo, BandejaActual);
       FormVista.ShowModal;
       FormVista.Free;

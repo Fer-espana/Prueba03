@@ -33,6 +33,7 @@ type
     CorreoActual: PCorreo;
     BandejaActual: PBandejaUsuario;
     procedure NotificarFormularioPrincipal;
+    procedure NotificarFormularioFavoritos; // <-- NUEVA DECLARACIÓN
   public
     procedure SetCorreoActual(Correo: PCorreo; Bandeja: PBandejaUsuario);
   end;
@@ -42,8 +43,8 @@ var
 
 implementation
 
-// CORRECCIÓN: Se elimina UFavoritos, ya que solo se usa UUsuarioEstandar para TForm3
-uses UUsuarioEstandar;
+// CORRECCIÓN: Se agrega UFavoritos
+uses UUsuarioEstandar, UFavoritos;
 
 {$R *.lfm}
 
@@ -115,6 +116,24 @@ begin
       FormUsuario := (Screen.Forms[i] as TForm3);
       // Llama al método RefrescarDatos, que es público en TForm3
       FormUsuario.RefrescarDatos;
+      Break; // Salir después de encontrar el formulario
+    end;
+  end;
+end;
+
+procedure TForm10.NotificarFormularioFavoritos; // <-- NUEVA IMPLEMENTACIÓN
+var
+  i: Integer;
+  FormFavoritos: TForm17; // TForm17 es el formulario de favoritos (UFavoritos)
+begin
+  // Busca TForm17 (UFavoritos) en los formularios abiertos
+  for i := 0 to Screen.FormCount - 1 do
+  begin
+    if Screen.Forms[i] is TForm17 then
+    begin
+      FormFavoritos := (Screen.Forms[i] as TForm17);
+      // Llama al método RefrescarDatos, que es público en TForm17
+      FormFavoritos.RefrescarDatos;
       Break; // Salir después de encontrar el formulario
     end;
   end;
@@ -204,6 +223,9 @@ begin
 
     // Notificar al formulario principal para refrescar (para que se actualice el contador de Favoritos)
     NotificarFormularioPrincipal;
+
+    // <-- Llama al nuevo procedimiento de notificación para actualizar el TListView de TForm17
+    NotificarFormularioFavoritos;
 
     (Sender as TButton).Enabled := False;
   end
