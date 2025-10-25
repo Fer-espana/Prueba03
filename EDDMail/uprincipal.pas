@@ -6,7 +6,9 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls,
-  UListaSimpleUsuarios, URegistrarse, UUsuarioEstandar, UROOT, UGLOBAL, fpjson, jsonparser;
+  UListaSimpleUsuarios, URegistrarse, UUsuarioEstandar, UROOT, UGLOBAL, fpjson, jsonparser,
+  // *** NUEVA DEPENDENCIA (Fase 3) ***
+  bitacora; // <-- Añadir Bitacora
 
 type
 
@@ -27,7 +29,7 @@ type
     procedure FormDestroy(Sender: TObject);
   private
     procedure CargarUsuariosDesdeJSON;
-    procedure GuardarUsuariosEnJSON; // AGREGAR ESTA DECLARACIÓN
+    procedure GuardarUsuariosEnJSON;
   public
   end;
 
@@ -55,7 +57,7 @@ begin
    if BuscarUsuarioPorEmail(ListaUsuariosGlobal, ROOT_EMAIL) = nil then
    begin
      InsertarUsuario(ListaUsuariosGlobal, 1, 'Administrador Root', 'root',
-       ROOT_EMAIL, '0000-0000', ROOT_PASSWORD); // AGREGAR ROOT_PASSWORD
+       ROOT_EMAIL, '0000-0000', ROOT_PASSWORD);
      StatusBar1.SimpleText := 'Sistema inicializado. Usuario root creado.';
 
     // Guardar el usuario root en el JSON
@@ -65,7 +67,6 @@ begin
     StatusBar1.SimpleText := 'Sistema inicializado. ' + IntToStr(ListaUsuariosGlobal.Count) + ' usuario(s) cargados.';
 end;
 
-// MANTENER LA IMPLEMENTACIÓN DE GuardarUsuariosEnJSON DONDE ESTÁ
 procedure TForm1.GuardarUsuariosEnJSON;
 var
   Archivo: TextFile;
@@ -98,14 +99,13 @@ begin
       if not EsPrimerUsuario then
         WriteLn(Archivo, ',');
 
-      // En la sección donde escribes el JSON, agregar la contraseña:
       WriteLn(Archivo, '    {');
       WriteLn(Archivo, '      "id": ', Actual^.Id, ',');
       WriteLn(Archivo, '      "nombre": "', Actual^.Nombre, '",');
       WriteLn(Archivo, '      "usuario": "', Actual^.Usuario, '",');
       WriteLn(Archivo, '      "email": "', Actual^.Email, '",');
-      WriteLn(Archivo, '      "telefono": "', Actual^.Telefono, '",'); // Agregar coma
-      WriteLn(Archivo, '      "password": "', Actual^.Password, '"'); // NUEVA LÍNEA
+      WriteLn(Archivo, '      "telefono": "', Actual^.Telefono, '",');
+      WriteLn(Archivo, '      "password": "', Actual^.Password, '"');
       Write(Archivo, '    }');
 
       EsPrimerUsuario := False;
@@ -126,7 +126,7 @@ procedure TForm1.CargarUsuariosDesdeJSON;
 var
   Archivo: TextFile;
   Linea, JSONContent: string;
-  JSONData: TJSONData; // CAMBIAR: eliminar Parser
+  JSONData: TJSONData;
   UsuariosArray: TJSONArray;
   i: Integer;
   UsuarioObj: TJSONObject;
@@ -153,7 +153,7 @@ begin
     end;
     CloseFile(Archivo);
 
-    // Parsear JSON - USAR GetJSON
+    // Parsear JSON
     JSONData := GetJSON(JSONContent);
     try
       if (JSONData <> nil) and (JSONData.FindPath('usuarios') <> nil) then
@@ -172,12 +172,12 @@ begin
               UsuarioObj.Get('usuario', ''),
               UsuarioObj.Get('email', ''),
               UsuarioObj.Get('telefono', ''),
-              UsuarioObj.Get('password', '')); // AGREGAR ESTE PARÁMETRO
+              UsuarioObj.Get('password', ''));
           end;
         end;
       end;
     finally
-      JSONData.Free; // LIBERAR JSONData
+      JSONData.Free;
     end;
   except
     on E: Exception do
@@ -190,56 +190,91 @@ var
   Usuario: PUsuario;
   FormUsuario: TForm3;
   FormRoot: TForm2;
+  email, passwordInput: String;
 begin
-  // Verificar credenciales root
-  if (edtEmail.Text = ROOT_EMAIL) and (edtPassword.Text = ROOT_PASSWORD) then
+  email := Trim(edtEmail.Text);
+  passwordInput := edtPassword.Text; // Contraseñas no se trimean
+
+  // Validar campos vacíos
+  if (email = '') or (passwordInput = '') then
+  begin
+    ShowMessage('Por favor, ingrese su correo y contraseña.');
+    Exit;
+  end;
+
+  // Verificar credenciales del Root
+  if (email = ROOT_EMAIL) and (passwordInput = ROOT_PASSWORD) then
   begin
     EsUsuarioRoot := True;
-    UsuarioActual := nil;
+    UsuarioActual := nil; // Root no está en la lista
+
+    // *** INTEGRACIÓN BITÁCORA (Fase 3) ***
+    RegistrarEntrada(LogAccesos, email); // <-- Registrar entrada del Root
 
     ShowMessage('¡Bienvenido Root!');
     StatusBar1.SimpleText := 'Sesión root iniciada';
 
-    // Navegar a formulario Root - CORREGIDO
-    FormRoot := TForm2.Create(nil);
-    FormRoot.Show;
-    Self.Hide; // Ocultar login
-    Exit;
+    // Ocultar formulario principal y mostrar formulario Root modalmente
+    Hide;
+    FormRoot := TForm2.Create(Application);
+    try
+      FormRoot.ShowModal;
+    finally
+      // El registro de salida se hará en FormRoot.OnDestroy si es necesario
+      EsUsuarioRoot := False;
+      FormRoot.Free;
+      // Mostrar formulario principal de nuevo
+      Show;
+    end;
+  end
+  // Verificar credenciales de Usuario Estándar
+  else
+  begin
+    Usuario := BuscarUsuarioPorEmail(ListaUsuariosGlobal, email);
+    if (Usuario <> nil) and (Usuario^.Password = passwordInput) then
+    begin
+      EsUsuarioRoot := False;
+      UsuarioActual := Usuario; // Establecer usuario global
+
+      // *** INTEGRACIÓN BITÁCORA (Fase 3) ***
+      RegistrarEntrada(LogAccesos, email); // <-- Registrar entrada del usuario estándar
+
+      ShowMessage('¡Bienvenido ' + Usuario^.Nombre + '!');
+      StatusBar1.SimpleText := 'Sesión de usuario iniciada: ' + Usuario^.Nombre;
+
+      // Ocultar formulario principal y mostrar formulario de usuario estándar modalmente
+      Hide;
+      FormUsuario := TForm3.Create(Application);
+      try
+        FormUsuario.SetUsuarioActual(Usuario);
+        FormUsuario.ShowModal;
+      finally
+        // El registro de salida se hará en FormUsuarioEstandar.OnDestroy si es necesario
+        UsuarioActual := nil; // Limpiar usuario global al cerrar sesión
+        EsUsuarioRoot := False;
+        FormUsuario.Free;
+        // Mostrar formulario principal de nuevo
+        Show;
+      end;
+    end
+    else
+    begin
+      ShowMessage('Correo o contraseña incorrectos.');
+      EsUsuarioRoot := False;
+      UsuarioActual := nil; // Asegurarse que no quede nada logueado
+    end;
   end;
 
-  // Buscar usuario normal
-   Usuario := BuscarUsuarioPorEmail(ListaUsuariosGlobal, edtEmail.Text);
-   if Usuario = nil then
-   begin
-     ShowMessage('Error: Usuario no encontrado');
-     Exit;
-   end;
-
-   // VERIFICAR CONTRASEÑA
-   if Usuario^.Password <> edtPassword.Text then
-   begin
-     ShowMessage('Error: Contraseña incorrecta');
-     Exit;
-   end;
-
-  // Configurar usuario actual
-  EsUsuarioRoot := False;
-  UsuarioActual := Usuario;
-
-  ShowMessage('¡Bienvenido ' + Usuario^.Nombre + '!');
-  StatusBar1.SimpleText := 'Sesión de usuario iniciada: ' + Usuario^.Nombre;
-
-  // Navegar a formulario de usuario estándar - CORREGIDO
-  FormUsuario := TForm3.Create(nil);
-  FormUsuario.SetUsuarioActual(Usuario);
-  FormUsuario.Show;
-  Self.Hide; // Ocultar login
+  // Limpiar campos después de intentar iniciar sesión
+  edtEmail.Clear;
+  edtPassword.Clear;
+  edtEmail.SetFocus;
 end;
 
 procedure TForm1.btnRegistrarClick(Sender: TObject);
 begin
-  // Abrir formulario de registro - CORREGIDO
-  Form8 := TForm8.Create(nil);
+  // Abrir formulario de registro modalmente
+  Form8 := TForm8.Create(Application);
   try
     Form8.ShowModal;
   finally

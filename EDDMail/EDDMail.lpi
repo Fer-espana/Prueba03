@@ -47,7 +47,7 @@
       <Unit>
         <Filename Value="ulistasimpleusuarios.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UListaSimpleUsuarios"/>
+        <UnitName Value="uListaSimpleUsuarios"/>
       </Unit>
       <Unit>
         <Filename Value="uroot.pas"/>

@@ -7,7 +7,13 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, UGLOBAL,
   UListaSimpleUsuarios, fpjson, jsonparser, UMatrizDispersaRelaciones,
-  UGestionComunidades, Process, UListaDobleEnlazadaCorreos, UPrincipal;
+  UGestionComunidades, Process, UListaDobleEnlazadaCorreos,
+  // *** NUEVAS DEPENDENCIAS (Fase 3) ***
+  bitacora, fbitacora, // <-- Añadir Bitacora y el formulario fbitacora
+  FileUtil, LCLIntf, LCLType, Math, StrUtils,
+  ulistacircularcontactos, blockchain,
+  // *** NUEVA DEPENDENCIA PARA REPORTE DE COMUNIDADES ***
+  ulistadelistascomunidades; // <-- Añadir para GenerarReporteComunidades
 
 type
 
@@ -19,6 +25,14 @@ type
     btnGestionComunidades: TButton;
     btnReporteUsuarios: TButton;
     btnReporteRelaciones: TButton;
+    // *** NUEVOS BOTONES (Fase 3) ***
+    BtnCargaCorreos: TButton;
+    BtnCargaContactos: TButton;
+    BtnVerMensajesComunidad: TButton;
+    BtnReporteComunidades: TButton;
+    BtnReporteGrafoContactos: TButton;
+    BtnReporteBlockchain: TButton;
+    BtnVerBitacora: TButton;
     procedure btnCargaMasivaClick(Sender: TObject);
     procedure btnReporteUsuariosClick(Sender: TObject);
     procedure btnReporteRelacionesClick(Sender: TObject);
@@ -27,11 +41,21 @@ type
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    // *** NUEVOS EVENTOS (Fase 3) ***
+    procedure BtnCargaCorreosClick(Sender: TObject);
+    procedure BtnCargaContactosClick(Sender: TObject);
+    procedure BtnVerMensajesComunidadClick(Sender: TObject);
+    procedure BtnReporteComunidadesClick(Sender: TObject);
+    procedure BtnReporteGrafoContactosClick(Sender: TObject);
+    procedure BtnReporteBlockchainClick(Sender: TObject);
+    procedure BtnVerBitacoraClick(Sender: TObject);
   private
     procedure CargarUsuariosDesdeJSON;
     procedure GuardarUsuariosEnJSON;
-    // CORRECCIÓN 1: Se declara el método en la interface (section private)
     procedure CargarCorreosDesdeJSON;
+    // *** NUEVOS PROCEDIMIENTOS (Fase 3) ***
+    procedure CargarContactosDesdeJSON(const archivo: string);
+    function ConvertirDotAPng(nombreArchivoDot: string): Boolean;
   public
 
   end;
@@ -40,6 +64,8 @@ var
   Form2: TForm2;
 
 implementation
+
+uses UPrincipal;
 
 {$R *.lfm}
 
@@ -59,12 +85,22 @@ begin
     Application.MainForm.Show;
 end;
 
+// *** NUEVO PROCEDIMIENTO (Fase 3) ***
+procedure TForm2.FormDestroy(Sender: TObject);
+begin
+  // Registrar salida del Root
+  RegistrarSalida(LogAccesos, 'root@edd.com');
+
+  // Limpiar estado global
+  EsUsuarioRoot := False;
+  UsuarioActual := nil;
+end;
 
 procedure TForm2.CargarUsuariosDesdeJSON;
 var
   Archivo: TextFile;
   Linea, JSONContent: string;
-  JSONData: TJSONData; // CAMBIAR: eliminar Parser
+  JSONData: TJSONData;
   UsuariosArray: TJSONArray;
   i: Integer;
   UsuarioObj: TJSONObject;
@@ -87,7 +123,7 @@ begin
     end;
     CloseFile(Archivo);
 
-    // Parsear JSON - USAR GetJSON EN LUGAR DE TJSONParser
+    // Parsear JSON
     JSONData := GetJSON(JSONContent);
     try
       if JSONData.FindPath('usuarios') <> nil then
@@ -104,12 +140,12 @@ begin
             UsuarioObj.Get('usuario', ''),
             UsuarioObj.Get('email', ''),
             UsuarioObj.Get('telefono', ''),
-            UsuarioObj.Get('password', '')); // Contraseña vacía por defecto
+            UsuarioObj.Get('password', ''));
         end;
         ShowMessage('Usuarios cargados exitosamente desde Data/usuarios.json');
       end;
     finally
-      JSONData.Free; // LIBERAR JSONData en lugar de Parser
+      JSONData.Free;
     end;
   except
     on E: Exception do
@@ -154,8 +190,8 @@ begin
       WriteLn(Archivo, '      "nombre": "', Actual^.Nombre, '",');
       WriteLn(Archivo, '      "usuario": "', Actual^.Usuario, '",');
       WriteLn(Archivo, '      "email": "', Actual^.Email, '",');
-      WriteLn(Archivo, '      "telefono": "', Actual^.Telefono, '",'); // Agregar coma
-      WriteLn(Archivo, '      "password": "', Actual^.Password, '"');  // NUEVA LÍNEA
+      WriteLn(Archivo, '      "telefono": "', Actual^.Telefono, '",');
+      WriteLn(Archivo, '      "password": "', Actual^.Password, '"');
       Write(Archivo, '    }');
 
       EsPrimerUsuario := False;
@@ -179,9 +215,136 @@ begin
   CargarUsuariosDesdeJSON;
 
   // NUEVA FUNCIÓN DE CARGA DE CORREOS
-  CargarCorreosDesdeJSON; // <--- LLAMAR A LA FUNCIÓN DE CARGA DE CORREOS
+  CargarCorreosDesdeJSON;
 
   ShowMessage('Carga Masiva de Usuarios y Correos completada.');
+end;
+
+// *** NUEVO EVENTO ONCLICK (Fase 3) ***
+procedure TForm2.BtnCargaCorreosClick(Sender: TObject);
+begin
+  CargarCorreosDesdeJSON;
+end;
+
+// *** NUEVO EVENTO ONCLICK (Fase 3) ***
+procedure TForm2.BtnCargaContactosClick(Sender: TObject);
+var
+  OpenDialog: TOpenDialog;
+begin
+  OpenDialog := TOpenDialog.Create(nil);
+  try
+    OpenDialog.Filter := 'JSON files (*.json)|*.json|All files (*.*)|*.*';
+    OpenDialog.Title := 'Seleccionar archivo JSON de Contactos';
+    if OpenDialog.Execute then
+    begin
+      CargarContactosDesdeJSON(OpenDialog.FileName);
+    end;
+  finally
+    OpenDialog.Free;
+  end;
+end;
+
+// *** NUEVO EVENTO ONCLICK (Fase 3) ***
+procedure TForm2.BtnVerMensajesComunidadClick(Sender: TObject);
+begin
+  // Asumiendo que tienes un formulario para ver mensajes de comunidad
+  // Si no existe, puedes implementarlo o mostrar un mensaje
+  ShowMessage('Funcionalidad de mensajes de comunidad - Por implementar');
+end;
+
+// *** NUEVO EVENTO ONCLICK (Fase 3) - IMPLEMENTADO ***
+procedure TForm2.BtnReporteComunidadesClick(Sender: TObject);
+var
+  nombreBase: String;
+  dotFilePath, pngFilePath: String;
+begin
+  nombreBase := 'comunidades_bst';
+
+  // Asegúrate que la función exista en la unidad correspondiente y reciba ArbolComunidades
+  if Assigned(@GenerarReporteComunidades) then
+  begin
+    GenerarReporteComunidades(ArbolComunidades, nombreBase); // Llama a la función del BST
+  end
+  else
+  begin
+    ShowMessage('Error: Función GenerarReporteComunidades no disponible');
+    Exit;
+  end;
+
+  dotFilePath := IncludeTrailingPathDelimiter(DirectorioReportesRoot) + nombreBase + '.dot';
+  pngFilePath := ChangeFileExt(dotFilePath, '.png');
+
+  if ConvertirDotAPng(dotFilePath) then
+    ShowMessage('Reporte de Comunidades (BST) generado en: ' + pngFilePath)
+  else
+    ShowMessage('Error al generar la imagen del reporte de Comunidades.');
+end;
+
+// *** MODIFICADO/CONFIRMADO (Fase 3) ***
+procedure TForm2.BtnReporteGrafoContactosClick(Sender: TObject);
+var
+   nombreBase: String;
+   dotFilePath: String;
+   pngFilePath: String;
+begin
+   nombreBase := 'grafo_contactos'; // Nombre base sin extensión ni ruta
+
+   // Llama a la función que AHORA está en ulistasimpleusuarios
+   GenerarReporteGrafo(nombreBase); // <-- Llamada correcta
+
+   // Construir rutas completas (usando DirectorioReportesRoot de uglobal)
+   dotFilePath := IncludeTrailingPathDelimiter(DirectorioReportesRoot) + nombreBase + '.dot';
+   pngFilePath := ChangeFileExt(dotFilePath, '.png');
+
+   // Convertir a PNG (asegúrate que ConvertirDotAPng esté disponible aquí)
+   if ConvertirDotAPng(dotFilePath) then
+      ShowMessage('Reporte del Grafo de Contactos generado en: ' + pngFilePath)
+   else
+      ShowMessage('Error al generar la imagen del Grafo de Contactos.');
+end;
+
+// *** NUEVO EVENTO ONCLICK (Fase 3) ***
+procedure TForm2.BtnReporteBlockchainClick(Sender: TObject);
+var
+   nombreBase: String;
+   dotFilePath: String;
+   pngFilePath: String;
+begin
+   nombreBase := 'Blockchain_Reporte';
+
+   // Llama a la función en blockchain.pas
+   if Assigned(@GenerarReporteBlockchain) then
+   begin
+     GenerarReporteBlockchain(SistemaBlockchain, nombreBase);
+   end
+   else
+   begin
+     ShowMessage('Función GenerarReporteBlockchain no disponible');
+     Exit;
+   end;
+
+   // Construir rutas completas
+   dotFilePath := ExtractFilePath(Application.ExeName) + 'Root-Reportes' + PathDelim + nombreBase + '.dot';
+   pngFilePath := ChangeFileExt(dotFilePath, '.png');
+
+   // Convertir a PNG
+   if ConvertirDotAPng(dotFilePath) then
+      ShowMessage('Reporte de Blockchain generado en: ' + pngFilePath)
+   else
+      ShowMessage('Error al generar la imagen de Blockchain.');
+end;
+
+// *** NUEVO EVENTO ONCLICK (Fase 3) ***
+procedure TForm2.BtnVerBitacoraClick(Sender: TObject);
+var
+  FormBitacora: TFFbitacora;
+begin
+  FormBitacora := TFFbitacora.Create(Application);
+  try
+    FormBitacora.ShowModal;
+  finally
+    FormBitacora.Free;
+  end;
 end;
 
 // =======================================================
@@ -190,7 +353,7 @@ end;
 procedure TForm2.btnReporteUsuariosClick(Sender: TObject);
 var
   RutaCarpeta, NombreDOT, NombrePNG, RutaDOT, RutaPNG: string;
-  Proc: TProcess; // VARIABLE PARA TProcess
+  Proc: TProcess;
 begin
   RutaCarpeta := ExtractFilePath(Application.ExeName) + 'Root-Reportes';
   NombreDOT := 'reporte_usuarios.dot';
@@ -205,7 +368,7 @@ begin
   // 2. Generar el archivo DOT
   GenerarReporteDOTUsuarios(ListaUsuariosGlobal, RutaDOT);
 
-  // 3. EJECUTAR GRAPHVIZ (Generación automática de PNG) - CORREGIDO
+  // 3. EJECUTAR GRAPHVIZ (Generación automática de PNG)
   if FileExists(RutaDOT) then
   begin
     // Comando: dot -Tpng <archivo.dot> -o <archivo.png>
@@ -233,7 +396,7 @@ end;
 procedure TForm2.btnReporteRelacionesClick(Sender: TObject);
 var
   RutaCarpeta, NombreDOT, NombrePNG, RutaDOT, RutaPNG: string;
-  Proc: TProcess; // VARIABLE PARA TProcess
+  Proc: TProcess;
 begin
   RutaCarpeta := ExtractFilePath(Application.ExeName) + 'Root-Reportes';
   NombreDOT := 'reporte_relaciones.dot';
@@ -248,7 +411,7 @@ begin
   // 2. Generar reporte de relaciones (Matriz Dispersa a DOT)
   GenerarReporteRelaciones(MatrizRelaciones, RutaDOT);
 
-  // 3. EJECUTAR GRAPHVIZ (Generación automática de PNG) - CORREGIDO
+  // 3. EJECUTAR GRAPHVIZ (Generación automática de PNG)
   if FileExists(RutaDOT) then
   begin
     // Comando: dot -Tpng <archivo.dot> -o <archivo.png>
@@ -279,10 +442,8 @@ begin
 end;
 
 procedure TForm2.btnCerrarSesionClick(Sender: TObject);
-var
-  Form1 : TForm1;
 begin
-  // 1. Limpiar el estado de la sesión Root (aunque FormDestroy lo hace, es explícito)
+  // 1. Limpiar el estado de la sesión Root
   EsUsuarioRoot := False;
   UsuarioActual := nil;
 
@@ -349,23 +510,22 @@ begin
             BandejaDestino := CrearBandejaUsuario(CorreoObj.Get('destinatario', ''));
 
           // Insertar correo: Seguridad contra punteros nulos
-          if BandejaDestino <> nil then // <--- COMPROBACIÓN AÑADIDA
+          if BandejaDestino <> nil then
           begin
-            InsertarCorreo(BandejaDestino^.BandejaEntrada, // Aquí se inserta en la BandejaEntrada
+            InsertarCorreo(BandejaDestino^.BandejaEntrada,
               CorreoObj.Get('id', 0),
               CorreoObj.Get('remitente', ''),
               CorreoObj.Get('destinatario', ''),
               EstadoCorreo,
               False, // No son programados en esta carga
               CorreoObj.Get('asunto', ''),
-              FormatDateTime('yyyy-mm-dd hh:nn:ss', Now), // Usar fecha actual para la carga
+              FormatDateTime('yyyy-mm-dd hh:nn:ss', Now),
               CorreoObj.Get('mensaje', ''));
 
-            // Actualizar Matriz de Relaciones (solo si remitente/destinatario son usuarios válidos)
+            // Actualizar Matriz de Relaciones
             if (BuscarUsuarioPorEmail(ListaUsuariosGlobal, CorreoObj.Get('remitente', '')) <> nil) and
                (BuscarUsuarioPorEmail(ListaUsuariosGlobal, CorreoObj.Get('destinatario', '')) <> nil) then
             begin
-              // Asumiendo que BuscarIndiceUsuario devuelve el ID
               InsertarValor(MatrizRelaciones,
                             BuscarUsuarioPorEmail(ListaUsuariosGlobal, CorreoObj.Get('remitente', ''))^.Id,
                             BuscarUsuarioPorEmail(ListaUsuariosGlobal, CorreoObj.Get('destinatario', ''))^.Id,
@@ -384,11 +544,126 @@ begin
   end;
 end;
 
-procedure TForm2.FormDestroy(Sender: TObject);
+// *** NUEVO PROCEDIMIENTO (Fase 3) ***
+procedure TForm2.CargarContactosDesdeJSON(const archivo: string);
+var
+  jsonText: string;
+  jsonData, jsonUsuariosArray, jsonUsuarioItem, jsonContactosArray: TJSONData;
+  jsonContactoItem: TJSONStringType;
+  i, j: Integer;
+  usuarioPrincipalMail, contactoMail: string;
+  usuarioPrincipalPtr: PUsuario;
+  contactosCargados, contactosOmitidos: Integer;
+  SL: TStringList;
 begin
-  // Limpiar estado global
-  EsUsuarioRoot := False;
-  UsuarioActual := nil;
+   contactosCargados := 0;
+   contactosOmitidos := 0;
+   SL := TStringList.Create;
+   try
+      SL.LoadFromFile(archivo);
+      jsonText := SL.Text;
+   except
+      on E: Exception do begin
+         ShowMessage('Error al leer el archivo JSON: ' + E.Message);
+         SL.Free;
+         Exit;
+      end;
+   end;
+   SL.Free;
+
+   try
+      jsonData := GetJSON(jsonText);
+      if not (jsonData is TJSONObject) then raise Exception.Create('El JSON raíz no es un objeto.');
+
+      if not TJSONObject(jsonData).FindPath('Usuarios', jsonUsuariosArray) or not (jsonUsuariosArray is TJSONArray) then
+         raise Exception.Create('No se encontró el array "Usuarios" o no es válido.');
+
+      for i := 0 to TJSONArray(jsonUsuariosArray).Count - 1 do
+      begin
+         if not (TJSONArray(jsonUsuariosArray).Items[i] is TJSONObject) then Continue;
+         jsonUsuarioItem := TJSONObject(TJSONArray(jsonUsuariosArray).Items[i]);
+
+         // Obtener el email del usuario principal
+         if not jsonUsuarioItem.FindPathAsString('Usuario', usuarioPrincipalMail) then Continue;
+
+         // Buscar este usuario en nuestra lista
+         usuarioPrincipalPtr := BuscarUsuarioPorEmail(ListaUsuariosGlobal, usuarioPrincipalMail);
+         if usuarioPrincipalPtr = nil then
+         begin
+            // Si el usuario principal no existe, omitimos sus contactos
+            if jsonUsuarioItem.FindPath('Contactos', jsonContactosArray) and (jsonContactosArray is TJSONArray) then
+              Inc(contactosOmitidos, TJSONArray(jsonContactosArray).Count);
+            Continue;
+         end;
+
+         // Procesar la lista de contactos para este usuario
+         if jsonUsuarioItem.FindPath('Contactos', jsonContactosArray) and (jsonContactosArray is TJSONArray) then
+         begin
+            for j := 0 to TJSONArray(jsonContactosArray).Count - 1 do
+            begin
+               if not (TJSONArray(jsonContactosArray).Items[j] is TJSONStringType) then
+               begin
+                  Inc(contactosOmitidos);
+                  Continue;
+               end;
+               jsonContactoItem := TJSONStringType(TJSONArray(jsonContactosArray).Items[j]);
+               contactoMail := jsonContactoItem.AsString;
+
+               // Agregar contacto a la lista del usuario
+               AgregarContactoALista(usuarioPrincipalPtr^.contacts, contactoMail);
+               Inc(contactosCargados);
+            end;
+         end;
+      end;
+
+      ShowMessage(Format('Carga de contactos completada.' + #13#10 +
+        'Contactos agregados: %d' + #13#10 +
+        'Contactos omitidos (Usuario principal no encontrado o dato inválido): %d',
+        [contactosCargados, contactosOmitidos]));
+
+   except
+      on E: Exception do
+         ShowMessage('Error procesando el JSON de contactos: ' + E.Message);
+   end;
+end;
+
+// *** ASEGÚRATE DE TENER ESTA FUNCIÓN (copiada de referencia si es necesario) ***
+function TForm2.ConvertirDotAPng(nombreArchivoDot: string): Boolean;
+var
+  rutaCompletaPng: string;
+  dotProcess: TProcess;
+  DirectorioSalida: String;
+begin
+  Result := False; // Por defecto
+  if not FileExists(nombreArchivoDot) then
+  begin
+    ShowMessage('Error: El archivo .dot no existe: ' + nombreArchivoDot);
+    Exit;
+  end;
+
+  rutaCompletaPng := ChangeFileExt(nombreArchivoDot, '.png');
+  DirectorioSalida := ExtractFilePath(nombreArchivoDot); // Obtener directorio del .dot
+
+  dotProcess := TProcess.Create(nil);
+  try
+    dotProcess.Executable := 'dot'; // Asegúrate que 'dot' esté en el PATH del sistema
+    dotProcess.Parameters.Add('-Tpng');
+    dotProcess.Parameters.Add(nombreArchivoDot);
+    dotProcess.Parameters.Add('-o');
+    dotProcess.Parameters.Add(rutaCompletaPng);
+    // Especificar directorio de trabajo puede ayudar si hay problemas de ruta
+    dotProcess.CurrentDirectory := DirectorioSalida;
+    dotProcess.Options := [poWaitOnExit, poUsePipes]; // poUsePipes puede ayudar a capturar errores
+    dotProcess.Execute;
+
+    if dotProcess.ExitCode <> 0 then
+      ShowMessage('Error al ejecutar Graphviz (dot). Código: ' + IntToStr(dotProcess.ExitCode) + #13#10 +
+                  'Asegúrese que Graphviz esté instalado y en el PATH.')
+    else
+      Result := True; // Éxito
+  finally
+    dotProcess.Free;
+  end;
 end;
 
 end.

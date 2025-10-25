@@ -5,7 +5,7 @@ unit UVerBorradores;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls, // AÑADIDO ComCtrls
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls,
   UGLOBAL, UAVLTreeBorradores, UListaDobleEnlazadaCorreos, UCorregirBorrador, Process; // Grids ELIMINADO
 
 type
@@ -17,7 +17,6 @@ type
     btnInOrden: TButton;
     btnPostOrden: TButton;
     MemoRecorrido: TMemo;
-    // tablaBorradores: TStringGrid; // ELIMINADO
     listViewBorradores: TListView; // <--- AÑADIDO
     Label1: TLabel;
     Label2: TLabel;
@@ -117,7 +116,7 @@ begin
   Item.SubItems.Add(Nodo^.Correo.Fecha); // Columna 3
 
   // Guardar el ID en el puntero de datos del TListView
-  Item.Data := Pointer(PtrInt(Nodo^.Key));
+  Item.Data := Pointer(PtrInt(Nodo^.Key)); // Uso de PtrInt (solución para la portabilidad)
   Inc(Fila);
 
   RecorrerInOrdenParaTabla(Nodo^.Right, Fila);
@@ -146,7 +145,7 @@ begin
 
   if Assigned(Item) then
     // Recuperar el ID guardado en TListItem.Data
-    Result := PtrInt(Item.Data);
+    Result := PtrInt(Item.Data); // Uso de PtrInt (solución para la portabilidad)
 end;
 
 procedure TForm16.MostrarRecorrido(TipoRecorrido: string);
@@ -239,4 +238,3 @@ end;
 procedure TForm16.editNumeroBorradoresChange(Sender: TObject); begin end;
 
 end.
-

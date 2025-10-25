@@ -7,7 +7,9 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, UListaSimpleUsuarios,
   UBandejaEntrada, UEnviarCorreo, UPapelera, UProgramarCorreo, UCorreosProgramados,
-  UAgregarContacto, UVentanaContactos, UActualizarPerfil, UGLOBAL, process, UVerBorradores, UFavoritos;
+  UAgregarContacto, UVentanaContactos, UActualizarPerfil, UGLOBAL, process, UVerBorradores, UFavoritos,
+  // *** NUEVAS DEPENDENCIAS (Fase 3) ***
+  bitacora, privados, ugestioncomunidades; // <-- Añadir Bitacora y el formulario Privados
 
 type
 
@@ -26,6 +28,9 @@ type
     btnRegresarLogin: TButton;
     btnVerBorradoresDeMensajes: TButton;
     btnFavoritos: TButton;
+    // *** NUEVO BOTÓN (Fase 3) ***
+    BtnVerPrivados: TButton;
+    LabelUsuario: TLabel;
     procedure btnBandejaEntradaClick(Sender: TObject);
     procedure bntEnviarCorreoClick(Sender: TObject);
     procedure btnPapeleraClick(Sender: TObject);
@@ -38,6 +43,8 @@ type
     procedure btnRegresarLoginClick(Sender: TObject);
     procedure btnVerBorradoresDeMensajesClick(Sender: TObject);
     procedure btnFavoritosClick(Sender: TObject);
+    // *** NUEVOS EVENTOS (Fase 3) ***
+    procedure BtnVerPrivadosClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -45,16 +52,13 @@ type
     UsuarioActual: PUsuario;
   public
     procedure SetUsuarioActual(Usuario: PUsuario);
-    procedure RefrescarDatos; // Método público para la notificación global
+    procedure RefrescarDatos;
   end;
 
 var
   Form3: TForm3;
 
 implementation
-
-// CORRECCIÓN: Se elimina el uses duplicado que causaba errores.
-// uses UBandejaEntrada, UVerBorradores, UFavoritos;
 
 {$R *.lfm}
 
@@ -66,9 +70,15 @@ begin
   btnRegresarLogin.Caption := 'Cerrar Sesión';
 end;
 
+// *** NUEVO PROCEDIMIENTO (Fase 3) ***
 procedure TForm3.FormDestroy(Sender: TObject);
 begin
+  // Registrar salida del usuario estándar
+  if UsuarioActual <> nil then
+    RegistrarSalida(LogAccesos, UsuarioActual^.Email);
+
   // Limpiar recursos si es necesario
+  UsuarioActual := nil;
 end;
 
 // LÓGICA DE REFRESCADO GLOBAL
@@ -89,7 +99,6 @@ begin
   if Assigned(Form17) and (Form17.Visible) then
     Form17.RefrescarDatos;
 end;
-
 
 procedure TForm3.btnBandejaEntradaClick(Sender: TObject);
 var
@@ -114,7 +123,6 @@ var
   FormPapelera: TForm11;
 begin
   FormPapelera := TForm11.Create(Application);
-  // FormPapelera NO tiene SetBandejaActual - ELIMINAR ESTA LÍNEA
   FormPapelera.Show;
 end;
 
@@ -123,7 +131,6 @@ var
   FormProgramarCorreo: TForm5;
 begin
   FormProgramarCorreo := TForm5.Create(Application);
-  // FormProgramarCorreo NO tiene SetBandejaActual - ELIMINAR ESTA LÍNEA
   FormProgramarCorreo.Show;
 end;
 
@@ -132,7 +139,6 @@ var
   FormCorreosProgramados: TForm12;
 begin
   FormCorreosProgramados := TForm12.Create(Application);
-  // FormCorreosProgramados NO tiene SetBandejaActual - ELIMINAR ESTA LÍNEA
   FormCorreosProgramados.Show;
 end;
 
@@ -141,7 +147,6 @@ var
   FormAgregarContacto: TForm6;
 begin
   FormAgregarContacto := TForm6.Create(Application);
-  // FormAgregarContacto NO tiene SetBandejaActual - ELIMINAR ESTA LÍNEA
   FormAgregarContacto.Show;
 end;
 
@@ -150,7 +155,6 @@ var
   FormContactos: TForm13;
 begin
   FormContactos := TForm13.Create(Application);
-  // FormContactos NO tiene SetBandejaActual - ELIMINAR ESTA LÍNEA
   FormContactos.Show;
 end;
 
@@ -159,7 +163,6 @@ var
     FormActualizarPerfil: TForm7;
 begin
   FormActualizarPerfil := TForm7.Create(Application);
-  // FormActualizarPerfil NO tiene SetBandejaActual - ELIMINAR ESTA LÍNEA
   FormActualizarPerfil.Show;
 end;
 
@@ -202,17 +205,22 @@ var
 begin
   if UsuarioActual = nil then Exit;
 
-  FormBorradores := TForm16.Create(Application); // <--- Abre el TForm16 de Borradores
+  FormBorradores := TForm16.Create(Application);
   FormBorradores.RefrescarDatos;
   FormBorradores.Show;
 end;
-
 
 procedure TForm3.SetUsuarioActual(Usuario: PUsuario);
 begin
   UsuarioActual := Usuario;
   if UsuarioActual <> nil then
+  begin
     Caption := 'EDDMail - ' + UsuarioActual^.Nombre;
+    // *** ACTUALIZAR LABEL (Fase 3) ***
+    LabelUsuario.Caption := 'Hola: ' + UsuarioActual^.Nombre;
+  end
+  else
+    LabelUsuario.Caption := 'Hola: Usuario Desconocido';
 end;
 
 procedure TForm3.btnFavoritosClick(Sender: TObject);
@@ -221,9 +229,28 @@ var
 begin
   if UsuarioActual = nil then Exit;
 
-  FormFavoritos := TForm17.Create(Application); // <--- Abre el TForm17 de Favoritos
+  FormFavoritos := TForm17.Create(Application);
   FormFavoritos.RefrescarDatos;
   FormFavoritos.Show;
+end;
+
+// *** NUEVO PROCEDIMIENTO (Fase 3) ***
+procedure TForm3.BtnVerPrivadosClick(Sender: TObject);
+var
+  FormPriv: TFormPrivados;
+begin
+  if UsuarioActual = nil then
+  begin
+    ShowMessage('Error: No hay usuario logueado.');
+    Exit;
+  end;
+
+  FormPriv := TFormPrivados.Create(Application);
+  try
+    FormPriv.ShowModal;
+  finally
+    FormPriv.Free;
+  end;
 end;
 
 procedure TForm3.FormClose(Sender: TObject; var CloseAction: TCloseAction);

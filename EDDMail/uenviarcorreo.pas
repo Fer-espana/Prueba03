@@ -6,36 +6,45 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  UListaCircularContactos, UListaDobleEnlazadaCorreos, UGLOBAL,
-  UListaSimpleUsuarios, UMatrizDispersaRelaciones, UAVLTreeBorradores;
+  // Dependencias existentes
+  uglobal, ulistasimpleusuarios, ulistacircularcontactos, ulistadobleenlazadacorreos,
+  uavltreeborradores, // Para guardar borrador
+  // *** NUEVAS DEPENDENCIAS (Fase 3) ***
+  blockchain, // <-- Para registrar envío
+  privado,    // <-- Para guardar como privado
+  UVerBorradores; // Para notificar actualización de borradores
 
 type
 
-  { TForm4 } // <--- La clase correcta es TForm4
+  { TForm4 }
 
   TForm4 = class(TForm)
     btnEnviar: TButton;
+    // *** NUEVO BOTÓN (Fase 3) ***
+    btnGuardarPrivado: TButton;
+    btnGuardarBorrador: TButton;
     editAsunto: TEdit;
     editDestinatario: TEdit;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
+    Label4: TLabel;
     MemoMensaje: TMemo;
-    btnGuardarBorrador: TButton;
     procedure btnEnviarClick(Sender: TObject);
+    procedure btnGuardarBorradorClick(Sender: TObject);
+    procedure btnGuardarPrivadoClick(Sender: TObject); // Evento del botón Guardar Privado
     procedure editAsuntoChange(Sender: TObject);
     procedure editDestinatarioChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure MemoMensajeChange(Sender: TObject);
-    procedure btnGuardarBorradorClick(Sender: TObject);
   private
     BandejaActual: PBandejaUsuario;
     function GenerarIdCorreo: Integer;
     function ValidarDestinatario(Destinatario: string): Boolean;
     function BuscarIndiceUsuario(Email: string): Integer;
     procedure GuardarCorreoEnJSON(Id: Integer; Remitente, Destinatario, Asunto, Mensaje, Fecha: string);
-    procedure NotificarFormularioBorradores; // <-- AGREGADO
+    procedure NotificarFormularioBorradores;
   public
     procedure SetBandejaActual(Email: string);
   end;
@@ -44,8 +53,6 @@ var
   Form4: TForm4;
 
 implementation
-
-uses UVerBorradores; // <-- AGREGADO para referenciar TForm16
 
 {$R *.lfm}
 
@@ -116,24 +123,21 @@ begin
   Result := True;
 end;
 
-procedure TForm4.NotificarFormularioBorradores; // <-- IMPLEMENTACIÓN
+procedure TForm4.NotificarFormularioBorradores;
 var
   i: Integer;
-  FormBorradores: TForm16; // TForm16 es el formulario de borradores (UVerBorradores)
+  FormBorradores: TForm16;
 begin
-  // Busca TForm16 (UVerBorradores) en los formularios abiertos
   for i := 0 to Screen.FormCount - 1 do
   begin
     if Screen.Forms[i] is TForm16 then
     begin
       FormBorradores := (Screen.Forms[i] as TForm16);
-      // Llama al método RefrescarDatos, que es público en TForm16
       FormBorradores.RefrescarDatos;
-      Break; // Salir después de encontrar el formulario
+      Break;
     end;
   end;
 end;
-
 
 procedure TForm4.btnEnviarClick(Sender: TObject);
 var
@@ -142,10 +146,11 @@ var
   NuevoId: Integer;
   FechaActual: string;
   IndiceRemitente, IndiceDestinatario: Integer;
+  destinatarioUsuario: PUsuario;
 begin
   Destinatario := Trim(editDestinatario.Text);
   Asunto := Trim(editAsunto.Text);
-  Mensaje := Trim(MemoMensaje.Text);
+  Mensaje := MemoMensaje.Text; // No quitar espacios intermedios
 
   // Validaciones básicas
   if (Destinatario = '') or (Asunto = '') or (Mensaje = '') then
@@ -154,11 +159,26 @@ begin
     Exit;
   end;
 
-  // Validar destinatario
+  // Validar usuario logueado
+  if UsuarioActual = nil then
+  begin
+    ShowMessage('Error: No hay usuario logueado.');
+    Exit;
+  end;
+
+  // Validar destinatario usando contactos
   if not ValidarDestinatario(Destinatario) then
     Exit;
 
-  // Obtener o crear bandeja del destinatario
+  // Validar si el destinatario existe en el sistema
+  destinatarioUsuario := BuscarUsuarioPorEmail(ListaUsuariosGlobal, Destinatario);
+  if destinatarioUsuario = nil then
+  begin
+    ShowMessage('Error: El contacto "' + Destinatario + '" no es un usuario registrado en el sistema.');
+    Exit;
+  end;
+
+  // --- Lógica de Envío ---
   BandejaDestino := ObtenerBandejaUsuario(Destinatario);
   if BandejaDestino = nil then
     BandejaDestino := CrearBandejaUsuario(Destinatario);
@@ -171,7 +191,10 @@ begin
   InsertarCorreo(BandejaDestino^.BandejaEntrada, NuevoId,
     UsuarioActual^.Email, Destinatario, 'N', False, Asunto, FechaActual, Mensaje);
 
-  // NUEVA LÍNEA: GUARDAR EN LOG JSON
+  // *** INTEGRACIÓN BLOCKCHAIN (Fase 3) ***
+  AgregarBloque(SistemaBlockchain, IntToStr(NuevoId), UsuarioActual^.Email, Asunto, Mensaje);
+
+  // Guardar en log JSON
   GuardarCorreoEnJSON(NuevoId, UsuarioActual^.Email, Destinatario, Asunto, Mensaje, FechaActual);
 
   // Actualizar matriz de relaciones
@@ -192,41 +215,106 @@ begin
   MemoMensaje.Text := '';
 end;
 
-// CORRECCIÓN CLAVE: Se corrige TForm7 a TForm4
 procedure TForm4.btnGuardarBorradorClick(Sender: TObject);
 var
-  NuevoCorreo: TCorreo; // Usaremos la estructura TCorreo
+  NuevoCorreo: TCorreo;
   NuevoID: Integer;
 begin
-  // CORRECCIÓN: Se corrigen los nombres de los componentes (editAsunto, editDestinatario)
   if (BandejaActual = nil) or (editAsunto.Text = '') or (MemoMensaje.Text = '') then
   begin
     ShowMessage('Asunto y mensaje son obligatorios.');
     Exit;
   end;
 
-  // 1. Generar nuevo ID (CORRECCIÓN: Se llama al método local GenerarIdCorreo)
+  // Generar nuevo ID
   NuevoID := GenerarIdCorreo;
 
-  // 2. Crear un nuevo registro TCorreo con el estado 'Borrador' (o 'B')
+  // Crear registro TCorreo con estado 'Borrador'
   NuevoCorreo.Id := NuevoID;
   NuevoCorreo.Remitente := UsuarioActual^.Email;
   NuevoCorreo.Destinatario := editDestinatario.Text;
-  NuevoCorreo.Estado := 'B'; // 'B' para Borrador (Asumiendo que usas 'B')
+  NuevoCorreo.Estado := 'B';
   NuevoCorreo.Programado := False;
   NuevoCorreo.Asunto := editAsunto.Text;
   NuevoCorreo.Fecha := FormatDateTime('yyyy-mm-dd hh:nn:ss', Now);
   NuevoCorreo.Mensaje := MemoMensaje.Text;
 
-  // 3. Insertar en el Árbol AVL de borradores
   InsertarEnAVL(BandejaActual^.Borradores, NuevoID, NuevoCorreo);
 
   ShowMessage('Correo guardado como borrador (ID: ' + IntToStr(NuevoID) + ').');
-
-  // <-- CORRECCIÓN: Notificar al formulario de Borradores (TForm16) para que refresque su lista
   NotificarFormularioBorradores;
+  Self.Close;
+end;
 
-  Self.Close; // Self.Close funciona correctamente dentro de TForm4
+//
+// *** NUEVO PROCEDIMIENTO COMPLETO (Fase 3 con MerkleTree) ***
+//
+procedure TForm4.btnGuardarPrivadoClick(Sender: TObject);
+var
+  destinatario: String;
+  asunto: String;
+  mensajeTexto: String;
+  fechaStr: String;
+  merklePrivados: TMerkleTree;
+begin
+  if UsuarioActual = nil then
+  begin
+    ShowMessage('Error: No hay usuario logueado.');
+    Exit;
+  end;
+
+  // Obtener instancia del árbol Merkle del usuario logueado
+  merklePrivados := UsuarioActual^.privados;
+  if not Assigned(merklePrivados) then
+  begin
+    ShowMessage('Error interno: El árbol de privados no está inicializado.');
+    Exit;
+  end;
+
+  // 1. Obtener datos
+  destinatario := Trim(editDestinatario.Text);
+  asunto := Trim(editAsunto.Text);
+  mensajeTexto := MemoMensaje.Text; // No trimear el mensaje
+  fechaStr := FormatDateTime('yyyy-mm-dd hh:nn:ss', Now);
+
+  // 2. Validaciones
+  if (asunto = '') then
+  begin
+    ShowMessage('El asunto es obligatorio para guardar como privado.');
+    Exit;
+  end;
+
+  if (mensajeTexto = '') then
+  begin
+    ShowMessage('El mensaje no puede estar vacío para guardar como privado.');
+    Exit;
+  end;
+
+  // Validar duplicado de asunto
+  if merklePrivados.ExisteAsunto(asunto) then
+  begin
+    ShowMessage('Ya existe un correo privado con el asunto: "' + asunto + '". No se permiten duplicados.');
+    Exit;
+  end;
+
+  // 3. Insertar en el Árbol Merkle
+  try
+    if destinatario = '' then
+       destinatario := UsuarioActual^.Email;
+
+    merklePrivados.Insert(destinatario, asunto, fechaStr, mensajeTexto);
+
+    ShowMessage('Contenido guardado exitosamente como correo privado.' + #13#10 +
+                'El Árbol Merkle ha sido reconstruido.');
+
+    editDestinatario.Clear;
+    editAsunto.Clear;
+    MemoMensaje.Clear;
+    Close;
+  except
+    on E: Exception do
+      ShowMessage('Error al guardar como privado: ' + E.Message);
+  end;
 end;
 
 procedure TForm4.GuardarCorreoEnJSON(Id: Integer; Remitente, Destinatario, Asunto, Mensaje, Fecha: string);
@@ -235,17 +323,15 @@ var
   RutaArchivo, RutaCarpeta: string;
 begin
   RutaCarpeta := ExtractFilePath(Application.ExeName) + 'Data';
-  RutaArchivo := RutaCarpeta + PathDelim + 'correos_enviados_log.json'; // Usar un nombre de log distinto
+  RutaArchivo := RutaCarpeta + PathDelim + 'correos_enviados_log.json';
 
   if not DirectoryExists(RutaCarpeta) then
     ForceDirectories(RutaCarpeta);
 
   AssignFile(Archivo, RutaArchivo);
   try
-    // La forma más simple de evitar errores de formato en JSON es añadir cada objeto en una nueva línea
-    // y envolver el contenido completo en un array al leer.
     if FileExists(RutaArchivo) then
-      Append(Archivo) // Abrir para añadir al final
+      Append(Archivo)
     else
       Rewrite(Archivo);
 
@@ -262,28 +348,25 @@ begin
   end;
 end;
 
-// =============================================================================
-// EVENTOS VACÍOS PERO NECESARIOS PARA EVITAR ERRORES
-// =============================================================================
-
+//
+// EVENTOS VACÍOS NECESARIOS
+//
 procedure TForm4.editAsuntoChange(Sender: TObject);
 begin
-  // Evento vacío pero necesario
 end;
 
 procedure TForm4.editDestinatarioChange(Sender: TObject);
 begin
-  // Evento vacío pero necesario
 end;
 
 procedure TForm4.MemoMensajeChange(Sender: TObject);
 begin
-  // Evento vacío pero necesario
 end;
 
 procedure TForm4.FormDestroy(Sender: TObject);
 begin
-  // No liberamos BandejaActual porque es global
+  // No liberar BandejaActual (es global)
 end;
 
 end.
+

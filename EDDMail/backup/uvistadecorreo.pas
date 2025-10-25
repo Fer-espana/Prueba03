@@ -6,7 +6,9 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  UListaDobleEnlazadaCorreos, UGLOBAL, UPilaPapelera, UArbolB;
+  UListaDobleEnlazadaCorreos, UGLOBAL, UPilaPapelera, UArbolB,
+  // *** NUEVAS DEPENDENCIAS (Fase 3) ***
+  privado, lzw, FileUtil; // <-- Añadir privado y lzw
 
 type
 
@@ -15,6 +17,9 @@ type
   TForm10 = class(TForm)
     btnEliminarCorreo: TButton;
     btnFavorito: TButton;
+    // *** NUEVOS BOTONES (Fase 3) ***
+    BtnAnadirPrivado: TButton;
+    BtnDescargar: TButton;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
@@ -27,13 +32,18 @@ type
     MemoMensaje: TMemo;
     procedure btnEliminarCorreoClick(Sender: TObject);
     procedure btnFavoritoClick(Sender: TObject);
+    // *** NUEVOS EVENTOS (Fase 3) ***
+    procedure BtnAnadirPrivadoClick(Sender: TObject);
+    procedure BtnDescargarClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
     CorreoActual: PCorreo;
     BandejaActual: PBandejaUsuario;
     procedure NotificarFormularioPrincipal;
-    procedure NotificarFormularioFavoritos; // <-- AGREGADO
+    procedure NotificarFormularioFavoritos;
+    // *** NUEVO PROCEDIMIENTO (Fase 3) ***
+    procedure MostrarCorreo;
   public
     procedure SetCorreoActual(Correo: PCorreo; Bandeja: PBandejaUsuario);
   end;
@@ -53,7 +63,7 @@ uses UUsuarioEstandar, UFavoritos;
 procedure TForm10.FormCreate(Sender: TObject);
 begin
   Caption := 'Vista de Correo';
-// ... (código para configurar etiquetas y controles)
+  // ... (código para configurar etiquetas y controles)
   Label1.Caption := 'Remitente:';
   Label2.Caption := 'Asunto:';
   Label3.Caption := 'Fecha:';
@@ -64,15 +74,24 @@ begin
   MemoMensaje.ReadOnly := True;
 
   btnEliminarCorreo.Caption := 'Eliminar Correo';
+
+  // *** CONFIGURAR NUEVOS BOTONES (Fase 3) ***
+  BtnAnadirPrivado.Caption := 'Añadir a Privados';
+  BtnDescargar.Caption := 'Descargar';
 end;
 
 procedure TForm10.SetCorreoActual(Correo: PCorreo; Bandeja: PBandejaUsuario);
-var
-  EstadoStr: string;
 begin
   CorreoActual := Correo;
   BandejaActual := Bandeja;
+  MostrarCorreo;
+end;
 
+// *** NUEVO PROCEDIMIENTO (Fase 3) ***
+procedure TForm10.MostrarCorreo;
+var
+  EstadoStr: string;
+begin
   if CorreoActual <> nil then
   begin
     // Mostrar información del correo
@@ -99,6 +118,12 @@ begin
       btnFavorito.Enabled := False
     else
       btnFavorito.Enabled := True;
+
+    // *** VALIDACIÓN PARA BOTÓN PRIVADOS (Fase 3) ***
+    if (UsuarioActual <> nil) and (UsuarioActual^.privados.ExisteAsunto(CorreoActual^.Asunto)) then
+      BtnAnadirPrivado.Enabled := False
+    else
+      BtnAnadirPrivado.Enabled := True;
   end;
 end;
 
@@ -120,7 +145,7 @@ begin
   end;
 end;
 
-procedure TForm10.NotificarFormularioFavoritos; // <-- IMPLEMENTACIÓN
+procedure TForm10.NotificarFormularioFavoritos;
 var
   i: Integer;
   FormFavoritos: TForm17; // TForm17 es el formulario de favoritos (UFavoritos)
@@ -222,13 +247,100 @@ begin
     // Notificar al formulario principal (TForm3)
     NotificarFormularioPrincipal;
 
-    // Llama al nuevo procedimiento para actualizar TForm17
+    // Notificar al formulario de Favoritos (TForm17) para que refresque su lista
     NotificarFormularioFavoritos;
 
     (Sender as TButton).Enabled := False;
   end
   else
     ShowMessage('Error al insertar en Favoritos.');
+end;
+
+// *** NUEVO PROCEDIMIENTO (Fase 3) ***
+procedure TForm10.BtnAnadirPrivadoClick(Sender: TObject);
+var
+  asunto: String;
+  fechaStr: String;
+begin
+  if (UsuarioActual = nil) or (CorreoActual = nil) then
+  begin
+    ShowMessage('Error: No hay usuario logueado o correo seleccionado.');
+    Exit;
+  end;
+
+  asunto := CorreoActual^.Asunto;
+  fechaStr := FormatDateTime('yyyy-mm-dd hh:nn:ss', Now); // Usar fecha actual o la del correo
+
+  // Validar duplicado de asunto
+  if UsuarioActual^.privados.ExisteAsunto(asunto) then
+  begin
+    ShowMessage('Ya existe un correo privado con el asunto: "' + asunto + '". No se pueden agregar duplicados.');
+    BtnAnadirPrivado.Enabled := False;
+    Exit;
+  end;
+
+  // Insertar en el Árbol Merkle
+  try
+    UsuarioActual^.privados.Insert(
+      CorreoActual^.Remitente,
+      asunto,
+      fechaStr,
+      CorreoActual^.Mensaje
+    );
+    ShowMessage('Correo añadido a Privados exitosamente.' + #13#10 +
+                'El Árbol Merkle ha sido reconstruido.');
+    BtnAnadirPrivado.Enabled := False;
+  except
+    on E: Exception do
+      ShowMessage('Error al añadir a privados: ' + E.Message);
+  end;
+end;
+
+// *** NUEVO PROCEDIMIENTO (Fase 3) ***
+procedure TForm10.BtnDescargarClick(Sender: TObject);
+var
+  SaveDialog: TSaveDialog;
+  Archivo: TextFile;
+  RutaArchivo, ContenidoComprimido: string;
+begin
+  if CorreoActual = nil then
+  begin
+    ShowMessage('Error: No hay correo para descargar.');
+    Exit;
+  end;
+
+  SaveDialog := TSaveDialog.Create(nil);
+  try
+    SaveDialog.Filter := 'Archivos de texto (*.txt)|*.txt|Todos los archivos (*.*)|*.*';
+    SaveDialog.DefaultExt := 'txt';
+    SaveDialog.FileName := 'correo_' + IntToStr(CorreoActual^.Id) + '.txt';
+
+    if SaveDialog.Execute then
+    begin
+      RutaArchivo := SaveDialog.FileName;
+
+      // Comprimir el contenido usando LZW
+      ContenidoComprimido := ComprimirLZW(
+        'Remitente: ' + CorreoActual^.Remitente + sLineBreak +
+        'Destinatario: ' + CorreoActual^.Destinatario + sLineBreak +
+        'Asunto: ' + CorreoActual^.Asunto + sLineBreak +
+        'Fecha: ' + CorreoActual^.Fecha + sLineBreak +
+        'Mensaje: ' + sLineBreak + CorreoActual^.Mensaje
+      );
+
+      // Guardar archivo comprimido
+      AssignFile(Archivo, RutaArchivo);
+      try
+        Rewrite(Archivo);
+        WriteLn(Archivo, ContenidoComprimido);
+        ShowMessage('Correo descargado y comprimido exitosamente en: ' + RutaArchivo);
+      finally
+        CloseFile(Archivo);
+      end;
+    end;
+  finally
+    SaveDialog.Free;
+  end;
 end;
 
 procedure TForm10.FormDestroy(Sender: TObject);

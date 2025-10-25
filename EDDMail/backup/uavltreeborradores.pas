@@ -34,7 +34,7 @@ procedure LiberarAVL(var Tree: TAVLTree);
 
 implementation
 
-// DECLARACIÓN FORWARD (CORRECCIÓN: MOVIDA AQUÍ)
+// DECLARACIÓN FORWARD
 procedure GenerarNodoDOT(Nodo: PNodeAVL; var Archivo: TextFile; var Contador: Integer); forward;
 
 // STUBS (Lógica pendiente)
@@ -51,7 +51,7 @@ begin
   if Nodo = nil then Exit('');
 
   LeftStr := RecorridoRecursivo(Nodo^.Left, Tipo);
-  // CORRECCIÓN: Se cambió "RecorrivoRecursivo" a "RecorridoRecursivo"
+  // CORRECCIÓN DE TYPO: RecorrivoRecursivo -> RecorridoRecursivo
   RightStr := RecorridoRecursivo(Nodo^.Right, Tipo);
 
   case UpperCase(Tipo) of

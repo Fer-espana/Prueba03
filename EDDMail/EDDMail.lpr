@@ -10,14 +10,20 @@ uses
   athreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, UPrincipal, UROOT, UUsuarioEstandar, UEnviarCorreo, UProgramarCorreo,
-  datetimectrls, UAgregarContacto, UActualizarPerfil, URegistrarse,
-  UBandejaEntrada, UVistadeCorreo, UPapelera, UCorreosProgramados,
-  UVentanaContactos, UListaSimpleUsuarios, UListaDobleEnlazadaCorreos,
-  UListaCircularContactos, UColaCorreosProgramados, UPilaPapelera,
-  UMatrizDispersaRelaciones, UListadeListasComunidades, UGLOBAL, UNAVEGACION,
-  UGestionComunidades, UAVLTreeBorradores, UArbolB, UCorregirBorrador,
-  UVerBorradores;
+  Forms,
+  // Unidades existentes (asegúrate que estén todas)
+  uprincipal, uregistrarse, uglobal, ulistasimpleusuarios,
+  ulistadobleenlazadacorreos, umatrizdispersarelaciones, uroot,
+  uusuarioestandar, uagregarcontacto, ulistacircularcontactos,
+  uventanacontactos, uactualizarperfil, uenviarcorreo, upilapapelera,
+  ucolacorreosprogramados, upapelera, uprogramarcorreo, ucorreosprogramados,
+  uarbolb, ufavoritos, uvistadefavorito, uavltreeborradores, uverborradores,
+  ucorregirborrador, ugestioncomunidades, ulistadelistascomunidades,
+  uvistadecorreo, unavegacion, // <-- Añade las que falten de tu proyecto
+  // Unidades Nuevas (Fase 3)
+  blockchain, bitacora, privado, lzw,
+  fbitacora, privados // <-- Formularios nuevos
+  { you can add units after this };
 
 {$R *.res}
 
@@ -25,9 +31,17 @@ begin
   RequireDerivedFormResource:=True;
   Application.Scaled:=True;
   Application.Initialize;
-  Application.CreateForm(TForm1, Form1);
-  Application.CreateForm(TForm14, Form14);
-  Application.CreateForm(TForm16, Form16);
-  // SOLO creamos Form1 (login), los demás se crean dinámicamente
+
+  // Inicializaciones existentes
+  InicializarLista(ListaUsuarios);
+  InicializarMatriz(MatrizRelaciones);
+  InicializarArbolComunidades(ArbolComunidades); // Asumiendo que tienes esta variable global
+
+  // *** NUEVAS INICIALIZACIONES (Fase 3) ***
+  InicializarBlockchain(SistemaBlockchain); // Declara SistemaBlockchain: TBlockchain; en uglobal.pas o aquí
+  InicializarBitacora(LogAccesos);        // Declara LogAccesos: TListaAccesos; en uglobal.pas o aquí
+
+  // Crear y correr el formulario principal
+  Application.CreateForm(TFormPrincipal, FormPrincipal);
   Application.Run;
 end.

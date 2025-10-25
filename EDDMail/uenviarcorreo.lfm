@@ -63,19 +63,28 @@ object Form4: TForm4
   object btnEnviar: TButton
     Left = 288
     Height = 49
-    Top = 296
+    Top = 280
     Width = 198
     Caption = 'Enviar'
     OnClick = btnEnviarClick
     TabOrder = 3
   end
   object btnGuardarBorrador: TButton
-    Left = 56
+    Left = 40
     Height = 49
-    Top = 296
+    Top = 280
     Width = 176
     Caption = 'Guardar Borrador'
     OnClick = btnGuardarBorradorClick
     TabOrder = 4
+  end
+  object btnGuardarPrivado: TButton
+    Left = 40
+    Height = 33
+    Top = 344
+    Width = 179
+    Caption = 'Guardar Privado'
+    OnClick = btnGuardarPrivadoClick
+    TabOrder = 5
   end
 end

@@ -65,7 +65,8 @@ begin
     StatusBar1.SimpleText := 'Sistema inicializado. ' + IntToStr(ListaUsuariosGlobal.Count) + ' usuario(s) cargados.';
 end;
 
-procedure TForm2.GuardarUsuariosEnJSON;
+// MANTENER LA IMPLEMENTACIÓN DE GuardarUsuariosEnJSON DONDE ESTÁ
+procedure TForm1.GuardarUsuariosEnJSON;
 var
   Archivo: TextFile;
   Actual: PUsuario;
@@ -97,13 +98,14 @@ begin
       if not EsPrimerUsuario then
         WriteLn(Archivo, ',');
 
+      // En la sección donde escribes el JSON, agregar la contraseña:
       WriteLn(Archivo, '    {');
       WriteLn(Archivo, '      "id": ', Actual^.Id, ',');
       WriteLn(Archivo, '      "nombre": "', Actual^.Nombre, '",');
       WriteLn(Archivo, '      "usuario": "', Actual^.Usuario, '",');
       WriteLn(Archivo, '      "email": "', Actual^.Email, '",');
       WriteLn(Archivo, '      "telefono": "', Actual^.Telefono, '",'); // Agregar coma
-      WriteLn(Archivo, '      "password": "', Actual^.Password, '"');  // NUEVA LÍNEA
+      WriteLn(Archivo, '      "password": "', Actual^.Password, '"'); // NUEVA LÍNEA
       Write(Archivo, '    }');
 
       EsPrimerUsuario := False;
@@ -115,7 +117,6 @@ begin
     WriteLn(Archivo, '  ]');
     WriteLn(Archivo, '}');
 
-    ShowMessage('Usuarios guardados en: ' + RutaArchivo);
   finally
     CloseFile(Archivo);
   end;

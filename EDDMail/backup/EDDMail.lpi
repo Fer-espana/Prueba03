@@ -47,7 +47,7 @@
       <Unit>
         <Filename Value="ulistasimpleusuarios.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UListaSimpleUsuarios"/>
+        <UnitName Value="uListaSimpleUsuarios"/>
       </Unit>
       <Unit>
         <Filename Value="uroot.pas"/>
@@ -203,7 +203,9 @@
       <Unit>
         <Filename Value="uverborradores.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form16"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
         <UnitName Value="UVerBorradores"/>
       </Unit>
       <Unit>

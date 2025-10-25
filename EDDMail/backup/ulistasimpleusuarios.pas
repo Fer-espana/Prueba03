@@ -1,50 +1,67 @@
-unit UListaSimpleUsuarios;
+unit ulistasimpleusuarios;
 
 {$mode objfpc}{$H+}
 
 interface
 
 uses
-  Classes, SysUtils, UAVLTreeBorradores, UArbolB;
+  Classes, SysUtils, Forms, Dialogs, Process, LCLIntf, LCLType, Math, FileUtil,
+  // Dependencias existentes
+  ulistadobleenlazadacorreos, ulistacircularcontactos, upilapapelera,
+  ucolacorreosprogramados, uarbolb, uavltreeborradores,
+  // *** NUEVA DEPENDENCIA (Fase 3) ***
+  privado; // <-- Unidad que define TMerkleTree
 
 type
+  { TUsuario }
   PUsuario = ^TUsuario;
   TUsuario = record
-    Id: Integer;
-    Nombre: string;
-    Usuario: string;
-    Email: string;
-    Telefono: string;
-    Password: string; // NUEVO CAMPO
-    Siguiente: PUsuario;
+    id: Integer;
+    nombre: String;
+    usuario: String;
+    password: String;
+    email: String; // Clave principal para búsquedas
+    telefono: String;
+    // Estructuras existentes
+    inbox: TListaCorreos;
+    contacts: TListaContactos;
+    papelera: TPila;
+    programados: TCola;
+    favoritos: TArbolB;
+    borradores: TArbolAVL;
+    // *** NUEVA ESTRUCTURA (Fase 3) ***
+    privados: TMerkleTree; // <-- Campo para el Árbol Merkle
+    // Puntero lista simple
+    siguiente: PUsuario;
   end;
 
+  { TListaUsuarios }
   TListaUsuarios = record
-    Cabeza: PUsuario;
-    Count: Integer;
+    primero: PUsuario;
+    count: Integer;
   end;
 
+// Variables globales (si las mueves a uglobal, quítalas de aquí)
 var
-  ListaUsuariosGlobal: TListaUsuarios;
+  ListaUsuarios: TListaUsuarios;
+  UsuarioLogueado: PUsuario = nil; // Usuario actualmente logueado
 
-// Procedimientos básicos
-procedure InicializarListaUsuarios(var Lista: TListaUsuarios);
-procedure InsertarUsuario(var Lista: TListaUsuarios; Id: Integer;
-  Nombre, Usuario, Email, Telefono, Password: string);
-function BuscarUsuarioPorEmail(Lista: TListaUsuarios; Email: string): PUsuario;
-procedure MostrarUsuarios(Lista: TListaUsuarios);
-procedure LiberarListaUsuarios(var Lista: TListaUsuarios);
-
-// NUEVAS DECLARACIONES
-procedure GenerarReporteDOTUsuarios(Lista: TListaUsuarios; NombreArchivo: string);
-function ObtenerIDyEmailPorID(Lista: TListaUsuarios; IDUsuario: Integer): string;
+// Procedimientos y Funciones existentes...
+procedure InicializarLista(var lista: TListaUsuarios);
+procedure AgregarUsuario(var lista: TListaUsuarios; id: Integer; nombre, usuario, password, email, telefono: String);
+function BuscarUsuario(lista: TListaUsuarios; email: String): PUsuario;
+function BuscarUsuarioPorID(lista: TListaUsuarios; id: Integer): PUsuario;
+procedure GenerarGraphvizUsuarios(lista: TListaUsuarios; nombreArchivo: string);
+// *** NUEVA FUNCIÓN (Fase 3 - La copiaremos en Paso 7) ***
+// procedure GenerarGrafoContactos(var lista: TListaUsuarios; nombreArchivoBase: String);
+procedure LiberarListaUsuarios(var lista: TListaUsuarios); // <-- IMPORTANTE: Modificarla para liberar MerkleTree
 
 implementation
 
-procedure InicializarListaUsuarios(var Lista: TListaUsuarios);
+procedure InicializarLista(var lista: TListaUsuarios);
 begin
-  Lista.Cabeza := nil;
-  Lista.Count := 0;
+  lista.primero := nil;
+  lista.count := 0;
 end;
 
 // En UListaSimpleUsuarios.pas - AGREGAR EN LA SECCIÓN implementation
@@ -80,6 +97,7 @@ begin
   Nuevo^.Telefono := Telefono;
   Nuevo^.Password := Password; // GUARDAR CONTRASEÑA
   Nuevo^.Siguiente := nil;
+  nuevo^.privados := TMerkleTree.Create;
 
   if Lista.Cabeza = nil then
     Lista.Cabeza := Nuevo
@@ -125,23 +143,81 @@ begin
   end;
 end;
 
-procedure LiberarListaUsuarios(var Lista: TListaUsuarios);
+procedure LiberarListaUsuarios(var lista: TListaUsuarios);
 var
-  Actual, Temp: PUsuario;
+  actual, siguiente: PUsuario;
 begin
-  Actual := Lista.Cabeza;
-  while Actual <> nil do
+  actual := lista.primero;
+  while actual <> nil do
   begin
-    Temp := Actual;
-    Actual := Actual^.Siguiente;
-    Dispose(Temp);
+    siguiente := actual^.siguiente;
+
+    // Liberar estructuras internas
+    LiberarListaCorreos(actual^.inbox);
+    LiberarListaContactos(actual^.contacts); // Asegúrate de tener esta función
+    LiberarPila(actual^.papelera); // Asegúrate de tener esta función
+    LiberarCola(actual^.programados); // Asegúrate de tener esta función
+    LiberarArbolB(actual^.favoritos); // Asegúrate de tener esta función
+    LiberarArbolAVL(actual^.borradores); // Asegúrate de tener esta función
+
+    // *** NUEVA LIBERACIÓN (Fase 3) ***
+    actual^.privados.Free; // <-- Liberar el objeto MerkleTree
+
+    Dispose(actual); // Liberar el nodo de usuario
+    actual := siguiente;
   end;
-  Lista.Cabeza := nil;
-  Lista.Count := 0;
+  lista.primero := nil;
+  lista.count := 0;
 end;
 
+procedure AgregarUsuario(var lista: TListaUsuarios; id: Integer; nombre, usuario, password, email, telefono: String);
+var
+  nuevo, actual: PUsuario;
+begin
+  // (Validaciones existentes de ID y Email...)
+
+  New(nuevo);
+  nuevo^.id := id;
+  nuevo^.nombre := nombre;
+  nuevo^.usuario := usuario;
+  nuevo^.password := password;
+  nuevo^.email := email;
+  nuevo^.telefono := telefono;
+
+  // Inicializar estructuras existentes
+  InicializarListaCorreos(nuevo^.inbox);
+  InicializarListaContactos(nuevo^.contacts);
+  InitPila(nuevo^.papelera);
+  InitCola(nuevo^.programados);
+  InicializarArbolB(nuevo^.favoritos);
+  InicializarArbolAVL(nuevo^.borradores);
+
+  // *** NUEVA INICIALIZACIÓN (Fase 3) ***
+  nuevo^.privados := TMerkleTree.Create; // <-- Inicializar el Árbol Merkle
+
+  nuevo^.siguiente := nil;
+
+  // Insertar en la lista simple (al final o al principio, como lo tengas)
+  if lista.primero = nil then
+  begin
+    lista.primero := nuevo;
+  end
+  else
+  begin
+    actual := lista.primero;
+    while actual^.siguiente <> nil do
+      actual := actual^.siguiente;
+    actual^.siguiente := nuevo;
+  end;
+  Inc(lista.count);
+end;
+
+
+
+// *** PEGAR AQUÍ LA FUNCIÓN GenerarGrafoContactos (Paso 7) ***
+
 // =======================================================
-// IMPLEMENTACIONES DE FUNCIONES DE REPORTE/BUSQUEDA (MOVIDAS ANTES DE initialization)
+// IMPLEMENTACIONES DE FUNCIONES DE REPORTE/BUSQUEDA
 // =======================================================
 
 function ObtenerIDyEmailPorID(Lista: TListaUsuarios; IDUsuario: Integer): string;
