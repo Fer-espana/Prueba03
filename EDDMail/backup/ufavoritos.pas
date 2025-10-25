@@ -183,15 +183,57 @@ begin
 end;
 
 procedure TForm17.GenerarReporteFavoritos;
-// ... (Código existente)
+var
+  RutaCarpeta: string;
+  RutaArchivoDOT, RutaArchivoPNG: string;
+  Proc: TProcess;
+begin
+  RutaCarpeta := ExtractFilePath(Application.ExeName) +
+                 StringReplace(UsuarioActual^.Email, '@', '-', [rfReplaceAll]) +
+                 '-Reportes';
+
+  ForceDirectories(RutaCarpeta);
+  RutaArchivoDOT := RutaCarpeta + PathDelim + 'favoritos.dot';
+  RutaArchivoPNG := RutaCarpeta + PathDelim + 'favoritos.png';
+
+  GenerarReporteDOTArbolB(BandejaActual^.Favoritos, RutaArchivoDOT);
+
+  if FileExists(RutaArchivoDOT) then
+  begin
+    Proc := TProcess.Create(nil);
+    try
+      Proc.Executable := 'dot';
+      Proc.Parameters.Add('-Tpng');
+      Proc.Parameters.Add(RutaArchivoDOT);
+      Proc.Parameters.Add('-o');
+      Proc.Parameters.Add(RutaArchivoPNG);
+      Proc.Options := [poWaitOnExit];
+      Proc.Execute;
+    finally
+      Proc.Free;
+    end;
+  end;
+
+  ShowMessage('Reporte DOT y PNG de Favoritos generado.');
 end;
 
 procedure TForm17.btnGenerarReporteClick(Sender: TObject);
-// ... (Código existente)
+begin
+  GenerarReporteFavoritos;
 end;
 
 procedure TForm17.NotificarPapeleraSiEstaAbierta;
-// ... (Código existente)
+var
+  i: Integer;
+begin
+  for i := 0 to Screen.FormCount - 1 do
+  begin
+    if Screen.Forms[i] is TForm11 then
+    begin
+      // Asume que TForm11 tiene el método RefrescarPapelera
+      (Screen.Forms[i] as TForm11).RefrescarPapelera;
+    end;
+  end;
 end;
 
 // Eventos vacíos

@@ -34,8 +34,8 @@ type
     function GenerarIdCorreo: Integer;
     function ValidarDestinatario(Destinatario: string): Boolean;
     function BuscarIndiceUsuario(Email: string): Integer;
-    procedure GuardarCorreoEnJSON(Id: Integer; Remitente, Destinatario, Asunto, Mensaje, Fecha: string); // <--- NUEVA DECLARACIÓN
-    procedure NotificarFormularioBorradores; // <-- NUEVA DECLARACIÓN
+    procedure GuardarCorreoEnJSON(Id: Integer; Remitente, Destinatario, Asunto, Mensaje, Fecha: string);
+    procedure NotificarFormularioBorradores; // <-- AGREGADO
   public
     procedure SetBandejaActual(Email: string);
   end;
@@ -45,7 +45,7 @@ var
 
 implementation
 
-uses UVerBorradores; // <-- AÑADIDO para notificar TForm16
+uses UVerBorradores; // <-- AGREGADO para referenciar TForm16
 
 {$R *.lfm}
 
@@ -116,7 +116,7 @@ begin
   Result := True;
 end;
 
-procedure TForm4.NotificarFormularioBorradores; // <-- NUEVA IMPLEMENTACIÓN
+procedure TForm4.NotificarFormularioBorradores; // <-- IMPLEMENTACIÓN
 var
   i: Integer;
   FormBorradores: TForm16; // TForm16 es el formulario de borradores (UVerBorradores)
@@ -133,6 +133,7 @@ begin
     end;
   end;
 end;
+
 
 procedure TForm4.btnEnviarClick(Sender: TObject);
 var
@@ -222,43 +223,14 @@ begin
 
   ShowMessage('Correo guardado como borrador (ID: ' + IntToStr(NuevoID) + ').');
 
-  // <-- Llama al nuevo procedimiento de notificación para actualizar el TListView de TForm16
+  // <-- CORRECCIÓN: Notificar al formulario de Borradores (TForm16) para que refresque su lista
   NotificarFormularioBorradores;
 
   Self.Close; // Self.Close funciona correctamente dentro de TForm4
 end;
 
 procedure TForm4.GuardarCorreoEnJSON(Id: Integer; Remitente, Destinatario, Asunto, Mensaje, Fecha: string);
-var
-  Archivo: TextFile;
-  RutaArchivo, RutaCarpeta: string;
-begin
-  RutaCarpeta := ExtractFilePath(Application.ExeName) + 'Data';
-  RutaArchivo := RutaCarpeta + PathDelim + 'correos_enviados_log.json'; // Usar un nombre de log distinto
-
-  if not DirectoryExists(RutaCarpeta) then
-    ForceDirectories(RutaCarpeta);
-
-  AssignFile(Archivo, RutaArchivo);
-  try
-    // La forma más simple de evitar errores de formato en JSON es añadir cada objeto en una nueva línea
-    // y envolver el contenido completo en un array al leer.
-    if FileExists(RutaArchivo) then
-      Append(Archivo) // Abrir para añadir al final
-    else
-      Rewrite(Archivo);
-
-    WriteLn(Archivo, '{');
-    WriteLn(Archivo, '  "id": ', Id, ',');
-    WriteLn(Archivo, '  "remitente": "', Remitente, '",');
-    WriteLn(Archivo, '  "destinatario": "', Destinatario, '",');
-    WriteLn(Archivo, '  "asunto": "', Asunto, '",');
-    WriteLn(Archivo, '  "mensaje": "', StringReplace(Mensaje, sLineBreak, '\n', [rfReplaceAll]), '",');
-    WriteLn(Archivo, '  "fecha": "', Fecha, '"');
-    WriteLn(Archivo, '}');
-  finally
-    CloseFile(Archivo);
-  end;
+// ... (Código existente)
 end;
 
 // =============================================================================

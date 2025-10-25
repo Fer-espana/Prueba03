@@ -33,7 +33,7 @@ type
     CorreoActual: PCorreo;
     BandejaActual: PBandejaUsuario;
     procedure NotificarFormularioPrincipal;
-    procedure NotificarFormularioFavoritos; // <-- NUEVA DECLARACIÓN
+    procedure NotificarFormularioFavoritos; // <-- AGREGADO
   public
     procedure SetCorreoActual(Correo: PCorreo; Bandeja: PBandejaUsuario);
   end;
@@ -43,7 +43,7 @@ var
 
 implementation
 
-// CORRECCIÓN: Se agrega UFavoritos
+// Se agrega UFavoritos para notificar TForm17
 uses UUsuarioEstandar, UFavoritos;
 
 {$R *.lfm}
@@ -53,8 +53,7 @@ uses UUsuarioEstandar, UFavoritos;
 procedure TForm10.FormCreate(Sender: TObject);
 begin
   Caption := 'Vista de Correo';
-
-  // Configurar etiquetas
+// ... (código para configurar etiquetas y controles)
   Label1.Caption := 'Remitente:';
   Label2.Caption := 'Asunto:';
   Label3.Caption := 'Fecha:';
@@ -121,7 +120,7 @@ begin
   end;
 end;
 
-procedure TForm10.NotificarFormularioFavoritos; // <-- NUEVA IMPLEMENTACIÓN
+procedure TForm10.NotificarFormularioFavoritos; // <-- IMPLEMENTACIÓN
 var
   i: Integer;
   FormFavoritos: TForm17; // TForm17 es el formulario de favoritos (UFavoritos)
@@ -138,7 +137,6 @@ begin
     end;
   end;
 end;
-
 
 procedure TForm10.btnEliminarCorreoClick(Sender: TObject);
 var
@@ -221,10 +219,10 @@ begin
   begin
     ShowMessage('Correo marcado como favorito (Árbol B) con ID: ' + IntToStr(CorreoCopia.Id));
 
-    // Notificar al formulario principal para refrescar (para que se actualice el contador de Favoritos)
+    // Notificar al formulario principal (TForm3)
     NotificarFormularioPrincipal;
 
-    // <-- Llama al nuevo procedimiento de notificación para actualizar el TListView de TForm17
+    // Llama al nuevo procedimiento para actualizar TForm17
     NotificarFormularioFavoritos;
 
     (Sender as TButton).Enabled := False;

@@ -1,0 +1,11 @@
+digraph CorreosProgramados {
+  rankdir=LR;
+  node [shape=record, style=filled, fillcolor=lightyellow];
+  edge [color=darkorange];
+
+  frente [label="FRENTE", shape=ellipse, fillcolor=orange];
+  final [label="FINAL", shape=ellipse, fillcolor=lightgreen];
+  vacio [label="COLA VACÍA", shape=plaintext];
+  frente -> vacio;
+  vacio -> final;
+}

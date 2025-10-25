@@ -1,0 +1,7 @@
+digraph Contactos {
+  layout=circo; // Diseño circular
+  node [shape=record, style=filled, fillcolor=lightgreen];
+  edge [color=darkgreen];
+
+  vacio [label="No hay contactos", shape=plaintext];
+}

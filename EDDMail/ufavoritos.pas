@@ -5,7 +5,7 @@ unit UFavoritos;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls, // Grids ELIMINADO
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls,
   UListaDobleEnlazadaCorreos, UGLOBAL, UPapelera, UArbolB,
   UVistadeFavorito, Process; // UVistadeFavorito es TForm18
 
@@ -35,7 +35,7 @@ type
     procedure RecorrerArbolBParaTabla(Nodo: PNodoB; var Fila: Integer);
     procedure NotificarPapeleraSiEstaAbierta;
   public
-    procedure RefrescarDatos;
+    procedure RefrescarDatos; // <-- Necesario para la notificación externa
   end;
 
 var
@@ -48,6 +48,7 @@ implementation
 { TForm17 }
 
 procedure TForm17.ConfigurarListView;
+// ... (código existente)
 begin
   with listViewFavoritos do
   begin
@@ -90,10 +91,11 @@ begin
   if BandejaActual = nil then
     BandejaActual := CrearBandejaUsuario(UsuarioActual^.Email);
 
-  ActualizarTabla;
+  ActualizarTabla; // Llama a la lógica de recarga
 end;
 
 procedure TForm17.RecorrerArbolBParaTabla(Nodo: PNodoB; var Fila: Integer);
+// ... (código existente)
 var
   i: Integer;
   Item: TListItem; // Objeto para TListView
@@ -125,6 +127,7 @@ end;
 
 
 procedure TForm17.ActualizarTabla;
+// ... (código existente)
 var
   Fila: Integer;
 begin
@@ -158,20 +161,20 @@ end;
 procedure TForm17.tablaInformacionDblClick(Sender: TObject);
 var
   IDSeleccionado: Integer;
-  Correo: PCorreo; // PCorreo es el puntero a TCorreo que BuscarEnArbolB debe devolver
+  Correo: PCorreo; // PCorreo es el tipo correcto para recibir el puntero
   FormVista: TForm18; // <--- TForm18
 begin
   IDSeleccionado := ObtenerIDSeleccionado;
 
   if IDSeleccionado <> -1 then
   begin
-    // Buscar la REFERENCIA (PCorreo) al TCorreo almacenado en el Árbol B
+    // CORRECCIÓN: Se espera que BuscarEnArbolB devuelva un PCorreo
     Correo := BuscarEnArbolB(BandejaActual^.Favoritos, IDSeleccionado);
 
     if Correo <> nil then
     begin
       FormVista := TForm18.Create(Application);
-      // Pasamos la referencia correcta (PCorreo)
+      // Pasamos la referencia del TCorreo dentro del Árbol B.
       FormVista.SetCorreoActual(Correo, BandejaActual);
       FormVista.ShowModal;
       FormVista.Free;

@@ -53,8 +53,7 @@ uses UUsuarioEstandar, UFavoritos;
 procedure TForm10.FormCreate(Sender: TObject);
 begin
   Caption := 'Vista de Correo';
-
-  // Configurar etiquetas
+// ... (código para configurar etiquetas y controles)
   Label1.Caption := 'Remitente:';
   Label2.Caption := 'Asunto:';
   Label3.Caption := 'Fecha:';
@@ -138,7 +137,6 @@ begin
     end;
   end;
 end;
-
 
 procedure TForm10.btnEliminarCorreoClick(Sender: TObject);
 var
@@ -224,7 +222,7 @@ begin
     // Notificar al formulario principal (TForm3)
     NotificarFormularioPrincipal;
 
-    // Llama al nuevo procedimiento para actualizar TForm17
+    // <-- CORRECCIÓN: Notificar al formulario de Favoritos (TForm17) para que refresque su lista
     NotificarFormularioFavoritos;
 
     (Sender as TButton).Enabled := False;

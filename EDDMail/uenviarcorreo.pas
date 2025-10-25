@@ -34,7 +34,7 @@ type
     function GenerarIdCorreo: Integer;
     function ValidarDestinatario(Destinatario: string): Boolean;
     function BuscarIndiceUsuario(Email: string): Integer;
-    procedure GuardarCorreoEnJSON(Id: Integer; Remitente, Destinatario, Asunto, Mensaje, Fecha: string); // <--- NUEVA DECLARACIÓN
+    procedure GuardarCorreoEnJSON(Id: Integer; Remitente, Destinatario, Asunto, Mensaje, Fecha: string);
     procedure NotificarFormularioBorradores; // <-- AGREGADO
   public
     procedure SetBandejaActual(Email: string);
@@ -45,7 +45,7 @@ var
 
 implementation
 
-uses UVerBorradores; // <-- AGREGADO para notificar TForm16
+uses UVerBorradores; // <-- AGREGADO para referenciar TForm16
 
 {$R *.lfm}
 
@@ -223,7 +223,7 @@ begin
 
   ShowMessage('Correo guardado como borrador (ID: ' + IntToStr(NuevoID) + ').');
 
-  // Llama al nuevo procedimiento para actualizar TForm16
+  // <-- CORRECCIÓN: Notificar al formulario de Borradores (TForm16) para que refresque su lista
   NotificarFormularioBorradores;
 
   Self.Close; // Self.Close funciona correctamente dentro de TForm4

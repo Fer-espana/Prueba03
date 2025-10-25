@@ -3,14 +3,16 @@ digraph Comunidades {
   node [shape=box, style=filled, fillcolor=lightblue];
   edge [color=darkgreen];
 
-  "azzz" [shape=ellipse, fillcolor=orange];
-  "fes2@edd.com" [label="fes2\nfes2@edd.com"];
-  "azzz" -> "fes2@edd.com";
+  "comida" [shape=ellipse, fillcolor=orange];
 
-  "hola" [shape=ellipse, fillcolor=orange];
-  "fes1@edd.com" [label="fes1\nfes1@edd.com"];
-  "hola" -> "fes1@edd.com";
-  "fes@edd.com" [label="fes\nfes@edd.com"];
-  "hola" -> "fes@edd.com";
+  "animales" [shape=ellipse, fillcolor=orange];
+
+  "musica" [shape=ellipse, fillcolor=orange];
+
+  "juegos" [shape=ellipse, fillcolor=orange];
+
+  "asjhda" [shape=ellipse, fillcolor=orange];
+  "gkroah-hartman@edd.com" [label="Greg Kroah-Hartman\ngkroah-hartman@edd.com"];
+  "asjhda" -> "gkroah-hartman@edd.com";
 
 }
